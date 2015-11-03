@@ -1774,6 +1774,10 @@ public class POQLFunctions {
 					name = ">";
 				} else if (i == poqlParser.DIFFERENT) {
 					name = "<>";
+				} else if (i == poqlParser.OPEN_PARENTHESIS) {
+					name = "(";
+				} else if (i == poqlParser.CLOSE_PARENTHESIS) {
+					name = ")";
 				}
 				suggestions.add(name);
 			}

@@ -298,8 +298,8 @@ RESOURCE: R E S O U R C E ;
 ACTIVITY_ID: A C T I V I T Y '_' I D ;
 PROCESS_ID: P R O C E S S '_' I D ;
 
-OPEN_PARENTHESIS: '(' ;
-CLOSE_PARENTHESIS: ')' ;
+OPEN_PARENTHESIS: PARENTHESIS_LEFT ;
+CLOSE_PARENTHESIS: PARENTHESIS_RIGHT ;
 
 WHERE: W H E R E ;
 
@@ -316,13 +316,15 @@ NOT: N O T ;
 CHANGED: C H A N G E D ;
 FROM: F R O M ;
 TO: T O ;
-STRING: '"' ~('\r' | '\n' | '"')* '"' { setText(getText().substring(1, getText().length() - 1)); };
+STRING: '"' ~('\r' | '\n' | '"' )* '"' { setText(getText().substring(1, getText().length() - 1)); };
 
 IDATT : 'at.'IDNOATT { setText(getText().substring(3, getText().length())); };
 //IDNOATT : [a-z,0-9,_,A-Z]+ ;
-IDNOATT : ~('\r' | '\n' | '\t' | ' ')+ ;
+IDNOATT : ~('\r' | '\n' | '\t' | ' ' | '(' | ')' | '<' | '>' | '=' )+ ;
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 
+fragment PARENTHESIS_LEFT:('(');
+fragment PARENTHESIS_RIGHT:(')');
 fragment SMALLER_SIGN:('<');
 fragment GREATER_SIGN:('>');
 fragment EQUAL_SIGN:('=');
