@@ -39,7 +39,7 @@ public class POQLRunner {
 			parser.poql.setCheckerMode(true);
 			parser.poql.setVocabulary(poqlLexer.VOCABULARY);
         
-			ProgContext progC = parser.prog(); // begin parsing at rule 'prog'
+			ProgContext progC = parser.prog(0); // begin parsing at rule 'prog'
 			System.out.println(progC.toStringTree(parser)); // print LISP-style tree
 			
 		} catch (Exception e) {
@@ -68,9 +68,17 @@ public class POQLRunner {
 			if (offendedToken.getCharPositionInLine() != offendedToken.getStartIndex()) {
 				System.err.println("WARNING!");
 			}
-			result.initOffendingToken = offendedToken.getCharPositionInLine();
+			
 			result.initOffendingToken = offendedToken.getStartIndex();
 			result.endOffendingToken = offendedToken.getStopIndex();
+			
+//			if (offendedToken.getStartIndex() > offendedToken.getStopIndex() && suggestions.isEmpty()) {
+//				Token tk = parser.getTokenStream().get(offendedToken.getTokenIndex()-1);
+//				if (tk != null) {
+//					result.initOffendingToken = tk.getStartIndex(); 
+//					result.endOffendingToken = tk.getStopIndex();
+//				}
+//			}
 		}
 		
         return result;
@@ -100,13 +108,17 @@ public class POQLRunner {
 			parser.poql.setCheckerMode(true);
 			parser.poql.setVocabulary(lexer.getVocabulary());
         
-			ProgContext progC = parser.prog(); // begin parsing at rule 'prog'
+			ProgContext progC = parser.prog(0); // begin parsing at rule 'prog'
 			System.out.println(progC.toStringTree(parser)); // print LISP-style tree
 			
 			parser.reset();
 			
+			parser = new poqlParser(tokens);
+			parser.poql.setMetaModel(slxmm);
 			parser.poql.setCheckerMode(false);
-	        progC = parser.prog();
+			parser.poql.setVocabulary(lexer.getVocabulary());
+			//parser.poql.setCheckerMode(false);
+	        progC = parser.prog(0);
         
 			qr.result = progC.result;
 			qr.type = progC.type;

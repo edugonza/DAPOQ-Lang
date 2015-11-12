@@ -21,7 +21,7 @@
     <info
         organisation="db-process-mining"
         module="MetaModel-POQL"
-        revision="0.1">
+        revision="0.3">
 	</info>
 	
 	<dependencies>

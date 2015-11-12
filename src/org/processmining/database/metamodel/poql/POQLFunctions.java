@@ -46,9 +46,77 @@ public class POQLFunctions {
 	private List<String> suggestions = null;
 	private Token offendingToken = null;
 	private Vocabulary vocabulary = null;
+	private HashMap<Integer,HashMap<String,POQLVariable>> variablesPerContextMap = new HashMap<>();
+	private int lastLevel = 0;
+	
+	public static final int ID_TYPE_ANY = 0;
+	public static final int ID_TYPE_OBJECT = 1;
+	public static final int ID_TYPE_EVENT = 2;
+	public static final int ID_TYPE_CLASS = 3;
+	public static final int ID_TYPE_VERSION = 4;
+	public static final int ID_TYPE_ACTIVITY = 5;
+	public static final int ID_TYPE_RELATION = 6;
+	public static final int ID_TYPE_RELATIONSHIP = 7;
+	public static final int ID_TYPE_ACTIVITY_INSTANCE = 8;
+	public static final int ID_TYPE_CASE = 9;
+	public static final int ID_TYPE_ATTRIBUTE = 10;
 	
 	private static final int MAX_IDS_ARRAY_SIZE = 40000;
 
+	public boolean checkVariable(poqlParser parser, int type) {
+		POQLVariable var = findVariable(getLastLevel(),parser.getTokenStream().LT(1).getText());
+		
+		if (var != null) {
+			if (typeToInt(var.getType()) == type) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public int typeToInt(Class type) {
+		
+		if (type == SLEXMMObject.class) {
+			return ID_TYPE_OBJECT;
+		} else if (type == SLEXMMEvent.class) {
+			return ID_TYPE_EVENT;
+		} else if (type == SLEXMMClass.class) {
+			return ID_TYPE_CLASS;
+		} else if (type == SLEXMMObjectVersion.class) {
+			return ID_TYPE_VERSION;
+		} else if (type == SLEXMMActivity.class) {
+			return ID_TYPE_ACTIVITY;
+		} else if (type == SLEXMMRelation.class) {
+			return ID_TYPE_RELATION;
+		} else if (type == SLEXMMRelationship.class) {
+			return ID_TYPE_RELATIONSHIP;
+		} else if (type == SLEXMMActivityInstance.class) {
+			return ID_TYPE_ACTIVITY_INSTANCE;
+		} else if (type == SLEXMMCase.class) {
+			return ID_TYPE_CASE;
+		} else if (type == SLEXMMAttribute.class) {
+			return ID_TYPE_ATTRIBUTE;
+		} else {
+			return -1;
+		}
+		
+	}
+	
+	public void setOffendingToken(Token offendingToken) {
+		this.offendingToken = offendingToken;
+	}
+	
+	public int getLastLevel() {
+		return this.lastLevel;
+	}
+	
+	public int incLastLevel() {
+		return this.lastLevel++;
+	}
+	
 	public void setCheckerMode(boolean mode) {
 		this.checkerMode = mode;
 	}
@@ -61,6 +129,53 @@ public class POQLFunctions {
 		this.slxmm = strg;
 	}
 
+	public POQLVariable findVariable(int context, String name) {
+		POQLVariable var = null;
+		boolean found = false;
+		int level = 0;
+		
+		while (!found && level <= context) {
+			HashMap<String, POQLVariable> varMap = variablesPerContextMap.get(level);
+			if (varMap != null) {
+				var = varMap.get(name);
+				if (var != null) {
+					found = true;
+				} else {
+					level++;
+				}
+			} else {
+				level++;
+			}
+		}
+		
+		return var;
+	}
+	
+	public POQLVariable createVariable(int level, String name, Class type, Set<Object> value) {
+		
+		if (findVariable(level, name) != null) {
+			System.err.println("Variable "+name+" already defined."); // TODO Throw exception?
+			return null;
+		}
+		
+		POQLVariable var = new POQLVariable(level, name, type, value);
+		
+		if (variablesPerContextMap == null) {
+			variablesPerContextMap = new HashMap<>();
+		}
+		
+		HashMap<String, POQLVariable> varMap = variablesPerContextMap.get(level);
+		
+		if (varMap == null) {
+			varMap = new HashMap<>();
+			variablesPerContextMap.put(level,varMap);
+		}
+		
+		varMap.put(var.getName(), var);
+		
+		return var;
+	}
+	
 	public Set<Object> set_operation(int op, Set<Object> listA, Set<Object> listB, Class type) {
 		HashSet<Object> resultList = new HashSet<>();
 		
@@ -1778,6 +1893,12 @@ public class POQLFunctions {
 					name = "(";
 				} else if (i == poqlParser.CLOSE_PARENTHESIS) {
 					name = ")";
+				} else if (i == poqlParser.END_STATEMENT) {
+					name = ";";
+				} else if (i == poqlParser.ASSIGNMENT_SIGN) {
+					name = "=";
+				} else if (i == poqlParser.VAR_NAME) {
+					name = "_";
 				}
 				suggestions.add(name);
 			}
