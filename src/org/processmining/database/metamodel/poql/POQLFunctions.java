@@ -46,8 +46,7 @@ public class POQLFunctions {
 	private List<String> suggestions = null;
 	private Token offendingToken = null;
 	private Vocabulary vocabulary = null;
-	private HashMap<Integer,HashMap<String,POQLVariable>> variablesPerContextMap = new HashMap<>();
-	private int lastLevel = 0;
+	private HashMap<String,POQLVariable> variablesMap = new HashMap<>();
 	
 	public static final int ID_TYPE_ANY = 0;
 	public static final int ID_TYPE_OBJECT = 1;
@@ -60,11 +59,12 @@ public class POQLFunctions {
 	public static final int ID_TYPE_ACTIVITY_INSTANCE = 8;
 	public static final int ID_TYPE_CASE = 9;
 	public static final int ID_TYPE_ATTRIBUTE = 10;
+	public static final int ID_TYPE_PERIOD = 11;
 	
 	private static final int MAX_IDS_ARRAY_SIZE = 40000;
 
 	public boolean checkVariable(poqlParser parser, int type) {
-		POQLVariable var = findVariable(getLastLevel(),parser.getTokenStream().LT(1).getText());
+		POQLVariable var = findVariable(parser.getTokenStream().LT(1).getText());
 		
 		if (var != null) {
 			if (typeToInt(var.getType()) == type) {
@@ -109,14 +109,6 @@ public class POQLFunctions {
 		this.offendingToken = offendingToken;
 	}
 	
-	public int getLastLevel() {
-		return this.lastLevel;
-	}
-	
-	public int incLastLevel() {
-		return this.lastLevel++;
-	}
-	
 	public void setCheckerMode(boolean mode) {
 		this.checkerMode = mode;
 	}
@@ -129,49 +121,45 @@ public class POQLFunctions {
 		this.slxmm = strg;
 	}
 
-	public POQLVariable findVariable(int context, String name) {
+	public POQLVariable findVariable(String name) {
 		POQLVariable var = null;
-		boolean found = false;
-		int level = 0;
 		
-		while (!found && level <= context) {
-			HashMap<String, POQLVariable> varMap = variablesPerContextMap.get(level);
-			if (varMap != null) {
-				var = varMap.get(name);
-				if (var != null) {
-					found = true;
-				} else {
-					level++;
-				}
-			} else {
-				level++;
-			}
-		}
+		if (variablesMap != null) {
+			var = variablesMap.get(name);
+		}				
 		
 		return var;
 	}
 	
-	public POQLVariable createVariable(int level, String name, Class type, Set<Object> value) {
+	public void removeVariable(String name) {
 		
-		if (findVariable(level, name) != null) {
+		POQLVariable var = findVariable(name);
+		
+		if (var == null) {
+			System.err.println("Variable "+name+" does not exist"); // TODO Throw exception?
+			return;
+		}
+		
+		if (variablesMap != null) {
+			variablesMap.remove(name);
+		}
+		
+	}
+	
+	public POQLVariable createVariable(String name, Class type, Set<Object> value) {
+		
+		if (findVariable(name) != null) {
 			System.err.println("Variable "+name+" already defined."); // TODO Throw exception?
 			return null;
 		}
 		
-		POQLVariable var = new POQLVariable(level, name, type, value);
+		POQLVariable var = new POQLVariable(name, type, value);
 		
-		if (variablesPerContextMap == null) {
-			variablesPerContextMap = new HashMap<>();
+		if (variablesMap == null) {
+			variablesMap = new HashMap<>();
 		}
 		
-		HashMap<String, POQLVariable> varMap = variablesPerContextMap.get(level);
-		
-		if (varMap == null) {
-			varMap = new HashMap<>();
-			variablesPerContextMap.put(level,varMap);
-		}
-		
-		varMap.put(var.getName(), var);
+		variablesMap.put(var.getName(), var);
 		
 		return var;
 	}
@@ -507,6 +495,31 @@ public class POQLFunctions {
 					v = String.valueOf(ob.getClassId());
 				} else if (condition.getKeyId() == poqlParser.NAME) {
 					v = String.valueOf(ob.getName());
+				} else {
+					// ERROR
+					System.err.println("Unknown key");
+					return list;
+				}
+
+				if (v != null
+						&& filterOperation(v, condition.value,
+								condition.operator)) {
+					filteredList.add(o);
+				}
+
+			}
+		} else if (type == POQLPeriod.class) {
+			for (Object o : list) {
+				POQLPeriod ob = (POQLPeriod) o;
+				String v = null;
+				if (condition.isAttribute()) {
+					// ERROR
+					System.err.println("No attributes for type Period");
+					return list;
+				} else if (condition.getKeyId() == poqlParser.START) {
+					v = String.valueOf(ob.getStart());
+				} else if (condition.getKeyId() == poqlParser.END) {
+					v = String.valueOf(ob.getEnd());
 				} else {
 					// ERROR
 					System.err.println("Unknown key");
@@ -1637,6 +1650,102 @@ public class POQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
+			return list;
+		} else {
+			// ERROR
+			System.err.println("Unknown type");
+		}
+		
+		return listResult;
+	}
+	
+	public Set<Object> periodsOf(Set<Object> list, Class type) {
+		HashSet<Object> listResult = new HashSet<>();
+	 	
+		if (type == SLEXMMObject.class) { // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForObjects(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMEvent.class) { // TODO 
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForEvents(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMCase.class) {  // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForCases(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMActivity.class) {  // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForActivities(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMClass.class) {  // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForClasses(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMRelationship.class) {  // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForRelationships(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMObjectVersion.class) {  // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForObjectVersions(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMRelation.class) {  // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForRelations(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMActivityInstance.class) {  // TODO
+			int[][] ids = getArrayIds(list,type);
+			for (int i = 0; i < ids.length; i++) {
+				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForActivityInstances(ids[i]);
+				SLEXMMAttribute at = null;
+				while ((at = atrset.getNext()) != null) {
+					listResult.add(at);
+				}
+			}
+		} else if (type == SLEXMMAttribute.class) { // TODO
+			
+		} else if (type == POQLPeriod.class) { // TODO
 			return list;
 		} else {
 			// ERROR

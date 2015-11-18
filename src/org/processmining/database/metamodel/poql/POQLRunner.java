@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.processmining.database.metamodel.poql.poqlParser.ProgContext;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
@@ -39,7 +40,7 @@ public class POQLRunner {
 			parser.poql.setCheckerMode(true);
 			parser.poql.setVocabulary(poqlLexer.VOCABULARY);
         
-			ProgContext progC = parser.prog(0); // begin parsing at rule 'prog'
+			ProgContext progC = parser.prog(); // begin parsing at rule 'prog'
 			System.out.println(progC.toStringTree(parser)); // print LISP-style tree
 			
 		} catch (Exception e) {
@@ -71,73 +72,52 @@ public class POQLRunner {
 			
 			result.initOffendingToken = offendedToken.getStartIndex();
 			result.endOffendingToken = offendedToken.getStopIndex();
-			
-//			if (offendedToken.getStartIndex() > offendedToken.getStopIndex() && suggestions.isEmpty()) {
-//				Token tk = parser.getTokenStream().get(offendedToken.getTokenIndex()-1);
-//				if (tk != null) {
-//					result.initOffendingToken = tk.getStartIndex(); 
-//					result.endOffendingToken = tk.getStopIndex();
-//				}
-//			}
 		}
 		
         return result;
 	}
 	
 	public QueryResult executeQuery(SLEXMMStorageMetaModel slxmm, String query) throws Exception {
-
 		this.slxmm = slxmm;
+
 		System.out.println("Executing query: "+query);
 		long start_time = System.currentTimeMillis();
 		System.out.println("Start time: "+start_time);
 		
-		QueryResult qr = new QueryResult();
-		
+		QueryResult qres = new QueryResult();
 		poqlParser parser = null;
-		
+
 		try {
-			
 			ANTLRInputStream input = new ANTLRInputStream(query);
-
 			poqlLexer lexer = new poqlLexer(input);
+			parser = new poqlParser(new CommonTokenStream(lexer));
 
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			parser.poql = new POQLFunctions();
+			parser.poql.setMetaModel(slxmm);
+			parser.poql.setVocabulary(lexer.getVocabulary());
 
-			parser = new poqlParser(tokens);
-			parser.poql.setMetaModel(slxmm);
-			parser.poql.setCheckerMode(true);
-			parser.poql.setVocabulary(lexer.getVocabulary());
-        
-			ProgContext progC = parser.prog(0); // begin parsing at rule 'prog'
-			System.out.println(progC.toStringTree(parser)); // print LISP-style tree
-			
-			parser.reset();
-			
-			parser = new poqlParser(tokens);
-			parser.poql.setMetaModel(slxmm);
-			parser.poql.setCheckerMode(false);
-			parser.poql.setVocabulary(lexer.getVocabulary());
-			//parser.poql.setCheckerMode(false);
-	        progC = parser.prog(0);
-        
-			qr.result = progC.result;
-			qr.type = progC.type;
-        
+			ParseTree tree = parser.prog();
+			POQLBaseVisitor visitor = new POQLBaseVisitor(parser.poql);
+			POQLValue v = visitor.visit(tree);
+
+			qres.result = v.result;
+			qres.type = v.type;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
-        
-        long end_time = System.currentTimeMillis();
-        double total_time = (double) end_time - start_time;
-        double total_time_secs = total_time / 1000.0;
-        double total_time_mins = total_time_secs / 60.0;
-        System.out.println("End time: "+end_time);
-		System.out.println("Total time (millis): "+total_time);
-		System.out.println("Total time (seconds): "+total_time_secs);
-		System.out.println("Total time (minutes): "+total_time_mins);
-		
-        return qr;
+
+		long end_time = System.currentTimeMillis();
+		double total_time = (double) end_time - start_time;
+		double total_time_secs = total_time / 1000.0;
+		double total_time_mins = total_time_secs / 60.0;
+		System.out.println("End time: " + end_time);
+		System.out.println("Total time (millis): " + total_time);
+		System.out.println("Total time (seconds): " + total_time_secs);
+		System.out.println("Total time (minutes): " + total_time_mins);
+
+		return qres;
 	}
 	
 }
