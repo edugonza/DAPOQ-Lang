@@ -2,7 +2,6 @@ package org.processmining.database.metamodel.poql;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +32,8 @@ import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectResultSet;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
+import org.processmining.openslex.metamodel.SLEXMMPeriod;
+import org.processmining.openslex.metamodel.SLEXMMPeriodResultSet;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationResultSet;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
@@ -99,6 +100,8 @@ public class POQLFunctions {
 			return ID_TYPE_CASE;
 		} else if (type == SLEXMMAttribute.class) {
 			return ID_TYPE_ATTRIBUTE;
+		} else if (type == SLEXMMPeriod.class) {
+			return ID_TYPE_PERIOD;
 		} else {
 			return -1;
 		}
@@ -146,7 +149,7 @@ public class POQLFunctions {
 		
 	}
 	
-	public POQLVariable createVariable(String name, Class type, Set<Object> value) {
+	public POQLVariable createVariable(String name, Class type, HashMap<Object,HashSet<Integer>> value) {
 		
 		if (findVariable(name) != null) {
 			System.err.println("Variable "+name+" already defined."); // TODO Throw exception?
@@ -508,9 +511,9 @@ public class POQLFunctions {
 				}
 
 			}
-		} else if (type == POQLPeriod.class) {
+		} else if (type == SLEXMMPeriod.class) {
 			for (Object o : list) {
-				POQLPeriod ob = (POQLPeriod) o;
+				SLEXMMPeriod ob = (SLEXMMPeriod) o;
 				String v = null;
 				if (condition.isAttribute()) {
 					// ERROR
@@ -713,94 +716,133 @@ public class POQLFunctions {
 		return node;
 	}
 
-	public Set<Object> objectsOf(Set<Object> list, Class type) {
+	public HashMap<Object,HashSet<Integer>> objectsOf(HashMap<Object,HashSet<Integer>> list, Class type) {
 		
-		HashSet<Object> listResult = new HashSet<>();
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) {
 			return list;
 		} else if (type == SLEXMMEvent.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForEvents(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForCases(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForActivities(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForClasses(ids[i]);
-				SLEXMMObject ob = null;
+				SLEXMMObject slxo = null;
 
-				while ((ob = orset.getNext()) != null) {
-					listResult.add(ob);
+				while ((slxo = orset.getNext()) != null) {
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForRelationships(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForObjectVersions(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForRelations(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForActivityInstances(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectResultSet orset = slxmm.getObjectsForAttributes(ids[i]);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
-					listResult.add(slxo);
+					if (!listResult.containsKey(slxo)) {
+						listResult.put(slxo,new HashSet<Integer>());
+					}
+					listResult.get(slxo).add(orset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
+//			int[][] ids = getArrayIds(list.keySet(),type);
+//			for (int i = 0; i < ids.length; i++) {
+//				SLEXMMObjectResultSet orset = slxmm.getObjectsForAttributes(ids[i]);
+//				SLEXMMObject slxo = null;
+//				while ((slxo = orset.getNext()) != null) {
+//					if (!listResult.containsKey(slxo)) {
+//						listResult.put(slxo,new HashSet<Integer>());
+//					}
+//					listResult.get(slxo).add(orset.getOriginId());
+//				}
+//			}
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -809,92 +851,120 @@ public class POQLFunctions {
 		return listResult;
 	}
 
-	public Set<Object> casesOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> casesOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForObjects(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForEvents(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) {
 			return list;
 		} else if (type == SLEXMMActivity.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForActivities(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForClasses(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForRelationships(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForObjectVersions(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForRelations(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForActivityInstances(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMCaseResultSet crset = slxmm.getCasesForAttributes(ids[i]);
 				SLEXMMCase slxc = null;
 				while ((slxc = crset.getNext()) != null) {
-					listResult.add(slxc);
+					if (!listResult.containsKey(slxc)) {
+						listResult.put(slxc,new HashSet<Integer>());
+					}
+					listResult.get(slxc).add(crset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -903,94 +973,122 @@ public class POQLFunctions {
 		return listResult;
 	}
 
-	public Set<Object> eventsOf(Set<Object> list, Class type) {
+	public HashMap<Object,HashSet<Integer>> eventsOf(HashMap<Object,HashSet<Integer>> list, Class type) {
 		
-		HashSet<Object> listResult = new HashSet<>();
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForObjects(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) {
 			return list;
 		} else if (type == SLEXMMCase.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForCases(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForActivities(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForClasses(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForRelationships(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForObjectVersions(ids[i]);
-				SLEXMMEvent ev = null;
+				SLEXMMEvent e = null;
 
-				while ((ev = erset.getNext()) != null) {
-					listResult.add(ev);
+				while ((e = erset.getNext()) != null) {
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForRelations(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForActivityInstances(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMEventResultSet erset = slxmm.getEventsForAttributes(ids[i]);
 				SLEXMMEvent e = null;
 				while ((e = erset.getNext()) != null) {
-					listResult.add(e);
+					if (!listResult.containsKey(e)) {
+						listResult.put(e,new HashSet<Integer>());
+					}
+					listResult.get(e).add(erset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1000,93 +1098,121 @@ public class POQLFunctions {
 		
 	}
 
-	public Set<Object> versionsOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> versionsOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 		
 		if (type == SLEXMMObject.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm
 						.getObjectVersionsForObjects(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForEvents(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForCases(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForActivities(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForClasses(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForRelationships(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {
 			return list;
 		} else if (type == SLEXMMRelation.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForRelations(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForActivityInstances(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForAttributes(ids[i]);
 				SLEXMMObjectVersion ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1095,92 +1221,120 @@ public class POQLFunctions {
 		return listResult;
 	}
 
-	public Set<Object> activitiesOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> activitiesOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForObjects(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForEvents(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForCases(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) {
 			return list;
 		} else if (type == SLEXMMClass.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForClasses(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForRelationships(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForObjectVersions(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForRelations(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForActivityInstances(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityResultSet ovrset = slxmm.getActivitiesForAttributes(ids[i]);
 				SLEXMMActivity ov = null;
 				while ((ov = ovrset.getNext()) != null) {
-					listResult.add(ov);
+					if (!listResult.containsKey(ov)) {
+						listResult.put(ov,new HashSet<Integer>());
+					}
+					listResult.get(ov).add(ovrset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1189,92 +1343,120 @@ public class POQLFunctions {
 		return listResult;
 	}
 
-	public Set<Object> classesOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> classesOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForObjects(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForEvents(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForCases(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForActivities(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) {
 			return list;
 		} else if (type == SLEXMMRelationship.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForRelationships(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForObjectVersions(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForRelations(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForActivityInstances(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMClassResultSet crset = slxmm.getClassesForAttributes(ids[i]);
 				SLEXMMClass c = null;
 				while ((c = crset.getNext()) != null) {
-					listResult.add(c);
+					if (!listResult.containsKey(c)) {
+						listResult.put(c,new HashSet<Integer>());
+					}
+					listResult.get(c).add(crset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1283,92 +1465,120 @@ public class POQLFunctions {
 		return listResult;
 	}
 
-	public Set<Object> relationsOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> relationsOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForObjects(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForEvents(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) { // 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForCases(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) { // 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForActivities(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForClasses(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForRelationships(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForObjectVersions(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) {
 			return list;
 		} else if (type == SLEXMMActivityInstance.class) { // 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForActivityInstances(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationResultSet rrset = slxmm.getRelationsForAttributes(ids[i]);
 				SLEXMMRelation r = null;
 				while ((r = rrset.getNext()) != null) {
-					listResult.add(r);
+					if (!listResult.containsKey(r)) {
+						listResult.put(r,new HashSet<Integer>());
+					}
+					listResult.get(r).add(rrset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1377,92 +1587,120 @@ public class POQLFunctions {
 		return listResult;
 	}
 
-	public Set<Object> relationshipsOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> relationshipsOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForObjects(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForEvents(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForCases(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForActivities(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForClasses(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) { 
 			return list;
 		} else if (type == SLEXMMObjectVersion.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForObjectVersions(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForRelations(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForActivityInstances(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMRelationshipResultSet rsrset = slxmm.getRelationshipsForAttributes(ids[i]);
 				SLEXMMRelationship rs = null;
 				while ((rs = rsrset.getNext()) != null) {
-					listResult.add(rs);
+					if (!listResult.containsKey(rs)) {
+						listResult.put(rs,new HashSet<Integer>());
+					}
+					listResult.get(rs).add(rsrset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1471,92 +1709,120 @@ public class POQLFunctions {
 		return listResult;
 	}
 
-	public Set<Object> activityInstancesOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> activityInstancesOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForObjects(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForEvents(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForCases(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForActivities(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForClasses(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForRelationships(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForObjectVersions(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForRelations(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {
 			return list;
 		} else if (type == SLEXMMAttribute.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstancesForAttributes(ids[i]);
 				SLEXMMActivityInstance ai = null;
 				while ((ai = airset.getNext()) != null) {
-					listResult.add(ai);
+					if (!listResult.containsKey(ai)) {
+						listResult.put(ai,new HashSet<Integer>());
+					}
+					listResult.get(ai).add(airset.getOriginId());
 				}
 			}
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1565,92 +1831,120 @@ public class POQLFunctions {
 		return listResult;
 	}
 	
-	public Set<Object> attributesOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> attributesOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) {
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForObjects(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForEvents(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMCase.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForCases(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivity.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForActivities(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMClass.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForClasses(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelationship.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForRelationships(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForObjectVersions(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMRelation.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForRelations(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) { 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
 				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForActivityInstances(ids[i]);
 				SLEXMMAttribute at = null;
 				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+					if (!listResult.containsKey(at)) {
+						listResult.put(at,new HashSet<Integer>());
+					}
+					listResult.get(at).add(atrset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMAttribute.class) {
 			return list;
+		} else if (type == SLEXMMPeriod.class) { // TODO
 		} else {
 			// ERROR
 			System.err.println("Unknown type");
@@ -1659,93 +1953,130 @@ public class POQLFunctions {
 		return listResult;
 	}
 	
-	public Set<Object> periodsOf(Set<Object> list, Class type) {
-		HashSet<Object> listResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> periodsOf(HashMap<Object,HashSet<Integer>> list, Class type) {
+		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
 		if (type == SLEXMMObject.class) { // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForObjects(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
+				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForObjects(ids[i]);
+				SLEXMMPeriod p = null;
+				while ((p = prset.getNext()) != null) {
+					if (!listResult.containsKey(p)) {
+						listResult.put(p,new HashSet<Integer>());
+					}
+					listResult.get(p).add(prset.getOriginId());
 				}
 			}
 		} else if (type == SLEXMMEvent.class) { // TODO 
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForEvents(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForEvents(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMCase.class) {  // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForCases(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForCases(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMActivity.class) {  // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForActivities(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForActivities(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMClass.class) {  // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForClasses(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForClasses(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMRelationship.class) {  // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForRelationships(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForRelationships(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMObjectVersion.class) {  // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForObjectVersions(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForVersions(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMRelation.class) {  // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForRelations(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForRelations(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMActivityInstance.class) {  // TODO
-			int[][] ids = getArrayIds(list,type);
+			int[][] ids = getArrayIds(list.keySet(),type);
 			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet atrset = slxmm.getAttributesForActivityInstances(ids[i]);
-				SLEXMMAttribute at = null;
-				while ((at = atrset.getNext()) != null) {
-					listResult.add(at);
-				}
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForActivityInstances(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
 			}
 		} else if (type == SLEXMMAttribute.class) { // TODO
-			
-		} else if (type == POQLPeriod.class) { // TODO
+			int[][] ids = getArrayIds(list.keySet(),type);
+			for (int i = 0; i < ids.length; i++) {
+//				SLEXMMPeriodResultSet prset = slxmm.getPeriodsForAttributes(ids[i]);
+//				SLEXMMPeriod p = null;
+//				while ((p = prset.getNext()) != null) {
+//					if (!listResult.containsKey(p)) {
+//						listResult.put(p,new HashSet<Integer>());
+//					}
+//					listResult.get(p).add(prset.getOriginId());
+//				}
+			}
+		} else if (type == SLEXMMPeriod.class) {
 			return list;
 		} else {
 			// ERROR
@@ -1832,8 +2163,8 @@ public class POQLFunctions {
 		return idsArrays;
 	}
 
-	public Set<Object> versionsRelatedTo(Set<Object> list, Class type) {
-		HashSet<Object> setResult = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> versionsRelatedTo(Set<Object> list, Class type) {
+		HashMap<Object,HashSet<Integer>> setResult = new HashMap<>();
 
 		if (type == SLEXMMObjectVersion.class) {
 			for (Object o : list) {
@@ -1845,7 +2176,11 @@ public class POQLFunctions {
 				SLEXMMObjectVersion ov = null;
 
 				while ((ov = ovrset.getNext()) != null) {
-					setResult.add(ov);
+					Integer originId = ovrset.getOriginId();
+					if (!setResult.containsKey(ov)) {
+						setResult.put(ov,new HashSet<Integer>());
+					}
+					setResult.get(ov).add(originId);
 				}
 			}
 		} else {
@@ -1856,64 +2191,66 @@ public class POQLFunctions {
 		return setResult;
 	}
 
-	public Set<Object> getAllObjects() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllObjects() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMObjectResultSet orset = slxmm.getObjects();
 			SLEXMMObject o = null;
 			while ((o = orset.getNext()) != null) {
-				list.add(o);
+				list.put(o,null);
 			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllCases() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllCases() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMCaseResultSet crset = slxmm.getCases();
 			SLEXMMCase c = null;
 			while ((c = crset.getNext()) != null) {
-				list.add(c);
+				list.put(c,null);
 			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllEvents() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllEvents() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMEventResultSet erset = slxmm.getEvents();
 			SLEXMMEvent e = null;
 			while ((e = erset.getNext()) != null) {
-				list.add(e);
+				list.put(e,null);
 			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllVersions() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllVersions() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersions();
 			SLEXMMObjectVersion ov = null;
 			while ((ov = ovrset.getNext()) != null) {
-				list.add(ov);
+				list.put(ov,null);
 			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllActivities() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllActivities() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
-			list.addAll(slxmm.getActivities());
+			for (SLEXMMActivity act: slxmm.getActivities()) {
+				list.put(act,null);
+			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllClasses() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllClasses() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMDataModelResultSet dms = slxmm.getDataModels();
 			SLEXMMDataModel dm = null;
@@ -1921,52 +2258,54 @@ public class POQLFunctions {
 				SLEXMMClassResultSet crset = slxmm.getClassesForDataModel(dm);
 				SLEXMMClass cl = null;
 				while ((cl = crset.getNext()) != null) {
-					list.add(cl);
+					list.put(cl,null);
 				}
 			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllRelations() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllRelations() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMRelationResultSet rrset = slxmm.getRelations();
 			SLEXMMRelation r = null;
 			while ((r = rrset.getNext()) != null) {
-				list.add(r);
+				list.put(r,null);
 			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllRelationships() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllRelationships() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
-			list.addAll(slxmm.getRelationships());
+			for (SLEXMMRelationship rs: slxmm.getRelationships()) {
+				list.put(rs,null);
+			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllActivityInstances() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllActivityInstances() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMActivityInstanceResultSet airset = slxmm.getActivityInstances();
 			SLEXMMActivityInstance ai = null;
 			while ((ai = airset.getNext()) != null) {
-				list.add(ai);
+				list.put(ai,null);
 			}
 		}
 		return list;
 	}
 
-	public Set<Object> getAllAttributes() {
-		HashSet<Object> list = new HashSet<>();
+	public HashMap<Object,HashSet<Integer>> getAllAttributes() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
 			SLEXMMAttributeResultSet arset = slxmm.getAttributes();
 			SLEXMMAttribute at = null;
 			while ((at = arset.getNext()) != null) {
-				list.add(at);
+				list.put(at,null);
 			}
 		}
 		return list;
@@ -2029,4 +2368,95 @@ public class POQLFunctions {
 	public void setVocabulary(Vocabulary vocabulary) {
 		this.vocabulary = vocabulary;
 	}
+
+	public HashMap<Object, HashSet<Integer>> concurrentWith(HashMap<Object,HashSet<Integer>> vals,
+			Class<?> type) {
+		HashMap<Object,HashSet<Integer>> result = new HashMap<>();
+		
+		HashMap<Object,HashSet<Integer>> periodsMap = periodsOf(vals,type);
+		
+		for (Object p: periodsMap.keySet()) {
+			
+			HashMap<Object,HashSet<Integer>> inputMap = new HashMap<>();
+			inputMap.put(p, periodsMap.get(p));
+			HashMap<Object,HashSet<Integer>> concurrentSet = null;
+			
+			if (type == SLEXMMActivity.class) {
+				concurrentSet = activitiesOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMActivityInstance.class) {
+				concurrentSet = activityInstancesOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMAttribute.class) {
+				concurrentSet = attributesOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMCase.class) {
+				concurrentSet = casesOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMClass.class) {
+				concurrentSet = classesOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMEvent.class) {
+				concurrentSet = eventsOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMObject.class) {
+				concurrentSet = objectsOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMObjectVersion.class) {
+				concurrentSet = versionsOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMRelation.class) {
+				concurrentSet = relationsOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMRelationship.class) {
+				concurrentSet = relationshipsOf(inputMap, SLEXMMPeriod.class);
+			} else {
+				System.err.println("Unknown type");
+				break;
+			}
+			
+			for (Object o: concurrentSet.keySet()) {
+				if (!result.containsKey(o)) {
+					result.put(o, new HashSet<Integer>());
+				}
+				result.get(o).addAll(periodsMap.get(p));
+			}
+			
+		}
+		return result;
+	}
+
+	public HashMap<Object, HashSet<Integer>> getScopeOf(int scope,
+			HashMap<Object,HashSet<Integer>> val, Class<?> type) {
+		HashMap<Object,HashSet<Integer>> result = null;
+		
+		switch (scope) {
+		case ID_TYPE_ACTIVITY:
+			result = activitiesOf(val, type);
+			break;
+		case ID_TYPE_ACTIVITY_INSTANCE:
+			result = activityInstancesOf(val, type);
+			break;
+		case ID_TYPE_ATTRIBUTE:
+			result = attributesOf(val, type);
+			break;
+		case ID_TYPE_CASE:
+			result = casesOf(val, type);
+			break;
+		case ID_TYPE_CLASS:
+			result = classesOf(val, type);
+			break;
+		case ID_TYPE_EVENT:
+			result = eventsOf(val, type);
+			break;
+		case ID_TYPE_OBJECT:
+			result = objectsOf(val, type);
+			break;
+		case ID_TYPE_RELATION:
+			result = relationsOf(val, type);
+			break;
+		case ID_TYPE_RELATIONSHIP:
+			result = relationshipsOf(val, type);
+			break;
+		case ID_TYPE_VERSION:
+			result = versionsOf(val, type);
+			break;
+		default:
+			break;
+		}
+		
+		return result;
+	}
+
 }

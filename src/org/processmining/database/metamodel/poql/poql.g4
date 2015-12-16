@@ -132,6 +132,7 @@ objects:
 	| t2=allObjects #getAllObjects
 	| t3=objects f=filter #filterObjects
 	| t4=variable #objectsVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=objects CLOSE_PARENTHESIS (scope)? #concurrentWithObjects
 	;
  	
 cases:
@@ -139,6 +140,7 @@ cases:
 	| t2=allCases #getAllCases
 	| t3=cases f=filter #filterCases
 	| t4=variable #casesVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=cases CLOSE_PARENTHESIS (scope)? #concurrentWithCases
 	;
 	
 events:
@@ -146,6 +148,7 @@ events:
 	| t2=allEvents #getAllEvents
 	| t3=events f=filter #filterEvents
 	| t4=variable #eventsVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=events CLOSE_PARENTHESIS (scope)? #concurrentWithEvents
 	;
 	
 classes:
@@ -153,14 +156,16 @@ classes:
 	| t2=allClasses #getAllClasses
 	| t3=classes f=filter #filterClasses
 	| t4=variable #classesVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=classes CLOSE_PARENTHESIS (scope)? #concurrentWithClasses
 	; 
 	
 versions:
 	  VERSIONSOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #versionsOf
 	| t2=allVersions #getAllVersions
-	| VERSIONSRELATEDTO OPEN_PARENTHESIS t5=versions CLOSE_PARENTHESIS #versionsRelatedTo
 	| t3=versions f=filter #filterVersions
 	| t4=variable #versionsVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=versions CLOSE_PARENTHESIS (scope)? #concurrentWithVersions
+	| VERSIONSRELATEDTO OPEN_PARENTHESIS t6=versions CLOSE_PARENTHESIS (scope)? #versionsRelatedTo
 	;
 	
 activities:
@@ -168,6 +173,7 @@ activities:
 	| t2=allActivities #getAllActivities
 	| t3=activities f=filter #filterActivities
 	| t4=variable #activitiesVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=activities CLOSE_PARENTHESIS (scope)? #concurrentWithActivities
 	;
 	
 relations:
@@ -175,6 +181,7 @@ relations:
 	| t2=allRelations #getAllRelations
 	| t3=relations f=filter #filterRelations
 	| t4=variable #relationsVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=relations CLOSE_PARENTHESIS (scope)? #concurrentWithRelations
 	;
 	
 relationships:
@@ -182,6 +189,7 @@ relationships:
 	| t2=allRelationships #getAllRelationships
 	| t3=relationships f=filter #filterRelationships
 	| t4=variable #relationshipsVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=relationships CLOSE_PARENTHESIS (scope)? #concurrentWithRelationships
 	;
 	
 activityinstances:
@@ -189,6 +197,7 @@ activityinstances:
 	| t2=allActivityInstances #getAllActivityInstances
 	| t3=activityinstances f=filter #filterActivityInstances
 	| t4=variable #activityInstancesVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=activityinstances CLOSE_PARENTHESIS (scope)? #concurrentWithActivityInstances
 	;
 	
 attributes:
@@ -196,6 +205,11 @@ attributes:
 	| t2=allAttributes #getAllAttributes
 	| t3=attributes f=filter #filterAttributes
 	| t4=variable #attributesVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=attributes CLOSE_PARENTHESIS (scope)? #concurrentWithAttributes
+	;
+	
+scope:
+	  SCOPE (CASE|OBJECT|VERSION|CLASS|ATTRIBUTE|RELATIONSHIP|RELATION|ACTIVITYINSTANCE|ACTIVITY|EVENT) 
 	;
 	
 filter:
@@ -341,6 +355,7 @@ RELATIONSHIPSOF: R E L A T I O N S H I P S O F ;
 ACTIVITYINSTANCESOF: A C T I V I T Y I N S T A N C E S O F ;
 ATTRIBUTESOF: A T T R I B U T E S O F ;
 PERIODSOF: P E R I O D S O F ;
+CONCURRENTWITH: C O N C U R R E N T W I T H ;
 
 ALLOBJECTS: A L L O B J E C T S ;
 ALLCASES: A L L C A S E S ;
@@ -352,6 +367,19 @@ ALLRELATIONS: A L L R E L A T I O N S ;
 ALLRELATIONSHIPS: A L L R E L A T I O N S H I P S ;
 ALLACTIVITYINSTANCES: A L L A C T I V I T Y I N S T A N C E S ;
 ALLATTRIBUTES: A L L A T T R I B U T E S ;
+
+// Scopes
+SCOPE: S C O P E ;
+CASE: C A S E ;
+RELATIONSHIP: R E L A T I O N S H I P ;
+OBJECT: O B J E C T ;
+VERSION: V E R S I O N ;
+EVENT: E V E N T ;
+ACTIVITY: A C T I V I T Y ;
+CLASS: C L A S S ;
+ATTRIBUTE: A T T R I B U T E ;
+RELATION: R E L A T I O N ;
+ACTIVITYINSTANCE: A C T I V I T Y I N S T A N C E ;
 
 // tokens for filters
 ID: I D ;

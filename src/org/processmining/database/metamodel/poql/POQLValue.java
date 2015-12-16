@@ -1,10 +1,12 @@
 package org.processmining.database.metamodel.poql;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class POQLValue {
 	
-	public Set<Object> result;
+	public HashMap<Object,HashSet<Integer>> result;
 	public Class<?> type;
 	public FilterTree filterTree;
 	public int nodeType = 0;
@@ -17,4 +19,5 @@ public class POQLValue {
 	public String changedTo = null;
 	public int setOperator = 0;
 	public boolean conditionBoolean = false;
+	public int scope = 0;
 }

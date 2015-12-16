@@ -1,10 +1,12 @@
 package org.processmining.database.metamodel.poql;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 import org.processmining.database.metamodel.poql.poqlParser.*;
+import org.processmining.openslex.metamodel.SLEXMMAbstractDatabaseObject;
 import org.processmining.openslex.metamodel.SLEXMMActivity;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
 import org.processmining.openslex.metamodel.SLEXMMAttribute;
@@ -13,6 +15,7 @@ import org.processmining.openslex.metamodel.SLEXMMClass;
 import org.processmining.openslex.metamodel.SLEXMMEvent;
 import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
+import org.processmining.openslex.metamodel.SLEXMMPeriod;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
 
@@ -148,7 +151,7 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	public POQLValue visitVariable_value(Variable_valueContext ctx) {
 		POQLValue v = new POQLValue();
 		if (ctx.NULL() != null) {
-			v.result = new HashSet<Object>();
+			v.result = new HashMap<>();
 			v.type = null;
 			return v;
 		} else {
@@ -371,7 +374,13 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 				}
 			}
 			
-			v.result = poql.set_operation(vO.setOperator, vL.result, vR.result, type);
+			Set<Object> resultSetOperation = poql.set_operation(vO.setOperator, vL.result.keySet(), vR.result.keySet(), type);
+			v.result = new HashMap<>();
+			
+			for (Object o: resultSetOperation) {
+				v.result.put(o,null);
+			}
+			
 			v.type = type;
 		} else {
 			v = this.visit(ctx.children.get(0));
@@ -386,7 +395,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.objects());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -397,7 +410,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.cases());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -408,7 +425,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.activities());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -420,7 +441,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.activityinstances());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -431,7 +456,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.attributes());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -442,7 +471,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.classes());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -453,7 +486,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.events());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -464,7 +501,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.relations());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -475,7 +516,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.relationships());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -486,7 +531,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.versions());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -497,7 +546,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vob = this.visit(ctx.periods());
 		POQLValue vf = this.visit(ctx.f);
-		v.result = poql.filter(vob.result,vob.type, vf.filterTree);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
 		v.type = vob.type;
 		return v;
 	}
@@ -528,7 +581,7 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		POQLValue vthings = this.visit(ctx.things());
 		v.result = poql.periodsOf(vthings.result, vthings.type);
-		v.type = POQLPeriod.class;
+		v.type = SLEXMMPeriod.class;
 		return v;
 	}
 	
@@ -615,10 +668,23 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	@Override
 	public POQLValue visitVersionsRelatedTo(VersionsRelatedToContext ctx) {
 		POQLValue v = new POQLValue();
+		POQLValue vaux = new POQLValue();
 		
 		POQLValue vthings = this.visit(ctx.versions());
-		v.result = poql.versionsRelatedTo(vthings.result, vthings.type);
-		v.type = SLEXMMObjectVersion.class;
+		vaux.result = poql.versionsRelatedTo(vthings.result.keySet(), vthings.type);
+		vaux.type = SLEXMMObjectVersion.class;
+		v.type = vaux.type;
+		
+		if (ctx.scope() != null) {
+		
+			POQLValue scope = this.visit(ctx.scope());
+				
+			v = filterByScope(scope, vthings, vaux);
+			
+		} else {
+			v.result = vaux.result;
+		}
+		
 		return v;
 	}
 	
@@ -634,10 +700,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 			
 			POQLVariable var = poql.createVariable(var_name, vthings.type, null);
 					
-			for (Object o: vthings.result) {
+			for (Object o: vthings.result.keySet()) {
 		
-				Set<Object> s = new HashSet<Object>();
-				s.add(o);
+				HashMap<Object,HashSet<Integer>> s = new HashMap<>();
+				s.put(o, null);
 				var.setValue(s);
 				
 				this.visit(ctx.code_block());
@@ -708,6 +774,250 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		}
 		
 		return v;
+	}
+	
+	@Override
+	public POQLValue visitScope(ScopeContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		if (ctx.ACTIVITY() != null) {
+			v.scope = POQLFunctions.ID_TYPE_ACTIVITY;
+		} else if (ctx.ACTIVITYINSTANCE() != null) {
+			v.scope = POQLFunctions.ID_TYPE_ACTIVITY_INSTANCE;
+		} else if (ctx.OBJECT() != null) {
+			v.scope = POQLFunctions.ID_TYPE_OBJECT;
+		} else if (ctx.VERSION() != null) {
+			v.scope = POQLFunctions.ID_TYPE_VERSION;
+		} else if (ctx.CLASS() != null) {
+			v.scope = POQLFunctions.ID_TYPE_CLASS;
+		} else if (ctx.ATTRIBUTE() != null) {
+			v.scope = POQLFunctions.ID_TYPE_ATTRIBUTE;
+		} else if (ctx.RELATION() != null) {
+			v.scope = POQLFunctions.ID_TYPE_RELATION;
+		} else if (ctx.RELATIONSHIP() != null) {
+			v.scope = POQLFunctions.ID_TYPE_RELATIONSHIP;
+		} else if (ctx.CASE() != null) {
+			v.scope = POQLFunctions.ID_TYPE_CASE;
+		} else if (ctx.EVENT() != null) {
+			v.scope = POQLFunctions.ID_TYPE_EVENT;
+		} else {
+			v.scope = POQLFunctions.ID_TYPE_ANY;
+		}
+		
+		return v;
+	}
+	
+	public POQLValue filterByScope(POQLValue scope, POQLValue valA, POQLValue valB) {
+		
+		POQLValue v = new POQLValue();
+		v.result = new HashMap<>();
+		v.type = valA.type;
+		
+		HashMap<Integer,Object> elements = new HashMap<>();
+		
+		for (Object o: valA.result.keySet()) {
+			SLEXMMAbstractDatabaseObject ob = (SLEXMMAbstractDatabaseObject) o;
+			elements.put(ob.getId(), ob);
+		}
+		
+		for (Object o: valB.result.keySet()) {
+			SLEXMMAbstractDatabaseObject ob = (SLEXMMAbstractDatabaseObject) o;
+			elements.put(ob.getId(), ob);
+		}
+		
+		HashMap<Object,HashSet<Integer>> scopeA = poql.getScopeOf(scope.scope,valA.result, valA.type);
+		HashMap<Object,HashSet<Integer>> scopeB = poql.getScopeOf(scope.scope,valB.result, valB.type);
+	
+		HashSet<Object> intersectionSet = new HashSet<>();
+		intersectionSet.addAll(scopeA.keySet());
+		intersectionSet.retainAll(scopeB.keySet());
+	
+		for (Object o: intersectionSet) {
+			Set<Integer> originA = scopeA.get(o);
+			Set<Integer> originB = scopeB.get(o);
+			for (Integer concId: originB) {
+				Object concElem = elements.get(concId);
+				HashSet<Integer> originsOfBinA = valB.result.get(concElem);
+				for (Integer originBinA: originsOfBinA) {
+					if (originA.contains(originBinA)) {
+						v.result.put(concElem,originsOfBinA);
+						break;
+					}
+				}
+			}
+		}
+		
+		return v;
+	}
+	
+	public POQLValue concurrentWith(POQLValue originalValues, boolean hasScope, POQLValue scope) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue vob = originalValues;
+		HashMap<Object,HashSet<Integer>> vconc = poql.concurrentWith(vob.result,vob.type);
+		
+		v.result = new HashMap<Object,HashSet<Integer>>();
+		v.type = vob.type;
+		
+		if (hasScope) {
+			
+			POQLValue vconval = new POQLValue();
+			vconval.result = vconc;
+			vconval.type = vob.type;
+			
+			v = filterByScope(scope, vob, vconval);
+			
+		} else {
+			v.result = vconc;
+		}
+		
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithActivities(
+			ConcurrentWithActivitiesContext ctx) {
+		
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);		
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithActivityInstances(
+			ConcurrentWithActivityInstancesContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithAttributes(
+			ConcurrentWithAttributesContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithCases(ConcurrentWithCasesContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithClasses(ConcurrentWithClassesContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithEvents(ConcurrentWithEventsContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithObjects(ConcurrentWithObjectsContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithRelations(
+			ConcurrentWithRelationsContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithRelationships(
+			ConcurrentWithRelationshipsContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithVersions(
+			ConcurrentWithVersionsContext ctx) {
+
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
 	}
 	
 }

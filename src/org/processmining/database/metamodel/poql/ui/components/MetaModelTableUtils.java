@@ -3,6 +3,7 @@ package org.processmining.database.metamodel.poql.ui.components;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
@@ -25,6 +26,7 @@ import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectResultSet;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
+import org.processmining.openslex.metamodel.SLEXMMPeriod;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationResultSet;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
@@ -846,5 +848,52 @@ public class MetaModelTableUtils {
 					.setMinWidth(75);
 			}
 		});
+	}
+
+	public static class PeriodsTableModel extends DefaultTableModel {
+
+		Class[] columnTypes = new Class[] { Long.class, Long.class };
+		boolean[] columnEditables = new boolean[] { false, false };
+
+		public Class getColumnClass(int columnIndex) {
+			return columnTypes[columnIndex];
+		}
+
+		public boolean isCellEditable(int row, int column) {
+			return columnEditables[column];
+		}
+
+		public PeriodsTableModel() {
+			super(new String[] { "Start", "End" }, 0);
+		}
+
+	}
+	
+	public static void setPeriodsTableContent(final JTable table,
+			Collection<Object> list) throws Exception {
+		try {
+			final PeriodsTableModel model = new PeriodsTableModel();
+			
+
+			for (Object o : list) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+
+				model.addRow(new Object[] { p.getStart(), p.getEnd() });
+			}
+			
+			SwingUtilities.invokeAndWait(new Runnable() {
+				
+				@Override
+				public void run() {
+					table.setModel(model);
+					table.getColumnModel().getColumn(0).setMinWidth(75);
+					table.getColumnModel().getColumn(1).setMinWidth(75);
+				}
+			});
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

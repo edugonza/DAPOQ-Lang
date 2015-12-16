@@ -100,7 +100,7 @@ public class POQLRunner {
 			POQLBaseVisitor visitor = new POQLBaseVisitor(parser.poql);
 			POQLValue v = visitor.visit(tree);
 
-			qres.result = v.result;
+			qres.result = v.result.keySet();
 			qres.type = v.type;
 
 		} catch (Exception e) {
