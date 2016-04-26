@@ -10,35 +10,7 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
-import org.processmining.openslex.metamodel.SLEXMMActivity;
-import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
-import org.processmining.openslex.metamodel.SLEXMMActivityInstanceResultSet;
-import org.processmining.openslex.metamodel.SLEXMMActivityResultSet;
-import org.processmining.openslex.metamodel.SLEXMMAttribute;
-import org.processmining.openslex.metamodel.SLEXMMAttributeResultSet;
-import org.processmining.openslex.metamodel.SLEXMMAttributeValue;
-import org.processmining.openslex.metamodel.SLEXMMCase;
-import org.processmining.openslex.metamodel.SLEXMMCaseResultSet;
-import org.processmining.openslex.metamodel.SLEXMMClass;
-import org.processmining.openslex.metamodel.SLEXMMClassResultSet;
-import org.processmining.openslex.metamodel.SLEXMMDataModel;
-import org.processmining.openslex.metamodel.SLEXMMDataModelResultSet;
-import org.processmining.openslex.metamodel.SLEXMMEvent;
-import org.processmining.openslex.metamodel.SLEXMMEventAttribute;
-import org.processmining.openslex.metamodel.SLEXMMEventAttributeResultSet;
-import org.processmining.openslex.metamodel.SLEXMMEventAttributeValue;
-import org.processmining.openslex.metamodel.SLEXMMEventResultSet;
-import org.processmining.openslex.metamodel.SLEXMMObject;
-import org.processmining.openslex.metamodel.SLEXMMObjectResultSet;
-import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
-import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
-import org.processmining.openslex.metamodel.SLEXMMPeriod;
-import org.processmining.openslex.metamodel.SLEXMMPeriodResultSet;
-import org.processmining.openslex.metamodel.SLEXMMRelation;
-import org.processmining.openslex.metamodel.SLEXMMRelationResultSet;
-import org.processmining.openslex.metamodel.SLEXMMRelationship;
-import org.processmining.openslex.metamodel.SLEXMMRelationshipResultSet;
-import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
+import org.processmining.openslex.metamodel.*;
 
 public class POQLFunctions {
 
@@ -61,6 +33,9 @@ public class POQLFunctions {
 	public static final int ID_TYPE_CASE = 9;
 	public static final int ID_TYPE_ATTRIBUTE = 10;
 	public static final int ID_TYPE_PERIOD = 11;
+	public static final int ID_TYPE_DATAMODEL = 12;
+	public static final int ID_TYPE_PROCESS = 13;
+	public static final int ID_TYPE_LOG = 14;
 	
 	private static final int MAX_IDS_ARRAY_SIZE = 40000;
 
@@ -102,6 +77,12 @@ public class POQLFunctions {
 			return ID_TYPE_ATTRIBUTE;
 		} else if (type == SLEXMMPeriod.class) {
 			return ID_TYPE_PERIOD;
+		} else if (type == SLEXMMDataModel.class) {
+			return ID_TYPE_DATAMODEL;
+		} else if (type == SLEXMMProcess.class) {
+			return ID_TYPE_PROCESS;
+		} else if (type == SLEXMMLog.class) {
+			return ID_TYPE_LOG;
 		} else {
 			return -1;
 		}
@@ -218,6 +199,93 @@ public class POQLFunctions {
 				}
 
 			}
+		} else if (type == SLEXMMDataModel.class) {
+			for (Object o : list) {
+				SLEXMMDataModel ob = (SLEXMMDataModel) o;
+				String v = null;
+				if (condition.isAttribute()) {
+					// ERROR
+					System.err.println("No attributes for type Datamodel");
+					return list;
+				} else if (condition.getKeyId() == (poqlParser.NAME)) {
+					v = String.valueOf(ob.getName());
+				} else if (condition.getKeyId() == poqlParser.ID) {
+					v = String.valueOf(ob.getId());
+				} else {
+					// ERROR
+					System.err.println("Unknown key");
+					return list;
+				}
+
+				if (filterOperation(v, condition.value, condition.operator)) {
+					filteredList.add(o);
+				}
+
+			}
+		} else if (type == SLEXMMProcess.class) {
+			for (Object o : list) {
+				SLEXMMProcess ob = (SLEXMMProcess) o;
+				String v = null;
+				if (condition.isAttribute()) {
+					// ERROR
+					System.err.println("No attributes for type Process");
+					return list;
+				} else if (condition.getKeyId() == (poqlParser.NAME)) {
+					v = String.valueOf(ob.getName());
+				} else if (condition.getKeyId() == poqlParser.ID) {
+					v = String.valueOf(ob.getId());
+				} else {
+					// ERROR
+					System.err.println("Unknown key");
+					return list;
+				}
+
+				if (filterOperation(v, condition.value, condition.operator)) {
+					filteredList.add(o);
+				}
+
+			}
+		} else if (type == SLEXMMLog.class) {
+			for (Object o : list) {
+				SLEXMMLog ob = (SLEXMMLog) o;
+				String v = null;
+				SLEXMMLogAttribute slxAtt = null;
+				if (condition.isAttribute()) {
+					HashMap<SLEXMMLogAttribute, SLEXMMLogAttributeValue> attsMap = ob
+							.getAttributeValues();
+					slxAtt = null;
+
+					for (SLEXMMLogAttribute at : attsMap.keySet()) {
+						if (at.getName().equals(condition.getKey())) {
+							slxAtt = at;
+							break;
+						}
+					}
+
+					if (slxAtt != null) {
+						SLEXMMLogAttributeValue slxAttVal = attsMap.get(slxAtt);
+						if (slxAttVal != null) {
+							v = slxAttVal.getValue();
+						}
+					}
+					
+				} else if (condition.getKeyId() == (poqlParser.NAME)) {
+					v = String.valueOf(ob.getName());
+				} else if (condition.getKeyId() == (poqlParser.PROCESS_ID)) {
+					v = String.valueOf(ob.getProcessId());
+				} else if (condition.getKeyId() == poqlParser.ID) {
+					v = String.valueOf(ob.getId());
+				} else {
+					// ERROR
+					System.err.println("Unknown key");
+					return list;
+				}
+
+				if (filterOperation(v, condition.value, condition.operator)) {
+					filteredList.add(o);
+				}
+
+			}
 		} else if (type == SLEXMMObjectVersion.class) {
 			for (Object o : list) {
 				SLEXMMObjectVersion ob = (SLEXMMObjectVersion) o;
@@ -274,10 +342,26 @@ public class POQLFunctions {
 			for (Object o : list) {
 				SLEXMMCase ob = (SLEXMMCase) o;
 				String v = null;
+				SLEXMMCaseAttribute slxAtt = null;
 				if (condition.isAttribute()) {
-					// ERROR
-					System.err.println("No attributes for type Case");
-					return list;
+					HashMap<SLEXMMCaseAttribute, SLEXMMCaseAttributeValue> attsMap = ob
+							.getAttributeValues();
+					slxAtt = null;
+
+					for (SLEXMMCaseAttribute at : attsMap.keySet()) {
+						if (at.getName().equals(condition.getKey())) {
+							slxAtt = at;
+							break;
+						}
+					}
+
+					if (slxAtt != null) {
+						SLEXMMCaseAttributeValue slxAttVal = attsMap.get(slxAtt);
+						if (slxAttVal != null) {
+							v = slxAttVal.getValue();
+						}
+					}
+					
 				} else if (condition.getKeyId() == (poqlParser.NAME)) {
 					v = String.valueOf(ob.getName());
 				} else if (condition.getKeyId() == poqlParser.ID) {
@@ -388,8 +472,6 @@ public class POQLFunctions {
 					return list;
 				} else if (condition.getKeyId() == poqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.PROCESS_ID) {
-					v = String.valueOf(ob.getProcessId());
 				} else if (condition.getKeyId() == poqlParser.NAME) {
 					v = String.valueOf(ob.getName());
 				} else {
@@ -1953,6 +2035,7 @@ public class POQLFunctions {
 		return listResult;
 	}
 	
+	
 	public HashMap<Object,HashSet<Integer>> periodsOf(HashMap<Object,HashSet<Integer>> list, Class type) {
 		HashMap<Object,HashSet<Integer>> listResult = new HashMap<>();
 	 	
@@ -2153,12 +2236,26 @@ public class POQLFunctions {
 					SLEXMMAttribute ob = (SLEXMMAttribute) it.next();
 					ids[i] = ob.getId();
 				}
+			} else if (type == SLEXMMDataModel.class) {
+				for (int i = 0; i < size; i++) {
+					SLEXMMDataModel ob = (SLEXMMDataModel) it.next();
+					ids[i] = ob.getId();
+				}
+			} else if (type == SLEXMMProcess.class) {
+				for (int i = 0; i < size; i++) {
+					SLEXMMProcess ob = (SLEXMMProcess) it.next();
+					ids[i] = ob.getId();
+				}
+			} else if (type == SLEXMMLog.class) {
+				for (int i = 0; i < size; i++) {
+					SLEXMMLog ob = (SLEXMMLog) it.next();
+					ids[i] = ob.getId();
+				}
 			} else {
 				// ERROR
 				System.err.println("Unknown type");
 			}
 		}
-		
 		
 		return idsArrays;
 	}
@@ -2242,8 +2339,10 @@ public class POQLFunctions {
 	public HashMap<Object,HashSet<Integer>> getAllActivities() {
 		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
-			for (SLEXMMActivity act: slxmm.getActivities()) {
-				list.put(act,null);
+			SLEXMMActivityResultSet acrset = slxmm.getActivities();
+			SLEXMMActivity act = null;
+			while ((act = acrset.getNext()) != null) {
+				list.put(act, null);
 			}
 		}
 		return list;
@@ -2304,6 +2403,42 @@ public class POQLFunctions {
 		if (!isCheckerModeEnabled()) {
 			SLEXMMAttributeResultSet arset = slxmm.getAttributes();
 			SLEXMMAttribute at = null;
+			while ((at = arset.getNext()) != null) {
+				list.put(at,null);
+			}
+		}
+		return list;
+	}
+	
+	public HashMap<Object,HashSet<Integer>> getAllDatamodels() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
+		if (!isCheckerModeEnabled()) {
+			SLEXMMDataModelResultSet arset = slxmm.getDataModels();
+			SLEXMMDataModel at = null;
+			while ((at = arset.getNext()) != null) {
+				list.put(at,null);
+			}
+		}
+		return list;
+	}
+	
+	public HashMap<Object,HashSet<Integer>> getAllProcesses() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
+		if (!isCheckerModeEnabled()) {
+			SLEXMMProcessResultSet arset = slxmm.getProcesses();
+			SLEXMMProcess at = null;
+			while ((at = arset.getNext()) != null) {
+				list.put(at,null);
+			}
+		}
+		return list;
+	}
+	
+	public HashMap<Object,HashSet<Integer>> getAllLogs() {
+		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
+		if (!isCheckerModeEnabled()) {
+			SLEXMMLogResultSet arset = slxmm.getLogs();
+			SLEXMMLog at = null;
 			while ((at = arset.getNext()) != null) {
 				list.put(at,null);
 			}
@@ -2401,6 +2536,12 @@ public class POQLFunctions {
 				concurrentSet = relationsOf(inputMap, SLEXMMPeriod.class);
 			} else if (type == SLEXMMRelationship.class) {
 				concurrentSet = relationshipsOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMDataModel.class) {
+				concurrentSet = datamodelsOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMProcess.class) {
+				concurrentSet = processesOf(inputMap, SLEXMMPeriod.class);
+			} else if (type == SLEXMMLog.class) {
+				concurrentSet = logsOf(inputMap, SLEXMMPeriod.class);
 			} else {
 				System.err.println("Unknown type");
 				break;
@@ -2451,6 +2592,15 @@ public class POQLFunctions {
 			break;
 		case ID_TYPE_VERSION:
 			result = versionsOf(val, type);
+			break;
+		case ID_TYPE_DATAMODEL:
+			result = datamodelsOf(val, type);
+			break;
+		case ID_TYPE_PROCESS:
+			result = processesOf(val, type);
+			break;
+		case ID_TYPE_LOG:
+			result = logsOf(val, type);
 			break;
 		default:
 			break;

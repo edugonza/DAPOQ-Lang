@@ -12,10 +12,13 @@ import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
 import org.processmining.openslex.metamodel.SLEXMMAttribute;
 import org.processmining.openslex.metamodel.SLEXMMCase;
 import org.processmining.openslex.metamodel.SLEXMMClass;
+import org.processmining.openslex.metamodel.SLEXMMDataModel;
 import org.processmining.openslex.metamodel.SLEXMMEvent;
+import org.processmining.openslex.metamodel.SLEXMMLog;
 import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
 import org.processmining.openslex.metamodel.SLEXMMPeriod;
+import org.processmining.openslex.metamodel.SLEXMMProcess;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
 
@@ -122,6 +125,33 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		POQLValue value = new POQLValue();
 		value.result = poql.getAllVersions();
 		value.type = SLEXMMObjectVersion.class;
+
+		return value;
+	}
+	
+	@Override
+	public POQLValue visitAllProcesses(AllProcessesContext ctx) {
+		POQLValue value = new POQLValue();
+		value.result = poql.getAllProcesses();
+		value.type = SLEXMMProcess.class;
+
+		return value;
+	}
+	
+	@Override
+	public POQLValue visitAllLogs(AllLogsContext ctx) {
+		POQLValue value = new POQLValue();
+		value.result = poql.getAllLogs();
+		value.type = SLEXMMLog.class;
+
+		return value;
+	}
+	
+	@Override
+	public POQLValue visitAllDatamodels(AllDatamodelsContext ctx) {
+		POQLValue value = new POQLValue();
+		value.result = poql.getAllDatamodels();
+		value.type = SLEXMMDataModel.class;
 
 		return value;
 	}
@@ -556,6 +586,51 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
+	public POQLValue visitFilterProcesses(FilterProcessesContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue vob = this.visit(ctx.processes());
+		POQLValue vf = this.visit(ctx.f);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
+		v.type = vob.type;
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitFilterLogs(FilterLogsContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue vob = this.visit(ctx.logs());
+		POQLValue vf = this.visit(ctx.f);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
+		v.type = vob.type;
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitFilterDatamodels(FilterDatamodelsContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue vob = this.visit(ctx.datamodels());
+		POQLValue vf = this.visit(ctx.f);
+		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
+		v.result = new HashMap<>();
+		for (Object o: resultFilter) {
+			v.result.put(o, null);
+		}
+		v.type = vob.type;
+		return v;
+	}
+	
+	@Override
 	public POQLValue visitObjectsOf(ObjectsOfContext ctx) {
 		POQLValue v = new POQLValue();
 		
@@ -662,6 +737,36 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		POQLValue vthings = this.visit(ctx.things());
 		v.result = poql.versionsOf(vthings.result, vthings.type);
 		v.type = SLEXMMObjectVersion.class;
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitProcessesOf(ProcessesOfContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue vthings = this.visit(ctx.things());
+		v.result = poql.processesOf(vthings.result, vthings.type);
+		v.type = SLEXMMProcess.class;
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitLogsOf(LogsOfContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue vthings = this.visit(ctx.things());
+		v.result = poql.logsOf(vthings.result, vthings.type);
+		v.type = SLEXMMLog.class;
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitDatamodelsOf(DatamodelsOfContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue vthings = this.visit(ctx.things());
+		v.result = poql.datamodelsOf(vthings.result, vthings.type);
+		v.type = SLEXMMDataModel.class;
 		return v;
 	}
 	
@@ -800,6 +905,12 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 			v.scope = POQLFunctions.ID_TYPE_CASE;
 		} else if (ctx.EVENT() != null) {
 			v.scope = POQLFunctions.ID_TYPE_EVENT;
+		} else if (ctx.DATAMODEL() != null) {
+			v.scope = POQLFunctions.ID_TYPE_DATAMODEL;
+		} else if (ctx.PROCESS() != null) {
+			v.scope = POQLFunctions.ID_TYPE_PROCESS;
+		} else if (ctx.LOG() != null) {
+			v.scope = POQLFunctions.ID_TYPE_LOG;
 		} else {
 			v.scope = POQLFunctions.ID_TYPE_ANY;
 		}
@@ -1020,4 +1131,43 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		return concurrentWith(vob, hasScope, scope);
 	}
 	
+	@Override
+	public POQLValue visitConcurrentWithProcesses(ConcurrentWithProcessesContext ctx) {
+		
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithLogs(ConcurrentWithLogsContext ctx) {
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
+	
+	@Override
+	public POQLValue visitConcurrentWithDatamodels(ConcurrentWithDatamodelsContext ctx) {
+		POQLValue vob = this.visit(ctx.t5);
+		POQLValue scope = null;
+		boolean hasScope = false;
+		
+		if (ctx.scope() != null) {
+			hasScope = true;
+		}
+		
+		return concurrentWith(vob, hasScope, scope);
+	}
 }

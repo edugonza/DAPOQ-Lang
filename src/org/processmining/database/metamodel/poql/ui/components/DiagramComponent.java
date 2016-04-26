@@ -101,7 +101,13 @@ public class DiagramComponent extends JPanel {
 	public void setDataModel(SLEXMMDataModel dm) {
 		
 		//this.dm = dm;
+		
 		init();
+		
+		if (dm == null) {
+			return;
+		}
+		
 		SLEXMMStorageMetaModel mmstrg = dm.getStorage();
 		
 		widgetIdToClassMap = new HashMap<>();

@@ -1,10 +1,12 @@
 package org.processmining.database.metamodel.poql.ui.components;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
+import javax.swing.JComboBox;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
@@ -13,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 import org.processmining.openslex.metamodel.SLEXMMActivity;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstanceResultSet;
+import org.processmining.openslex.metamodel.SLEXMMActivityResultSet;
 import org.processmining.openslex.metamodel.SLEXMMAttribute;
 import org.processmining.openslex.metamodel.SLEXMMAttributeValue;
 import org.processmining.openslex.metamodel.SLEXMMCase;
@@ -22,11 +25,15 @@ import org.processmining.openslex.metamodel.SLEXMMEvent;
 import org.processmining.openslex.metamodel.SLEXMMEventAttribute;
 import org.processmining.openslex.metamodel.SLEXMMEventAttributeValue;
 import org.processmining.openslex.metamodel.SLEXMMEventResultSet;
+import org.processmining.openslex.metamodel.SLEXMMLog;
+import org.processmining.openslex.metamodel.SLEXMMLogResultSet;
 import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectResultSet;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
 import org.processmining.openslex.metamodel.SLEXMMPeriod;
+import org.processmining.openslex.metamodel.SLEXMMProcess;
+import org.processmining.openslex.metamodel.SLEXMMProcessResultSet;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationResultSet;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
@@ -47,6 +54,15 @@ public class MetaModelTableUtils {
 		}
 	}
 
+	public static Integer getSelectedLog(JTable table) {
+		int selectedRow = table.getSelectedRow();
+		if (selectedRow >= 0) {
+			return (int) table.getModel().getValueAt(selectedRow, 0);
+		} else {
+			return null;
+		}
+	}
+	
 	public static Integer getSelectedActivity(JTable table) {
 		int selectedRow = table.getSelectedRow();
 		if (selectedRow >= 0) {
@@ -86,6 +102,68 @@ public class MetaModelTableUtils {
 	
 	public static class ActivitiesTableModel extends DefaultTableModel {
 
+		Class[] columnTypes = new Class[] { Integer.class, String.class};
+		boolean[] columnEditables = new boolean[] { false, false };
+
+		public Class getColumnClass(int columnIndex) {
+			return columnTypes[columnIndex];
+		}
+
+		public boolean isCellEditable(int row, int column) {
+			return columnEditables[column];
+		}
+
+		public ActivitiesTableModel() {
+			super(new String[] { "Activity Id", "Name"}, 0);
+		}
+
+	}
+
+	public static void setActivitiesTableContent(final JTable table, SLEXMMActivityResultSet actrset) throws Exception {
+		final ActivitiesTableModel model = new ActivitiesTableModel();
+
+		SLEXMMActivity act = null;
+		
+		while ((act = actrset.getNext()) != null) {
+			model.addRow(new Object[] { act.getId(), act.getName()});
+		}
+		
+		SwingUtilities.invokeAndWait(new Runnable() {
+			
+			@Override
+			public void run() {
+				table.setModel(model);
+		
+				table.getColumnModel().getColumn(0).setMinWidth(75);
+				table.getColumnModel().getColumn(1).setMinWidth(75);
+			}
+		});
+
+	}
+	
+	public static void setActivitiesTableContent(final JTable table, Collection<Object> actrset) throws Exception {
+		final ActivitiesTableModel model = new ActivitiesTableModel();
+		
+		for (Object o: actrset) {
+			SLEXMMActivity act = (SLEXMMActivity) o;
+			model.addRow(new Object[] { act.getId(), act.getName()});
+		}
+		
+		SwingUtilities.invokeAndWait(new Runnable() {
+			
+			@Override
+			public void run() {
+				table.setModel(model);
+		
+				table.getColumnModel().getColumn(0).setMinWidth(75);
+				table.getColumnModel().getColumn(1).setMinWidth(75);
+			}
+		});
+
+	}
+	
+	public static class LogsTableModel extends DefaultTableModel {
+
 		Class[] columnTypes = new Class[] { Integer.class, String.class,
 				Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
@@ -98,19 +176,20 @@ public class MetaModelTableUtils {
 			return columnEditables[column];
 		}
 
-		public ActivitiesTableModel() {
-			super(new String[] { "Activity Id", "Name", "Process Id" }, 0);
+		public LogsTableModel() {
+			super(new String[] { "Log Id", "Name", "Process Id" }, 0);
 		}
 
 	}
+	
+	public static void setLogsTableContent(final JTable table, SLEXMMLogResultSet logrset) throws Exception {
+		
+		final LogsTableModel model = new LogsTableModel();
 
-	public static void setActivitiesTableContent(final JTable table, Collection activities) throws Exception {
-		final ActivitiesTableModel model = new ActivitiesTableModel();
-
-		for (Object o : activities) {
-			SLEXMMActivity act = (SLEXMMActivity) o;
-			model.addRow(new Object[] { act.getId(), act.getName(),
-					act.getProcessId() });
+		SLEXMMLog log = null;
+		
+		while ((log = logrset.getNext()) != null) {
+			model.addRow(new Object[] { log.getId(), log.getName(), log.getProcessId()});
 		}
 		
 		SwingUtilities.invokeAndWait(new Runnable() {
@@ -124,7 +203,6 @@ public class MetaModelTableUtils {
 				table.getColumnModel().getColumn(2).setMinWidth(75);
 			}
 		});
-
 	}
 	
 	public static class ClassesTableModel extends DefaultTableModel {
@@ -896,4 +974,16 @@ public class MetaModelTableUtils {
 			throw e;
 		}
 	}
+
+	public static void setProcessesDropboxContent(JComboBox<SLEXMMProcess> processComboBox,
+			SLEXMMProcessResultSet prset) throws Exception {
+
+		SLEXMMProcess p = null;
+
+		while ((p = prset.getNext()) != null) {
+			processComboBox.addItem(p);
+		}
+		
+	}
+
 }

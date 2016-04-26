@@ -3,8 +3,8 @@
     
     <resolvers>
     	<url name="db-process-mining">
-            <ivy pattern="https://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/blob/master/Releases/[module]/[module]-[revision]-ivy.xml?raw=true" />
-            <artifact pattern="https://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/blob/master/Releases/[module]/[module]-[revision].[ext]?raw=true" />
+            <ivy pattern="https://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/raw/master/Releases/[module]/[module]-[revision]-ivy.xml" />
+            <artifact pattern="https://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/raw/master/Releases/[module]/[module]-[revision].[ext]" />
         </url>
         <url name="prom" checkmodified="true">
             <ivy pattern="https://svn.win.tue.nl/repos/[organisation]/Releases/Packages/[module]/[revision]/ivy.xml" />

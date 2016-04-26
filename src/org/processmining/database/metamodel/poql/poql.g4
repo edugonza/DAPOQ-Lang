@@ -119,6 +119,30 @@ things:
 	| t9=activityinstances (o=set_operator tt9=activityinstances)? #thingsSetOperator
 	| t10=attributes (o=set_operator tt10=attributes)? #thingsSetOperator
 	| t11=periods (o=set_operator tt11=periods)? #thingsSetOperator
+	| t12=processes (o=set_operator tt12=processes)? #thingsSetOperator
+	| t13=logs (o=set_operator tt13=logs)? #thingsSetOperator
+	| t14=datamodels (o=set_operator tt14=datamodels)? #thingsSetOperator
+	;
+
+datamodels:
+	  DATAMODELSOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #datamodelsOf
+	| t3=datamodels f=filter #filterDatamodels
+	| t4=variable #datamodelsVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=datamodels CLOSE_PARENTHESIS (scope)? #concurrentWithDatamodels
+	;
+
+logs:
+	  LOGSOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #logsOf
+	| t3=logs f=filter #filterLogs
+	| t4=variable #logsVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=logs CLOSE_PARENTHESIS (scope)? #concurrentWithLogs
+	;
+
+processes:
+	  PROCESSESOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #processesOf
+	| t3=processes f=filter #filterProcesses
+	| t4=variable #processesVariable
+	| CONCURRENTWITH OPEN_PARENTHESIS t5=processes CLOSE_PARENTHESIS (scope)? #concurrentWithProcesses
 	;
 
 periods:
@@ -209,7 +233,20 @@ attributes:
 	;
 	
 scope:
-	  SCOPE (CASE|OBJECT|VERSION|CLASS|ATTRIBUTE|RELATIONSHIP|RELATION|ACTIVITYINSTANCE|ACTIVITY|EVENT) 
+	  SCOPE (CASE
+	  	|OBJECT
+	  	|VERSION
+	  	|CLASS
+	  	|ATTRIBUTE
+	  	|RELATIONSHIP
+	  	|RELATION
+	  	|ACTIVITYINSTANCE
+	  	|ACTIVITY
+	  	|EVENT
+	  	|PROCESS
+	  	|DATAMODEL
+	  	|LOG
+	  ) 
 	;
 	
 filter:
@@ -254,6 +291,26 @@ ids:
 	| id_activity
 	| id_attribute
 	| id_period
+	| id_process
+	| id_log
+	| id_datamodel
+	;
+
+id_datamodel:
+	  ID
+	| NAME
+	;
+
+id_log:
+	  ID
+	| PROCESS_ID
+	| NAME
+	| IDATT
+	;
+
+id_process:
+	  ID
+	| NAME
 	;
 
 id_period:
@@ -309,6 +366,7 @@ id_event:
 id_case:
 	  ID
 	| NAME
+	| IDATT
 	;
 	
 id_activity_instance:
@@ -318,7 +376,6 @@ id_activity_instance:
 	
 id_activity:
 	  ID
-	| PROCESS_ID
 	| NAME
 	;
 	
@@ -338,6 +395,9 @@ allRelations: ALLRELATIONS;
 allRelationships: ALLRELATIONSHIPS;
 allActivityInstances: ALLACTIVITYINSTANCES;
 allAttributes: ALLATTRIBUTES;
+allProcesses: ALLPROCESSES;
+allLogs: ALLLOGS;
+allDatamodels: A L L D A T A M O D E L S ;
 
 UNION: U N I O N ;
 INTERSECTION: I N T E R S E C T I O N ;
@@ -356,6 +416,9 @@ ACTIVITYINSTANCESOF: A C T I V I T Y I N S T A N C E S O F ;
 ATTRIBUTESOF: A T T R I B U T E S O F ;
 PERIODSOF: P E R I O D S O F ;
 CONCURRENTWITH: C O N C U R R E N T W I T H ;
+PROCESSESOF: P R O C E S S E S O F ;
+LOGSOF: L O G S O F ;
+DATAMODELSOF: D A T A M O D E L S O F ;
 
 ALLOBJECTS: A L L O B J E C T S ;
 ALLCASES: A L L C A S E S ;
@@ -367,6 +430,9 @@ ALLRELATIONS: A L L R E L A T I O N S ;
 ALLRELATIONSHIPS: A L L R E L A T I O N S H I P S ;
 ALLACTIVITYINSTANCES: A L L A C T I V I T Y I N S T A N C E S ;
 ALLATTRIBUTES: A L L A T T R I B U T E S ;
+ALLPROCESSES: A L L P R O C E S S E S ;
+ALLLOGS: A L L L O G S ;
+ALLDATAMODELS: A L L D A T A M O D E L S ;
 
 // Scopes
 SCOPE: S C O P E ;
@@ -380,6 +446,9 @@ CLASS: C L A S S ;
 ATTRIBUTE: A T T R I B U T E ;
 RELATION: R E L A T I O N ;
 ACTIVITYINSTANCE: A C T I V I T Y I N S T A N C E ;
+PROCESS: P R O C E S S ;
+LOG: L O G ;
+DATAMODEL: D A T A M O D E L ;
 
 // tokens for filters
 ID: I D ;
