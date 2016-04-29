@@ -126,6 +126,7 @@ things:
 
 datamodels:
 	  DATAMODELSOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #datamodelsOf
+	| t2=allDatamodels #getAllDatamodels
 	| t3=datamodels f=filter #filterDatamodels
 	| t4=variable #datamodelsVariable
 	| CONCURRENTWITH OPEN_PARENTHESIS t5=datamodels CLOSE_PARENTHESIS (scope)? #concurrentWithDatamodels
@@ -133,6 +134,7 @@ datamodels:
 
 logs:
 	  LOGSOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #logsOf
+	| t2=allLogs #getAllLogs
 	| t3=logs f=filter #filterLogs
 	| t4=variable #logsVariable
 	| CONCURRENTWITH OPEN_PARENTHESIS t5=logs CLOSE_PARENTHESIS (scope)? #concurrentWithLogs
@@ -140,6 +142,7 @@ logs:
 
 processes:
 	  PROCESSESOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #processesOf
+	| t2=allProcesses #getAllProcesses
 	| t3=processes f=filter #filterProcesses
 	| t4=variable #processesVariable
 	| CONCURRENTWITH OPEN_PARENTHESIS t5=processes CLOSE_PARENTHESIS (scope)? #concurrentWithProcesses
@@ -149,8 +152,25 @@ periods:
 	  PERIODSOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #periodsOf
 	| t3=periods f=filter #filterPeriods
 	| t4=variable #periodsVariable
+	| CREATEPERIOD OPEN_PARENTHESIS t5=timestamp COMMA t6=timestamp CLOSE_PARENTHESIS #createPeriod
 	;
  	
+timestamp:
+	  STRING #timestampFromString
+	| START_PERIOD OPEN_PARENTHESIS periods CLOSE_PARENTHESIS #startPeriod
+	| END_PERIOD OPEN_PARENTHESIS periods CLOSE_PARENTHESIS #endPeriod
+	| t1=timestamp op=timeoperator t2=timestamp_offset #timestampOperation
+	;
+
+timestamp_offset:
+	  STRING #timestampOffsetFromString
+	;
+
+timeoperator:
+	  op=PLUS
+	| op=MINUS
+	;
+	
 objects:
 	  OBJECTSOF OPEN_PARENTHESIS t1=things CLOSE_PARENTHESIS #objectsOf
 	| t2=allObjects #getAllObjects
@@ -397,7 +417,7 @@ allActivityInstances: ALLACTIVITYINSTANCES;
 allAttributes: ALLATTRIBUTES;
 allProcesses: ALLPROCESSES;
 allLogs: ALLLOGS;
-allDatamodels: A L L D A T A M O D E L S ;
+allDatamodels: ALLDATAMODELS;
 
 UNION: U N I O N ;
 INTERSECTION: I N T E R S E C T I O N ;
@@ -419,6 +439,9 @@ CONCURRENTWITH: C O N C U R R E N T W I T H ;
 PROCESSESOF: P R O C E S S E S O F ;
 LOGSOF: L O G S O F ;
 DATAMODELSOF: D A T A M O D E L S O F ;
+CREATEPERIOD: C R E A T E P E R I O D ;
+START_PERIOD: S T A R T '_' P E R I O D ;
+END_PERIOD: E N D '_' P E R I O D ;
 
 ALLOBJECTS: A L L O B J E C T S ;
 ALLCASES: A L L C A S E S ;
@@ -475,6 +498,9 @@ END: E N D ;
 
 OPEN_PARENTHESIS: PARENTHESIS_LEFT ;
 CLOSE_PARENTHESIS: PARENTHESIS_RIGHT ;
+COMMA: COMMA_SIGN;
+PLUS: PLUS_SIGN;
+MINUS: MINUS_SIGN;
 
 WHERE: W H E R E ;
 
@@ -524,6 +550,9 @@ COMMENT: SLASH SLASH ~('\r'|'\n')* -> skip ;
 
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 
+fragment PLUS_SIGN:('+');
+fragment MINUS_SIGN:('-');
+fragment COMMA_SIGN:(',');
 fragment SLASH:('/');
 fragment SEMICOLON:(';');
 fragment PARENTHESIS_LEFT:('(');

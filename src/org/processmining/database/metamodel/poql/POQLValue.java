@@ -20,4 +20,5 @@ public class POQLValue {
 	public int setOperator = 0;
 	public boolean conditionBoolean = false;
 	public int scope = 0;
+	public POQLTimestamp timestamp;
 }

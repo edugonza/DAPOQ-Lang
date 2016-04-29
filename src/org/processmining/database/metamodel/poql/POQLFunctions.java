@@ -3483,6 +3483,12 @@ public class POQLFunctions {
 					name = "=";
 				} else if (i == poqlParser.VAR_NAME) {
 					name = "_";
+				} else if (i == poqlParser.COMMA) {
+					name = ",";
+				} else if (i == poqlParser.PLUS) {
+					name = "+";
+				} else if (i == poqlParser.MINUS) {
+					name = "-";
 				}
 				suggestions.add(name);
 			}

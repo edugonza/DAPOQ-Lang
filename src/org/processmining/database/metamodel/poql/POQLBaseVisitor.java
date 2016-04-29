@@ -1,7 +1,12 @@
 package org.processmining.database.metamodel.poql;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
@@ -1170,4 +1175,165 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		return concurrentWith(vob, hasScope, scope);
 	}
+	
+	@Override
+	public POQLValue visitStartPeriod(StartPeriodContext ctx) {
+		POQLValue v = new POQLValue();
+		v.timestamp = new POQLTimestamp();
+		
+		POQLValue ps = this.visit(ctx.periods());
+		
+		long min = Long.MAX_VALUE;
+		
+		for (Object o: ps.result.keySet()) {
+			SLEXMMPeriod p = (SLEXMMPeriod) o;
+			if (p.getStart() < min) {
+				min = p.getStart();
+			}
+		}
+		
+		v.timestamp.timestamp = min;
+		
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitEndPeriod(EndPeriodContext ctx) {
+		POQLValue v = new POQLValue();
+		v.timestamp = new POQLTimestamp();
+		
+		POQLValue ps = this.visit(ctx.periods());
+		
+		long max = Long.MIN_VALUE;
+		
+		for (Object o: ps.result.keySet()) {
+			SLEXMMPeriod p = (SLEXMMPeriod) o;
+			if (p.getEnd() > max) {
+				max = p.getEnd();
+			}
+		}
+		
+		v.timestamp.timestamp = max;
+		
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitTimeoperator(TimeoperatorContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		switch (ctx.op.getType()) {
+		case poqlParser.PLUS:
+			v.operator = POQLTimestamp.OPERATOR_PLUS;
+			break;
+		case poqlParser.MINUS:
+			v.operator = POQLTimestamp.OPERATOR_MINUS;
+			break;
+		default:
+			throw new RuntimeException("Operator not valid");
+		}
+		
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitTimestampFromString(TimestampFromStringContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		v.timestamp = new POQLTimestamp();
+		
+		String dateStr = "";
+		
+		if (ctx.STRING() != null) {
+			dateStr = ctx.STRING().getText();
+		}
+		
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+		
+		Date date = null;
+		try {
+			date = format.parse(dateStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Date format not valid");
+		}
+		
+		v.timestamp.timestamp = date.getTime();
+		
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitTimestampOperation(TimestampOperationContext ctx) {
+		
+		POQLValue v = new POQLValue();
+		
+		POQLValue v1 = this.visit(ctx.t1);
+		
+		POQLValue op = this.visit(ctx.op);
+		
+		POQLValue v2 = this.visit(ctx.t2);
+		
+		switch(op.operator) {
+		case POQLTimestamp.OPERATOR_PLUS:
+			v.timestamp = new POQLTimestamp();
+			v.timestamp.timestamp = v1.timestamp.timestamp + v2.timestamp.timestamp;
+			break;
+		case POQLTimestamp.OPERATOR_MINUS:
+			v.timestamp = new POQLTimestamp();
+			v.timestamp.timestamp = v1.timestamp.timestamp - v2.timestamp.timestamp;
+			break;
+		default:
+			throw new RuntimeException("Operator not valid");
+		}
+		
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitTimestampOffsetFromString(TimestampOffsetFromStringContext ctx) {
+		POQLValue v = new POQLValue();
+		v.timestamp = new POQLTimestamp();
+		
+		String dateStr = "";
+		
+		if (ctx.STRING() != null) {
+			dateStr = ctx.STRING().getText();
+		}
+		
+		DateFormat format = new SimpleDateFormat("dd HH:mm:ss", Locale.ENGLISH);
+		
+		Date date = null;
+		Date dateOrigin = new Date(90000000L);
+		try {
+			date = format.parse(dateStr);
+			date = new Date(dateOrigin.getTime() + date.getTime());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Date format not valid");
+		}
+		
+		v.timestamp.timestamp = date.getTime();
+		
+		return v;
+	}
+	
+	@Override
+	public POQLValue visitCreatePeriod(CreatePeriodContext ctx) {
+		POQLValue v = new POQLValue();
+		
+		POQLValue startTimestamp = this.visit(ctx.t5);
+		POQLValue endTimestamp = this.visit(ctx.t6);
+		
+		SLEXMMPeriod p = new SLEXMMPeriod(startTimestamp.timestamp.timestamp,
+				endTimestamp.timestamp.timestamp);
+		
+		v.result = new HashMap<>();
+		v.result.put(p, new HashSet<Integer>());
+		
+		v.type = SLEXMMPeriod.class;
+		
+		return v;
+	};
+	
 }

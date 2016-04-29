@@ -21,20 +21,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.processmining.database.metamodel.poql.POQLRunner;
 import org.processmining.database.metamodel.poql.QueryResult;
-import org.processmining.openslex.metamodel.SLEXMMActivity;
-import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
-import org.processmining.openslex.metamodel.SLEXMMAttribute;
-import org.processmining.openslex.metamodel.SLEXMMAttributeValue;
-import org.processmining.openslex.metamodel.SLEXMMCase;
-import org.processmining.openslex.metamodel.SLEXMMClass;
-import org.processmining.openslex.metamodel.SLEXMMEvent;
-import org.processmining.openslex.metamodel.SLEXMMObject;
-import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
-import org.processmining.openslex.metamodel.SLEXMMPeriod;
-import org.processmining.openslex.metamodel.SLEXMMRelation;
-import org.processmining.openslex.metamodel.SLEXMMRelationship;
-import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
-import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
+import org.processmining.openslex.metamodel.*;
 
 public class POQLQueryPanel extends JPanel {
 	
@@ -297,6 +284,12 @@ public class POQLQueryPanel extends JPanel {
 					MetaModelTableUtils.setAttributesTableContent(sqlResultTable, qr.result);
 				} else if (qr.type == SLEXMMPeriod.class) {
 					MetaModelTableUtils.setPeriodsTableContent(sqlResultTable, qr.result);
+				} else if (qr.type == SLEXMMDataModel.class) {
+					MetaModelTableUtils.setDatamodelsTableContent(sqlResultTable, qr.result);
+				} else if (qr.type == SLEXMMLog.class) {
+					MetaModelTableUtils.setLogsTableContent(sqlResultTable, qr.result);
+				} else if (qr.type == SLEXMMProcess.class) {
+					MetaModelTableUtils.setProcessesTableContent(sqlResultTable, qr.result);
 				} else {
 					String msg = "ERROR: Unknown type of result "+qr.type;
 					System.err.println(msg);
