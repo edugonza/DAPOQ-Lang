@@ -1,6 +1,6 @@
 // Define a grammar
 
-grammar poql;
+grammar dapoql;
 
 @header {
   import java.util.List;

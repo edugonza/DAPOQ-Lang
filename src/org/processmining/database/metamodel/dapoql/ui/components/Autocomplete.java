@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.poql.ui.components;
+package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -15,8 +15,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
-import org.processmining.database.metamodel.poql.POQLRunner;
-import org.processmining.database.metamodel.poql.SuggestionsResult;
+import org.processmining.database.metamodel.dapoql.DAPOQLRunner;
+import org.processmining.database.metamodel.dapoql.SuggestionsResult;
 
 public class Autocomplete implements DocumentListener {
 
@@ -94,7 +94,7 @@ public class Autocomplete implements DocumentListener {
 
 			SuggestionsResult suggRes = null;
 			try {
-				POQLRunner runner = new POQLRunner();
+				DAPOQLRunner runner = new DAPOQLRunner();
 				suggRes = runner.executeQueryForSuggestions(content);
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.poql;
+package org.processmining.database.metamodel.dapoql;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,16 +10,17 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
+import org.processmining.database.metamodel.dapoql.dapoqlParser;
 import org.processmining.openslex.metamodel.*;
 
-public class POQLFunctions {
+public class DAPOQLFunctions {
 
 	private SLEXMMStorageMetaModel slxmm = null;
 	private boolean checkerMode = false;
 	private List<String> suggestions = null;
 	private Token offendingToken = null;
 	private Vocabulary vocabulary = null;
-	private HashMap<String,POQLVariable> variablesMap = new HashMap<>();
+	private HashMap<String,DAPOQLVariable> variablesMap = new HashMap<>();
 	
 	public static final int ID_TYPE_ANY = 0;
 	public static final int ID_TYPE_OBJECT = 1;
@@ -39,8 +40,8 @@ public class POQLFunctions {
 	
 	private static final int MAX_IDS_ARRAY_SIZE = 40000;
 
-	public boolean checkVariable(poqlParser parser, int type) {
-		POQLVariable var = findVariable(parser.getTokenStream().LT(1).getText());
+	public boolean checkVariable(dapoqlParser parser, int type) {
+		DAPOQLVariable var = findVariable(parser.getTokenStream().LT(1).getText());
 		
 		if (var != null) {
 			if (typeToInt(var.getType()) == type) {
@@ -105,8 +106,8 @@ public class POQLFunctions {
 		this.slxmm = strg;
 	}
 
-	public POQLVariable findVariable(String name) {
-		POQLVariable var = null;
+	public DAPOQLVariable findVariable(String name) {
+		DAPOQLVariable var = null;
 		
 		if (variablesMap != null) {
 			var = variablesMap.get(name);
@@ -117,7 +118,7 @@ public class POQLFunctions {
 	
 	public void removeVariable(String name) {
 		
-		POQLVariable var = findVariable(name);
+		DAPOQLVariable var = findVariable(name);
 		
 		if (var == null) {
 			System.err.println("Variable "+name+" does not exist"); // Throw exception?
@@ -130,14 +131,14 @@ public class POQLFunctions {
 		
 	}
 	
-	public POQLVariable createVariable(String name, Class<?> type, HashMap<Object,HashSet<Integer>> value) {
+	public DAPOQLVariable createVariable(String name, Class<?> type, HashMap<Object,HashSet<Integer>> value) {
 		
 		if (findVariable(name) != null) {
 			System.err.println("Variable "+name+" already defined."); // Throw exception?
 			return null;
 		}
 		
-		POQLVariable var = new POQLVariable(name, type, value);
+		DAPOQLVariable var = new DAPOQLVariable(name, type, value);
 		
 		if (variablesMap == null) {
 			variablesMap = new HashMap<>();
@@ -151,13 +152,13 @@ public class POQLFunctions {
 	public Set<Object> set_operation(int op, Set<Object> listA, Set<Object> listB, Class<?> type) {
 		HashSet<Object> resultList = new HashSet<>();
 		
-		if (op == poqlParser.UNION) {
+		if (op == dapoqlParser.UNION) {
 			resultList.addAll(listA);
 			resultList.addAll(listB);
-		} else if (op == poqlParser.EXCLUDING) {
+		} else if (op == dapoqlParser.EXCLUDING) {
 			resultList.addAll(listA);
 			resultList.removeAll(listB);
-		} else if (op == poqlParser.INTERSECTION) {
+		} else if (op == dapoqlParser.INTERSECTION) {
 			HashSet<Object> intersectionSet = new HashSet<>();
 			intersectionSet.addAll(listA);
 			for (Object o: listB) {
@@ -184,9 +185,9 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Object");
 					return list;
-				} else if (condition.getKeyId() == (poqlParser.CLASS_ID)) {
+				} else if (condition.getKeyId() == (dapoqlParser.CLASS_ID)) {
 					v = String.valueOf(ob.getClassId());
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
 				} else {
 					// ERROR
@@ -207,9 +208,9 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Datamodel");
 					return list;
-				} else if (condition.getKeyId() == (poqlParser.NAME)) {
+				} else if (condition.getKeyId() == (dapoqlParser.NAME)) {
 					v = String.valueOf(ob.getName());
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
 				} else {
 					// ERROR
@@ -230,9 +231,9 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Process");
 					return list;
-				} else if (condition.getKeyId() == (poqlParser.NAME)) {
+				} else if (condition.getKeyId() == (dapoqlParser.NAME)) {
 					v = String.valueOf(ob.getName());
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
 				} else {
 					// ERROR
@@ -269,11 +270,11 @@ public class POQLFunctions {
 						}
 					}
 					
-				} else if (condition.getKeyId() == (poqlParser.NAME)) {
+				} else if (condition.getKeyId() == (dapoqlParser.NAME)) {
 					v = String.valueOf(ob.getName());
-				} else if (condition.getKeyId() == (poqlParser.PROCESS_ID)) {
+				} else if (condition.getKeyId() == (dapoqlParser.PROCESS_ID)) {
 					v = String.valueOf(ob.getProcessId());
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
 				} else {
 					// ERROR
@@ -310,13 +311,13 @@ public class POQLFunctions {
 						}
 					}
 
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.OBJECT_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.OBJECT_ID) {
 					v = String.valueOf(ob.getObjectId());
-				} else if (condition.getKeyId() == poqlParser.START_TIMESTAMP) {
+				} else if (condition.getKeyId() == dapoqlParser.START_TIMESTAMP) {
 					v = String.valueOf(ob.getStartTimestamp());
-				} else if (condition.getKeyId() == poqlParser.END_TIMESTAMP) {
+				} else if (condition.getKeyId() == dapoqlParser.END_TIMESTAMP) {
 					v = String.valueOf(ob.getEndTimestamp());
 				} else {
 					// ERROR
@@ -362,9 +363,9 @@ public class POQLFunctions {
 						}
 					}
 					
-				} else if (condition.getKeyId() == (poqlParser.NAME)) {
+				} else if (condition.getKeyId() == (dapoqlParser.NAME)) {
 					v = String.valueOf(ob.getName());
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
 				} else {
 					// ERROR
@@ -410,17 +411,17 @@ public class POQLFunctions {
 						}
 					}
 
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.ACTIVITY_INSTANCE_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ACTIVITY_INSTANCE_ID) {
 					v = String.valueOf(ob.getActivityInstanceId());
-				} else if (condition.getKeyId() == poqlParser.ORDERING) {
+				} else if (condition.getKeyId() == dapoqlParser.ORDERING) {
 					v = String.valueOf(ob.getOrder());
-				} else if (condition.getKeyId() == poqlParser.TIMESTAMP) {
+				} else if (condition.getKeyId() == dapoqlParser.TIMESTAMP) {
 					v = String.valueOf(ob.getTimestamp());
-				} else if (condition.getKeyId() == poqlParser.LIFECYCLE) {
+				} else if (condition.getKeyId() == dapoqlParser.LIFECYCLE) {
 					v = String.valueOf(ob.getLifecycle());
-				} else if (condition.getKeyId() == poqlParser.RESOURCE) {
+				} else if (condition.getKeyId() == dapoqlParser.RESOURCE) {
 					v = String.valueOf(ob.getResource());
 				} else {
 					// ERROR
@@ -443,11 +444,11 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Class");
 					return list;
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.DATAMODEL_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.DATAMODEL_ID) {
 					v = String.valueOf(ob.getDataModelId());
-				} else if (condition.getKeyId() == poqlParser.NAME) {
+				} else if (condition.getKeyId() == dapoqlParser.NAME) {
 					v = String.valueOf(ob.getName());
 				} else {
 					// ERROR
@@ -470,9 +471,9 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Activity");
 					return list;
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.NAME) {
+				} else if (condition.getKeyId() == dapoqlParser.NAME) {
 					v = String.valueOf(ob.getName());
 				} else {
 					// ERROR
@@ -493,9 +494,9 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Activity Instance");
 					return list;
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.ACTIVITY_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ACTIVITY_ID) {
 					v = String.valueOf(ob.getActivityId());
 				} else {
 					// ERROR
@@ -516,17 +517,17 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Relation");
 					return list;
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.SOURCE_OBJECT_VERSION_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.SOURCE_OBJECT_VERSION_ID) {
 					v = String.valueOf(ob.getSourceObjectVersionId());
-				} else if (condition.getKeyId() == poqlParser.TARGET_OBJECT_VERSION_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.TARGET_OBJECT_VERSION_ID) {
 					v = String.valueOf(ob.getTargetObjectVersionId());
-				} else if (condition.getKeyId() == poqlParser.RELATIONSHIP_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.RELATIONSHIP_ID) {
 					v = String.valueOf(ob.getRelationshipId());
-				} else if (condition.getKeyId() == poqlParser.START_TIMESTAMP) {
+				} else if (condition.getKeyId() == dapoqlParser.START_TIMESTAMP) {
 					v = String.valueOf(ob.getStartTimestamp());
-				} else if (condition.getKeyId() == poqlParser.END_TIMESTAMP) {
+				} else if (condition.getKeyId() == dapoqlParser.END_TIMESTAMP) {
 					v = String.valueOf(ob.getEndTimestamp());
 				} else {
 					// ERROR
@@ -547,13 +548,13 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Relationship");
 					return list;
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.SOURCE) {
+				} else if (condition.getKeyId() == dapoqlParser.SOURCE) {
 					v = String.valueOf(ob.getSourceClassId());
-				} else if (condition.getKeyId() == poqlParser.TARGET) {
+				} else if (condition.getKeyId() == dapoqlParser.TARGET) {
 					v = String.valueOf(ob.getTargetClassId());
-				} else if (condition.getKeyId() == poqlParser.NAME) {
+				} else if (condition.getKeyId() == dapoqlParser.NAME) {
 					v = String.valueOf(ob.getName());
 				} else {
 					// ERROR
@@ -574,11 +575,11 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Attribute");
 					return list;
-				} else if (condition.getKeyId() == poqlParser.ID) {
+				} else if (condition.getKeyId() == dapoqlParser.ID) {
 					v = String.valueOf(ob.getId());
-				} else if (condition.getKeyId() == poqlParser.CLASS_ID) {
+				} else if (condition.getKeyId() == dapoqlParser.CLASS_ID) {
 					v = String.valueOf(ob.getClassId());
-				} else if (condition.getKeyId() == poqlParser.NAME) {
+				} else if (condition.getKeyId() == dapoqlParser.NAME) {
 					v = String.valueOf(ob.getName());
 				} else {
 					// ERROR
@@ -601,9 +602,9 @@ public class POQLFunctions {
 					// ERROR
 					System.err.println("No attributes for type Period");
 					return list;
-				} else if (condition.getKeyId() == poqlParser.START) {
+				} else if (condition.getKeyId() == dapoqlParser.START) {
 					v = String.valueOf(ob.getStart());
-				} else if (condition.getKeyId() == poqlParser.END) {
+				} else if (condition.getKeyId() == dapoqlParser.END) {
 					v = String.valueOf(ob.getEnd());
 				} else {
 					// ERROR
@@ -3457,37 +3458,37 @@ public class POQLFunctions {
 				} else {
 					name = name.substring(1, name.length() - 1);
 				}
-				if (i == poqlParser.STRING) {
+				if (i == dapoqlParser.STRING) {
 					name = "\"\"";
-				} else if (i == poqlParser.IDATT) {
+				} else if (i == dapoqlParser.IDATT) {
 					name = "at.";
-				} else if (i == poqlParser.EQUAL) {
+				} else if (i == dapoqlParser.EQUAL) {
 					name = "==";
-				} else if (i == poqlParser.EQUAL_OR_GREATER) {
+				} else if (i == dapoqlParser.EQUAL_OR_GREATER) {
 					name = "=>";
-				} else if (i == poqlParser.EQUAL_OR_SMALLER) {
+				} else if (i == dapoqlParser.EQUAL_OR_SMALLER) {
 					name = "=<";
-				} else if (i == poqlParser.SMALLER) {
+				} else if (i == dapoqlParser.SMALLER) {
 					name = "<";
-				} else if (i == poqlParser.GREATER) {
+				} else if (i == dapoqlParser.GREATER) {
 					name = ">";
-				} else if (i == poqlParser.DIFFERENT) {
+				} else if (i == dapoqlParser.DIFFERENT) {
 					name = "<>";
-				} else if (i == poqlParser.OPEN_PARENTHESIS) {
+				} else if (i == dapoqlParser.OPEN_PARENTHESIS) {
 					name = "(";
-				} else if (i == poqlParser.CLOSE_PARENTHESIS) {
+				} else if (i == dapoqlParser.CLOSE_PARENTHESIS) {
 					name = ")";
-				} else if (i == poqlParser.END_STATEMENT) {
+				} else if (i == dapoqlParser.END_STATEMENT) {
 					name = ";";
-				} else if (i == poqlParser.ASSIGNMENT_SIGN) {
+				} else if (i == dapoqlParser.ASSIGNMENT_SIGN) {
 					name = "=";
-				} else if (i == poqlParser.VAR_NAME) {
+				} else if (i == dapoqlParser.VAR_NAME) {
 					name = "_";
-				} else if (i == poqlParser.COMMA) {
+				} else if (i == dapoqlParser.COMMA) {
 					name = ",";
-				} else if (i == poqlParser.PLUS) {
+				} else if (i == dapoqlParser.PLUS) {
 					name = "+";
-				} else if (i == poqlParser.MINUS) {
+				} else if (i == dapoqlParser.MINUS) {
 					name = "-";
 				}
 				suggestions.add(name);

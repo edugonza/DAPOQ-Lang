@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.poql.ui.components;
+package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
@@ -13,7 +13,7 @@ import org.processmining.openslex.metamodel.SLEXMMDataModel;
 import org.processmining.openslex.metamodel.SLEXMMDataModelResultSet;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
-public class POQLPanel extends JPanel {
+public class DAPOQLPanel extends JPanel {
 
 	private int poqlTabCounter = 0;
 	private SLEXMMStorageMetaModel slxmm = null;
@@ -39,7 +39,7 @@ public class POQLPanel extends JPanel {
 		}
 	}
 	
-	public POQLPanel(SLEXMMStorageMetaModel mm) {
+	public DAPOQLPanel(SLEXMMStorageMetaModel mm) {
 		
 		this.slxmm = mm;
 		
@@ -54,7 +54,7 @@ public class POQLPanel extends JPanel {
 		final JTabbedPane poqlQueryTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 		poqlSplitPane.setRightComponent(poqlQueryTabbedPane);
 
-		POQLQueryPanel poqlQueryRightPanel = new POQLQueryPanel(getMetaModel(),incPOQLQueryTabCounter());
+		DAPOQLQueryPanel poqlQueryRightPanel = new DAPOQLQueryPanel(getMetaModel(),incPOQLQueryTabCounter());
 		
 		poqlQueryTabbedPane.addTab("Query "+poqlQueryRightPanel.getId(), poqlQueryRightPanel);
 		
@@ -65,7 +65,7 @@ public class POQLPanel extends JPanel {
 	            if (poqlQueryTabbedPane.getSelectedComponent() instanceof JLabel) {
 					if (!e.isControlDown()) {
 						int count = poqlQueryTabbedPane.getTabCount();
-						POQLQueryPanel newTab = new POQLQueryPanel(getMetaModel(),incPOQLQueryTabCounter());
+						DAPOQLQueryPanel newTab = new DAPOQLQueryPanel(getMetaModel(),incPOQLQueryTabCounter());
 						poqlQueryTabbedPane.add(newTab, count - 1);
 						poqlQueryTabbedPane.setTitleAt(count - 1, "Query "
 								+ newTab.getId());
@@ -73,7 +73,7 @@ public class POQLPanel extends JPanel {
 					}
 	            } else if (e.isControlDown()) {
 	            	int selected = poqlQueryTabbedPane.getSelectedIndex();
-	            	POQLQueryPanel poqlquerypanel = (POQLQueryPanel) poqlQueryTabbedPane.getComponentAt(selected);
+	            	DAPOQLQueryPanel poqlquerypanel = (DAPOQLQueryPanel) poqlQueryTabbedPane.getComponentAt(selected);
 	            	if (poqlquerypanel.isQueryRunning()) {
 	            		AskYesNoDialog dialog = new AskYesNoDialog(poqlquerypanel, "A query is running in this Tab. Do you want to kill it?");
 	            		if (dialog.showDialog()) {

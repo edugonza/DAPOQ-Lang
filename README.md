@@ -1,4 +1,4 @@
-MetaModel-POQL
+DAPOQ-Lang
 ===============
 
-Query language for the MetaModel implemented in OpenSLEX
+Data Aware Process Oriented Query Language for the MetaModel implemented in OpenSLEX

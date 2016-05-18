@@ -1,7 +1,6 @@
-package org.processmining.database.metamodel.poql;
+package org.processmining.database.metamodel.dapoql;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +9,9 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
-import org.processmining.database.metamodel.poql.poqlParser.*;
+import org.processmining.database.metamodel.dapoql.dapoqlBaseVisitor;
+import org.processmining.database.metamodel.dapoql.dapoqlParser;
+import org.processmining.database.metamodel.dapoql.dapoqlParser.*;
 import org.processmining.openslex.metamodel.SLEXMMAbstractDatabaseObject;
 import org.processmining.openslex.metamodel.SLEXMMActivity;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
@@ -27,17 +28,17 @@ import org.processmining.openslex.metamodel.SLEXMMProcess;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
 
-public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
+public class DAPOQLBaseVisitor extends dapoqlBaseVisitor<DAPOQLValue> {
 
-	private POQLFunctions poql;
+	private DAPOQLFunctions poql;
 
-	public POQLBaseVisitor(POQLFunctions poql) {
+	public DAPOQLBaseVisitor(DAPOQLFunctions poql) {
 		this.poql = poql;
 	}
 
 	@Override
-	public POQLValue visitAllActivities(AllActivitiesContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllActivities(AllActivitiesContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllActivities();
 		value.type = SLEXMMActivity.class;
@@ -46,8 +47,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllActivityInstances(AllActivityInstancesContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllActivityInstances(AllActivityInstancesContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllActivityInstances();
 		value.type = SLEXMMActivityInstance.class;
@@ -56,8 +57,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllAttributes(AllAttributesContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllAttributes(AllAttributesContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllAttributes();
 		value.type = SLEXMMAttribute.class;
@@ -66,8 +67,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllCases(AllCasesContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllCases(AllCasesContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllCases();
 		value.type = SLEXMMCase.class;
@@ -76,8 +77,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllClasses(AllClassesContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllClasses(AllClassesContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllClasses();
 		value.type = SLEXMMClass.class;
@@ -86,8 +87,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllEvents(AllEventsContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllEvents(AllEventsContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllEvents();
 		value.type = SLEXMMEvent.class;
@@ -96,8 +97,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllObjects(AllObjectsContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllObjects(AllObjectsContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllObjects();
 		value.type = SLEXMMObject.class;
@@ -106,8 +107,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllRelations(AllRelationsContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllRelations(AllRelationsContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllRelations();
 		value.type = SLEXMMRelation.class;
@@ -116,8 +117,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllRelationships(AllRelationshipsContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllRelationships(AllRelationshipsContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 
 		value.result = poql.getAllRelationships();
 		value.type = SLEXMMRelationship.class;
@@ -126,8 +127,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitAllVersions(AllVersionsContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllVersions(AllVersionsContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 		value.result = poql.getAllVersions();
 		value.type = SLEXMMObjectVersion.class;
 
@@ -135,8 +136,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitAllProcesses(AllProcessesContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllProcesses(AllProcessesContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 		value.result = poql.getAllProcesses();
 		value.type = SLEXMMProcess.class;
 
@@ -144,8 +145,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitAllLogs(AllLogsContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllLogs(AllLogsContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 		value.result = poql.getAllLogs();
 		value.type = SLEXMMLog.class;
 
@@ -153,8 +154,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitAllDatamodels(AllDatamodelsContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitAllDatamodels(AllDatamodelsContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 		value.result = poql.getAllDatamodels();
 		value.type = SLEXMMDataModel.class;
 
@@ -162,12 +163,12 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitVariable_definition(Variable_definitionContext ctx) {
+	public DAPOQLValue visitVariable_definition(Variable_definitionContext ctx) {
 		String var_name = ctx.VAR_NAME().getText();
 		
-		POQLVariable var = poql.findVariable(var_name);
+		DAPOQLVariable var = poql.findVariable(var_name);
 		
-		POQLValue v = null;
+		DAPOQLValue v = null;
 		
 		if (var == null) {
 		
@@ -183,8 +184,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 
 	@Override
-	public POQLValue visitVariable_value(Variable_valueContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitVariable_value(Variable_valueContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		if (ctx.NULL() != null) {
 			v.result = new HashMap<>();
 			v.type = null;
@@ -195,12 +196,12 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitVariable_assignment(Variable_assignmentContext ctx) {
+	public DAPOQLValue visitVariable_assignment(Variable_assignmentContext ctx) {
 		String var_name = ctx.VAR_NAME().getText();
 		
-		POQLVariable var = poql.findVariable(var_name);
+		DAPOQLVariable var = poql.findVariable(var_name);
 		
-		POQLValue v = null;
+		DAPOQLValue v = null;
 		
 		if (var != null) {
 		
@@ -217,22 +218,22 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitReturn_statement(Return_statementContext ctx) {
+	public DAPOQLValue visitReturn_statement(Return_statementContext ctx) {
 		return this.visit(ctx.returnable_object());
 	}
 	
 	@Override
-	public POQLValue visitReturnable_object(Returnable_objectContext ctx) {
+	public DAPOQLValue visitReturnable_object(Returnable_objectContext ctx) {
 		return this.visit(ctx.things());
 	}
 	
 	@Override
-	public POQLValue visitVariable(VariableContext ctx) {
+	public DAPOQLValue visitVariable(VariableContext ctx) {
 		String var_name = ctx.VAR_NAME().getText();
 		
-		POQLVariable var = poql.findVariable(var_name);
+		DAPOQLVariable var = poql.findVariable(var_name);
 		
-		POQLValue v = new POQLValue();
+		DAPOQLValue v = new DAPOQLValue();
 		
 		if (var != null) {
 			v.result = var.getValue();
@@ -245,10 +246,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterNegation(FilterNegationContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitFilterNegation(FilterNegationContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 		
-		POQLValue vsubtree = this.visit(ctx.filter_expression());
+		DAPOQLValue vsubtree = this.visit(ctx.filter_expression());
 		FilterTree subtree = vsubtree.filterTree;
 		FilterTree tree = poql.createNotNode(subtree);
 		
@@ -258,14 +259,14 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterCombined(FilterCombinedContext ctx) {
-		POQLValue value = new POQLValue();
+	public DAPOQLValue visitFilterCombined(FilterCombinedContext ctx) {
+		DAPOQLValue value = new DAPOQLValue();
 		
-		POQLValue voperator = this.visit(ctx.node());
+		DAPOQLValue voperator = this.visit(ctx.node());
 		int operator = voperator.nodeType;		
 		
-		POQLValue vsubtreeL = this.visit(ctx.filter_expression(0));
-		POQLValue vsubtreeR = this.visit(ctx.filter_expression(1));
+		DAPOQLValue vsubtreeL = this.visit(ctx.filter_expression(0));
+		DAPOQLValue vsubtreeR = this.visit(ctx.filter_expression(1));
 		FilterTree subtreeL = vsubtreeL.filterTree;
 		FilterTree subtreeR = vsubtreeR.filterTree;
 		FilterTree tree = poql.createNode(subtreeL, subtreeR, operator);
@@ -276,14 +277,14 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitNode(NodeContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitNode(NodeContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		switch (ctx.n.getType()) {
-		case poqlParser.AND:
+		case dapoqlParser.AND:
 			v.nodeType = FilterTree.NODE_AND;
 			break;
-		case poqlParser.OR:
+		case dapoqlParser.OR:
 			v.nodeType = FilterTree.NODE_OR;
 			break;
 		default:
@@ -294,11 +295,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterField(FilterFieldContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterField(FilterFieldContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue voperator = this.visit(ctx.operator());
-		POQLValue vid = this.visit(ctx.ids());
+		DAPOQLValue voperator = this.visit(ctx.operator());
+		DAPOQLValue vid = this.visit(ctx.ids());
 		
 		FilterTree tree = null;
 		
@@ -317,15 +318,15 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitIds(IdsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitIds(IdsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		Token tk = ctx.getStart();
 				
 		int tokenType = tk.getType();
 		String tokenStr = tk.getText();
 		
-		if (tokenType == poqlParser.IDATT) {
+		if (tokenType == dapoqlParser.IDATT) {
 			v.isAttribute = true;
 		} else {
 			v.isAttribute = false;
@@ -338,34 +339,34 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitOperator(OperatorContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitOperator(OperatorContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		v.operatorValue = ctx.v.getText();
 		
 		switch (ctx.op.getType()) {
-		case poqlParser.EQUAL:
+		case dapoqlParser.EQUAL:
 			v.operator = FilterTree.OPERATOR_EQUAL;
 			break;
-		case poqlParser.EQUAL_OR_GREATER:
+		case dapoqlParser.EQUAL_OR_GREATER:
 			v.operator = FilterTree.OPERATOR_EQUAL_OR_GREATER_THAN;
 			break;
-		case poqlParser.EQUAL_OR_SMALLER:
+		case dapoqlParser.EQUAL_OR_SMALLER:
 			v.operator = FilterTree.OPERATOR_EQUAL_OR_SMALLER_THAN;
 			break;
-		case poqlParser.DIFFERENT:
+		case dapoqlParser.DIFFERENT:
 			v.operator = FilterTree.OPERATOR_DIFFERENT;
 			break;
-		case poqlParser.GREATER:
+		case dapoqlParser.GREATER:
 			v.operator = FilterTree.OPERATOR_GREATER_THAN;
 			break;
-		case poqlParser.SMALLER:
+		case dapoqlParser.SMALLER:
 			v.operator = FilterTree.OPERATOR_SMALLER_THAN;
 			break;
-		case poqlParser.CONTAINS:
+		case dapoqlParser.CONTAINS:
 			v.operator = FilterTree.OPERATOR_CONTAINS;
 			break;
-		case poqlParser.CHANGED:
+		case dapoqlParser.CHANGED:
 			v.operator = FilterTree.OPERATOR_CHANGED;
 			v.changedFrom = ctx.f.getText();
 			v.changedTo = ctx.t.getText();
@@ -378,8 +379,8 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitSet_operator(Set_operatorContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitSet_operator(Set_operatorContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		v.setOperator = ctx.o.getType();
 		
@@ -387,14 +388,14 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitThingsSetOperator(ThingsSetOperatorContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitThingsSetOperator(ThingsSetOperatorContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		if (ctx.o != null) {
-			POQLValue vL = this.visit(ctx.children.get(0));
-			POQLValue vR = this.visit(ctx.children.get(2));
+			DAPOQLValue vL = this.visit(ctx.children.get(0));
+			DAPOQLValue vR = this.visit(ctx.children.get(2));
 			
-			POQLValue vO = this.visit(ctx.o);
+			DAPOQLValue vO = this.visit(ctx.o);
 			
 			Class<?> type = null;
 			if (vL.type == vR.type) {
@@ -425,11 +426,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterObjects(FilterObjectsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterObjects(FilterObjectsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.objects());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.objects());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -440,11 +441,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterCases(FilterCasesContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterCases(FilterCasesContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.cases());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.cases());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -455,11 +456,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterActivities(FilterActivitiesContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterActivities(FilterActivitiesContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.activities());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.activities());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -470,12 +471,12 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterActivityInstances(
+	public DAPOQLValue visitFilterActivityInstances(
 			FilterActivityInstancesContext ctx) {
-		POQLValue v = new POQLValue();
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.activityinstances());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.activityinstances());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -486,11 +487,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterAttributes(FilterAttributesContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterAttributes(FilterAttributesContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.attributes());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.attributes());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -501,11 +502,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterClasses(FilterClassesContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterClasses(FilterClassesContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.classes());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.classes());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -516,11 +517,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterEvents(FilterEventsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterEvents(FilterEventsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.events());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.events());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -531,11 +532,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterRelations(FilterRelationsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterRelations(FilterRelationsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.relations());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.relations());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -546,11 +547,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterRelationships(FilterRelationshipsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterRelationships(FilterRelationshipsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.relationships());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.relationships());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -561,11 +562,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterVersions(FilterVersionsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterVersions(FilterVersionsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.versions());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.versions());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -576,11 +577,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterPeriods(FilterPeriodsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterPeriods(FilterPeriodsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.periods());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.periods());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -591,11 +592,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterProcesses(FilterProcessesContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterProcesses(FilterProcessesContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.processes());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.processes());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -606,11 +607,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterLogs(FilterLogsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterLogs(FilterLogsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.logs());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.logs());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -621,11 +622,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitFilterDatamodels(FilterDatamodelsContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitFilterDatamodels(FilterDatamodelsContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = this.visit(ctx.datamodels());
-		POQLValue vf = this.visit(ctx.f);
+		DAPOQLValue vob = this.visit(ctx.datamodels());
+		DAPOQLValue vf = this.visit(ctx.f);
 		Set<Object> resultFilter = poql.filter(vob.result.keySet(),vob.type, vf.filterTree);
 		v.result = new HashMap<>();
 		for (Object o: resultFilter) {
@@ -636,158 +637,158 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitObjectsOf(ObjectsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitObjectsOf(ObjectsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.objectsOf(vthings.result, vthings.type);
 		v.type = SLEXMMObject.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitCasesOf(CasesOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitCasesOf(CasesOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.casesOf(vthings.result, vthings.type);
 		v.type = SLEXMMCase.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitPeriodsOf(PeriodsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitPeriodsOf(PeriodsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.periodsOf(vthings.result, vthings.type);
 		v.type = SLEXMMPeriod.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitClassesOf(ClassesOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitClassesOf(ClassesOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.classesOf(vthings.result, vthings.type);
 		v.type = SLEXMMClass.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitActivitiesOf(ActivitiesOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitActivitiesOf(ActivitiesOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.activitiesOf(vthings.result, vthings.type);
 		v.type = SLEXMMActivity.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitActivityInstancesOf(ActivityInstancesOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitActivityInstancesOf(ActivityInstancesOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.activityInstancesOf(vthings.result, vthings.type);
 		v.type = SLEXMMActivityInstance.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitAttributesOf(AttributesOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitAttributesOf(AttributesOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.attributesOf(vthings.result, vthings.type);
 		v.type = SLEXMMAttribute.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitEventsOf(EventsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitEventsOf(EventsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.eventsOf(vthings.result, vthings.type);
 		v.type = SLEXMMEvent.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitRelationshipsOf(RelationshipsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitRelationshipsOf(RelationshipsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.relationshipsOf(vthings.result, vthings.type);
 		v.type = SLEXMMRelationship.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitRelationsOf(RelationsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitRelationsOf(RelationsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.relationsOf(vthings.result, vthings.type);
 		v.type = SLEXMMRelation.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitVersionsOf(VersionsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitVersionsOf(VersionsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.versionsOf(vthings.result, vthings.type);
 		v.type = SLEXMMObjectVersion.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitProcessesOf(ProcessesOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitProcessesOf(ProcessesOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.processesOf(vthings.result, vthings.type);
 		v.type = SLEXMMProcess.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitLogsOf(LogsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitLogsOf(LogsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.logsOf(vthings.result, vthings.type);
 		v.type = SLEXMMLog.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitDatamodelsOf(DatamodelsOfContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitDatamodelsOf(DatamodelsOfContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.things());
+		DAPOQLValue vthings = this.visit(ctx.things());
 		v.result = poql.datamodelsOf(vthings.result, vthings.type);
 		v.type = SLEXMMDataModel.class;
 		return v;
 	}
 	
 	@Override
-	public POQLValue visitVersionsRelatedTo(VersionsRelatedToContext ctx) {
-		POQLValue v = new POQLValue();
-		POQLValue vaux = new POQLValue();
+	public DAPOQLValue visitVersionsRelatedTo(VersionsRelatedToContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
+		DAPOQLValue vaux = new DAPOQLValue();
 		
-		POQLValue vthings = this.visit(ctx.versions());
+		DAPOQLValue vthings = this.visit(ctx.versions());
 		vaux.result = poql.versionsRelatedTo(vthings.result.keySet(), vthings.type);
 		vaux.type = SLEXMMObjectVersion.class;
 		v.type = vaux.type;
 		
 		if (ctx.scope() != null) {
 		
-			POQLValue scope = this.visit(ctx.scope());
+			DAPOQLValue scope = this.visit(ctx.scope());
 				
 			v = filterByScope(scope, vthings, vaux);
 			
@@ -799,16 +800,16 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitLoop(LoopContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitLoop(LoopContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		String var_name = ctx.VAR_NAME().getText();
 		
 		if (poql.findVariable(var_name) == null) {
 		
-			POQLValue vthings = this.visit(ctx.things());
+			DAPOQLValue vthings = this.visit(ctx.things());
 			
-			POQLVariable var = poql.createVariable(var_name, vthings.type, null);
+			DAPOQLVariable var = poql.createVariable(var_name, vthings.type, null);
 					
 			for (Object o: vthings.result.keySet()) {
 		
@@ -829,10 +830,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConditionEmpty(ConditionEmptyContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitConditionEmpty(ConditionEmptyContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vT = this.visit(ctx.t);
+		DAPOQLValue vT = this.visit(ctx.t);
 		
 		if (vT.result.isEmpty()) {
 			v.conditionBoolean = true;
@@ -844,10 +845,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConditionNotEmpty(ConditionNotEmptyContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitConditionNotEmpty(ConditionNotEmptyContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vT = this.visit(ctx.t);
+		DAPOQLValue vT = this.visit(ctx.t);
 		
 		if (vT.result.isEmpty()) {
 			v.conditionBoolean = false;
@@ -859,10 +860,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitIf_block(If_blockContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitIf_block(If_blockContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vC = new POQLValue();
+		DAPOQLValue vC = new DAPOQLValue();
 		vC.conditionBoolean = false;
 		
 		int elseifBlocks = ctx.conditional_expression().size();
@@ -887,45 +888,45 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitScope(ScopeContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitScope(ScopeContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		if (ctx.ACTIVITY() != null) {
-			v.scope = POQLFunctions.ID_TYPE_ACTIVITY;
+			v.scope = DAPOQLFunctions.ID_TYPE_ACTIVITY;
 		} else if (ctx.ACTIVITYINSTANCE() != null) {
-			v.scope = POQLFunctions.ID_TYPE_ACTIVITY_INSTANCE;
+			v.scope = DAPOQLFunctions.ID_TYPE_ACTIVITY_INSTANCE;
 		} else if (ctx.OBJECT() != null) {
-			v.scope = POQLFunctions.ID_TYPE_OBJECT;
+			v.scope = DAPOQLFunctions.ID_TYPE_OBJECT;
 		} else if (ctx.VERSION() != null) {
-			v.scope = POQLFunctions.ID_TYPE_VERSION;
+			v.scope = DAPOQLFunctions.ID_TYPE_VERSION;
 		} else if (ctx.CLASS() != null) {
-			v.scope = POQLFunctions.ID_TYPE_CLASS;
+			v.scope = DAPOQLFunctions.ID_TYPE_CLASS;
 		} else if (ctx.ATTRIBUTE() != null) {
-			v.scope = POQLFunctions.ID_TYPE_ATTRIBUTE;
+			v.scope = DAPOQLFunctions.ID_TYPE_ATTRIBUTE;
 		} else if (ctx.RELATION() != null) {
-			v.scope = POQLFunctions.ID_TYPE_RELATION;
+			v.scope = DAPOQLFunctions.ID_TYPE_RELATION;
 		} else if (ctx.RELATIONSHIP() != null) {
-			v.scope = POQLFunctions.ID_TYPE_RELATIONSHIP;
+			v.scope = DAPOQLFunctions.ID_TYPE_RELATIONSHIP;
 		} else if (ctx.CASE() != null) {
-			v.scope = POQLFunctions.ID_TYPE_CASE;
+			v.scope = DAPOQLFunctions.ID_TYPE_CASE;
 		} else if (ctx.EVENT() != null) {
-			v.scope = POQLFunctions.ID_TYPE_EVENT;
+			v.scope = DAPOQLFunctions.ID_TYPE_EVENT;
 		} else if (ctx.DATAMODEL() != null) {
-			v.scope = POQLFunctions.ID_TYPE_DATAMODEL;
+			v.scope = DAPOQLFunctions.ID_TYPE_DATAMODEL;
 		} else if (ctx.PROCESS() != null) {
-			v.scope = POQLFunctions.ID_TYPE_PROCESS;
+			v.scope = DAPOQLFunctions.ID_TYPE_PROCESS;
 		} else if (ctx.LOG() != null) {
-			v.scope = POQLFunctions.ID_TYPE_LOG;
+			v.scope = DAPOQLFunctions.ID_TYPE_LOG;
 		} else {
-			v.scope = POQLFunctions.ID_TYPE_ANY;
+			v.scope = DAPOQLFunctions.ID_TYPE_ANY;
 		}
 		
 		return v;
 	}
 	
-	public POQLValue filterByScope(POQLValue scope, POQLValue valA, POQLValue valB) {
+	public DAPOQLValue filterByScope(DAPOQLValue scope, DAPOQLValue valA, DAPOQLValue valB) {
 		
-		POQLValue v = new POQLValue();
+		DAPOQLValue v = new DAPOQLValue();
 		v.result = new HashMap<>();
 		v.type = valA.type;
 		
@@ -966,10 +967,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		return v;
 	}
 	
-	public POQLValue concurrentWith(POQLValue originalValues, boolean hasScope, POQLValue scope) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue concurrentWith(DAPOQLValue originalValues, boolean hasScope, DAPOQLValue scope) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue vob = originalValues;
+		DAPOQLValue vob = originalValues;
 		HashMap<Object,HashSet<Integer>> vconc = poql.concurrentWith(vob.result,vob.type);
 		
 		v.result = new HashMap<Object,HashSet<Integer>>();
@@ -977,7 +978,7 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 		
 		if (hasScope) {
 			
-			POQLValue vconval = new POQLValue();
+			DAPOQLValue vconval = new DAPOQLValue();
 			vconval.result = vconc;
 			vconval.type = vob.type;
 			
@@ -991,11 +992,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithActivities(
+	public DAPOQLValue visitConcurrentWithActivities(
 			ConcurrentWithActivitiesContext ctx) {
 		
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1006,11 +1007,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithActivityInstances(
+	public DAPOQLValue visitConcurrentWithActivityInstances(
 			ConcurrentWithActivityInstancesContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1021,11 +1022,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithAttributes(
+	public DAPOQLValue visitConcurrentWithAttributes(
 			ConcurrentWithAttributesContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1036,10 +1037,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithCases(ConcurrentWithCasesContext ctx) {
+	public DAPOQLValue visitConcurrentWithCases(ConcurrentWithCasesContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1050,10 +1051,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithClasses(ConcurrentWithClassesContext ctx) {
+	public DAPOQLValue visitConcurrentWithClasses(ConcurrentWithClassesContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1064,10 +1065,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithEvents(ConcurrentWithEventsContext ctx) {
+	public DAPOQLValue visitConcurrentWithEvents(ConcurrentWithEventsContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1078,10 +1079,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithObjects(ConcurrentWithObjectsContext ctx) {
+	public DAPOQLValue visitConcurrentWithObjects(ConcurrentWithObjectsContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1092,11 +1093,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithRelations(
+	public DAPOQLValue visitConcurrentWithRelations(
 			ConcurrentWithRelationsContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1107,11 +1108,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithRelationships(
+	public DAPOQLValue visitConcurrentWithRelationships(
 			ConcurrentWithRelationshipsContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1122,11 +1123,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithVersions(
+	public DAPOQLValue visitConcurrentWithVersions(
 			ConcurrentWithVersionsContext ctx) {
 
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1137,10 +1138,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithProcesses(ConcurrentWithProcessesContext ctx) {
+	public DAPOQLValue visitConcurrentWithProcesses(ConcurrentWithProcessesContext ctx) {
 		
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1151,9 +1152,9 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithLogs(ConcurrentWithLogsContext ctx) {
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+	public DAPOQLValue visitConcurrentWithLogs(ConcurrentWithLogsContext ctx) {
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1164,9 +1165,9 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitConcurrentWithDatamodels(ConcurrentWithDatamodelsContext ctx) {
-		POQLValue vob = this.visit(ctx.t5);
-		POQLValue scope = null;
+	public DAPOQLValue visitConcurrentWithDatamodels(ConcurrentWithDatamodelsContext ctx) {
+		DAPOQLValue vob = this.visit(ctx.t5);
+		DAPOQLValue scope = null;
 		boolean hasScope = false;
 		
 		if (ctx.scope() != null) {
@@ -1177,11 +1178,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitStartPeriod(StartPeriodContext ctx) {
-		POQLValue v = new POQLValue();
-		v.timestamp = new POQLTimestamp();
+	public DAPOQLValue visitStartPeriod(StartPeriodContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
+		v.timestamp = new DAPOQLTimestamp();
 		
-		POQLValue ps = this.visit(ctx.periods());
+		DAPOQLValue ps = this.visit(ctx.periods());
 		
 		long min = Long.MAX_VALUE;
 		
@@ -1198,11 +1199,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitEndPeriod(EndPeriodContext ctx) {
-		POQLValue v = new POQLValue();
-		v.timestamp = new POQLTimestamp();
+	public DAPOQLValue visitEndPeriod(EndPeriodContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
+		v.timestamp = new DAPOQLTimestamp();
 		
-		POQLValue ps = this.visit(ctx.periods());
+		DAPOQLValue ps = this.visit(ctx.periods());
 		
 		long max = Long.MIN_VALUE;
 		
@@ -1219,15 +1220,15 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitTimeoperator(TimeoperatorContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitTimeoperator(TimeoperatorContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
 		switch (ctx.op.getType()) {
-		case poqlParser.PLUS:
-			v.operator = POQLTimestamp.OPERATOR_PLUS;
+		case dapoqlParser.PLUS:
+			v.operator = DAPOQLTimestamp.OPERATOR_PLUS;
 			break;
-		case poqlParser.MINUS:
-			v.operator = POQLTimestamp.OPERATOR_MINUS;
+		case dapoqlParser.MINUS:
+			v.operator = DAPOQLTimestamp.OPERATOR_MINUS;
 			break;
 		default:
 			throw new RuntimeException("Operator not valid");
@@ -1237,10 +1238,10 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitTimestampFromString(TimestampFromStringContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitTimestampFromString(TimestampFromStringContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		v.timestamp = new POQLTimestamp();
+		v.timestamp = new DAPOQLTimestamp();
 		
 		String dateStr = "";
 		
@@ -1264,23 +1265,23 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitTimestampOperation(TimestampOperationContext ctx) {
+	public DAPOQLValue visitTimestampOperation(TimestampOperationContext ctx) {
 		
-		POQLValue v = new POQLValue();
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue v1 = this.visit(ctx.t1);
+		DAPOQLValue v1 = this.visit(ctx.t1);
 		
-		POQLValue op = this.visit(ctx.op);
+		DAPOQLValue op = this.visit(ctx.op);
 		
-		POQLValue v2 = this.visit(ctx.t2);
+		DAPOQLValue v2 = this.visit(ctx.t2);
 		
 		switch(op.operator) {
-		case POQLTimestamp.OPERATOR_PLUS:
-			v.timestamp = new POQLTimestamp();
+		case DAPOQLTimestamp.OPERATOR_PLUS:
+			v.timestamp = new DAPOQLTimestamp();
 			v.timestamp.timestamp = v1.timestamp.timestamp + v2.timestamp.timestamp;
 			break;
-		case POQLTimestamp.OPERATOR_MINUS:
-			v.timestamp = new POQLTimestamp();
+		case DAPOQLTimestamp.OPERATOR_MINUS:
+			v.timestamp = new DAPOQLTimestamp();
 			v.timestamp.timestamp = v1.timestamp.timestamp - v2.timestamp.timestamp;
 			break;
 		default:
@@ -1291,9 +1292,9 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitTimestampOffsetFromString(TimestampOffsetFromStringContext ctx) {
-		POQLValue v = new POQLValue();
-		v.timestamp = new POQLTimestamp();
+	public DAPOQLValue visitTimestampOffsetFromString(TimestampOffsetFromStringContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
+		v.timestamp = new DAPOQLTimestamp();
 		
 		String dateStr = "";
 		
@@ -1319,11 +1320,11 @@ public class POQLBaseVisitor extends poqlBaseVisitor<POQLValue> {
 	}
 	
 	@Override
-	public POQLValue visitCreatePeriod(CreatePeriodContext ctx) {
-		POQLValue v = new POQLValue();
+	public DAPOQLValue visitCreatePeriod(CreatePeriodContext ctx) {
+		DAPOQLValue v = new DAPOQLValue();
 		
-		POQLValue startTimestamp = this.visit(ctx.t5);
-		POQLValue endTimestamp = this.visit(ctx.t6);
+		DAPOQLValue startTimestamp = this.visit(ctx.t5);
+		DAPOQLValue endTimestamp = this.visit(ctx.t6);
 		
 		SLEXMMPeriod p = new SLEXMMPeriod(startTimestamp.timestamp.timestamp,
 				endTimestamp.timestamp.timestamp);

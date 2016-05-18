@@ -20,7 +20,7 @@
 <ivy-module version="2.0">
     <info
         organisation="db-process-mining"
-        module="MetaModel-POQL"
+        module="DAPOQ-Lang"
         revision="0.5">
 	</info>
 	

@@ -1,15 +1,15 @@
-package org.processmining.database.metamodel.poql;
+package org.processmining.database.metamodel.dapoql;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class POQLVariable {
+public class DAPOQLVariable {
 	private String name = null;
 	private Class type = null;
 	private HashMap<Object,HashSet<Integer>> value = null;
 	
-	public POQLVariable(String name, Class type, HashMap<Object,HashSet<Integer>> value) {
+	public DAPOQLVariable(String name, Class type, HashMap<Object,HashSet<Integer>> value) {
 		setName(name);
 		setType(type);
 		setValue(value);

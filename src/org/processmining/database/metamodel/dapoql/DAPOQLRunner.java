@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.poql;
+package org.processmining.database.metamodel.dapoql;
 
 import java.util.List;
 import java.util.Set;
@@ -6,10 +6,12 @@ import java.util.Set;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.processmining.database.metamodel.poql.poqlParser.ProgContext;
+import org.processmining.database.metamodel.dapoql.dapoqlLexer;
+import org.processmining.database.metamodel.dapoql.dapoqlParser;
+import org.processmining.database.metamodel.dapoql.dapoqlParser.ProgContext;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
-public class POQLRunner {
+public class DAPOQLRunner {
 
 	SLEXMMStorageMetaModel slxmm = null;
 	
@@ -25,20 +27,20 @@ public class POQLRunner {
 		long start_time = System.currentTimeMillis();
 		System.out.println("Start time: "+start_time);
 		
-		poqlParser parser = null;
+		dapoqlParser parser = null;
 		
 		try {
 			
 			ANTLRInputStream input = new ANTLRInputStream(query);
 
-			poqlLexer lexer = new poqlLexer(input);
+			dapoqlLexer lexer = new dapoqlLexer(input);
 
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-			parser = new poqlParser(tokens);
+			parser = new dapoqlParser(tokens);
 			parser.poql.setMetaModel(null);
 			parser.poql.setCheckerMode(true);
-			parser.poql.setVocabulary(poqlLexer.VOCABULARY);
+			parser.poql.setVocabulary(dapoqlLexer.VOCABULARY);
         
 			ProgContext progC = parser.prog(); // begin parsing at rule 'prog'
 			System.out.println(progC.toStringTree(parser)); // print LISP-style tree
@@ -85,20 +87,20 @@ public class POQLRunner {
 		System.out.println("Start time: "+start_time);
 		
 		QueryResult qres = new QueryResult();
-		poqlParser parser = null;
+		dapoqlParser parser = null;
 
 		try {
 			ANTLRInputStream input = new ANTLRInputStream(query);
-			poqlLexer lexer = new poqlLexer(input);
-			parser = new poqlParser(new CommonTokenStream(lexer));
+			dapoqlLexer lexer = new dapoqlLexer(input);
+			parser = new dapoqlParser(new CommonTokenStream(lexer));
 
-			parser.poql = new POQLFunctions();
+			parser.poql = new DAPOQLFunctions();
 			parser.poql.setMetaModel(slxmm);
 			parser.poql.setVocabulary(lexer.getVocabulary());
 
 			ParseTree tree = parser.prog();
-			POQLBaseVisitor visitor = new POQLBaseVisitor(parser.poql);
-			POQLValue v = visitor.visit(tree);
+			DAPOQLBaseVisitor visitor = new DAPOQLBaseVisitor(parser.poql);
+			DAPOQLValue v = visitor.visit(tree);
 
 			qres.result = v.result.keySet();
 			qres.type = v.type;

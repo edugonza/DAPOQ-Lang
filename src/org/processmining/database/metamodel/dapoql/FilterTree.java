@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.poql;
+package org.processmining.database.metamodel.dapoql;
 
 public class FilterTree {
 	

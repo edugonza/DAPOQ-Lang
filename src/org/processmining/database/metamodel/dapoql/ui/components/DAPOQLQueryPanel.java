@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.poql.ui.components;
+package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -19,11 +19,11 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.processmining.database.metamodel.poql.POQLRunner;
-import org.processmining.database.metamodel.poql.QueryResult;
+import org.processmining.database.metamodel.dapoql.DAPOQLRunner;
+import org.processmining.database.metamodel.dapoql.QueryResult;
 import org.processmining.openslex.metamodel.*;
 
-public class POQLQueryPanel extends JPanel {
+public class DAPOQLQueryPanel extends JPanel {
 	
 	/**
 	 * 
@@ -56,7 +56,7 @@ public class POQLQueryPanel extends JPanel {
 		return this.id;
 	}
 	
-	public POQLQueryPanel(SLEXMMStorageMetaModel mm, int id) {
+	public DAPOQLQueryPanel(SLEXMMStorageMetaModel mm, int id) {
 		super();
 		
 		this.id = id;
@@ -233,7 +233,7 @@ public class POQLQueryPanel extends JPanel {
 	
 	private class QueryThread extends Thread {
 		
-		POQLRunner runner = null;
+		DAPOQLRunner runner = null;
 		
 		private void stopThread() {
 			if (runner != null) {
@@ -253,7 +253,7 @@ public class POQLQueryPanel extends JPanel {
 				btnExecutePOQLQuery.setText(STOP_BUTTON_TEXT);
 				progressBar.setIndeterminate(true);
 				String query = poqlQueryField.getText();
-				runner = new POQLRunner();
+				runner = new DAPOQLRunner();
 				QueryResult qr = runner.executeQuery(slxmm, query);
 				
 				setTable(sqlResultTable);

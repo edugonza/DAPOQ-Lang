@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.poql.ui.components;
+package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;

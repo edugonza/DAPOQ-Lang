@@ -1,10 +1,10 @@
-package org.processmining.database.metamodel.poql;
+package org.processmining.database.metamodel.dapoql;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class POQLValue {
+public class DAPOQLValue {
 	
 	public HashMap<Object,HashSet<Integer>> result;
 	public Class<?> type;
@@ -20,5 +20,5 @@ public class POQLValue {
 	public int setOperator = 0;
 	public boolean conditionBoolean = false;
 	public int scope = 0;
-	public POQLTimestamp timestamp;
+	public DAPOQLTimestamp timestamp;
 }
