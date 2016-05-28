@@ -38,9 +38,9 @@ public class DAPOQLRunner {
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 
 			parser = new dapoqlParser(tokens);
-			parser.poql.setMetaModel(null);
-			parser.poql.setCheckerMode(true);
-			parser.poql.setVocabulary(dapoqlLexer.VOCABULARY);
+			parser.dapoql.setMetaModel(null);
+			parser.dapoql.setCheckerMode(true);
+			parser.dapoql.setVocabulary(dapoqlLexer.VOCABULARY);
         
 			ProgContext progC = parser.prog(); // begin parsing at rule 'prog'
 			System.out.println(progC.toStringTree(parser)); // print LISP-style tree
@@ -58,8 +58,8 @@ public class DAPOQLRunner {
 		System.out.println("Total time (seconds): "+total_time_secs);
 		System.out.println("Total time (minutes): "+total_time_mins);
 		
-		List<String> suggestions = parser.poql.getSuggestions();
-		Token offendedToken = parser.poql.getOffendingToken();
+		List<String> suggestions = parser.dapoql.getSuggestions();
+		Token offendedToken = parser.dapoql.getOffendingToken();
 		
 		SuggestionsResult result = new SuggestionsResult();
 		result.suggestions = suggestions;
@@ -94,12 +94,12 @@ public class DAPOQLRunner {
 			dapoqlLexer lexer = new dapoqlLexer(input);
 			parser = new dapoqlParser(new CommonTokenStream(lexer));
 
-			parser.poql = new DAPOQLFunctions();
-			parser.poql.setMetaModel(slxmm);
-			parser.poql.setVocabulary(lexer.getVocabulary());
+			parser.dapoql = new DAPOQLFunctions();
+			parser.dapoql.setMetaModel(slxmm);
+			parser.dapoql.setVocabulary(lexer.getVocabulary());
 
 			ParseTree tree = parser.prog();
-			DAPOQLBaseVisitor visitor = new DAPOQLBaseVisitor(parser.poql);
+			DAPOQLBaseVisitor visitor = new DAPOQLBaseVisitor(parser.dapoql);
 			DAPOQLValue v = visitor.visit(tree);
 
 			qres.result = v.result.keySet();

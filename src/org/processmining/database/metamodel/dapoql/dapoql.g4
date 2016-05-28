@@ -5,17 +5,7 @@ grammar dapoql;
 @header {
   import java.util.List;
   import java.util.Set;
-  import org.processmining.openslex.metamodel.SLEXMMCase;
-  import org.processmining.openslex.metamodel.SLEXMMObject;
-  import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
-  import org.processmining.openslex.metamodel.SLEXMMEvent;
-  import org.processmining.openslex.metamodel.SLEXMMActivity;
-  import org.processmining.openslex.metamodel.SLEXMMCase;
-  import org.processmining.openslex.metamodel.SLEXMMClass;
-  import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
-  import org.processmining.openslex.metamodel.SLEXMMRelation;
-  import org.processmining.openslex.metamodel.SLEXMMRelationship;
-  import org.processmining.openslex.metamodel.SLEXMMAttribute;
+  import org.processmining.openslex.metamodel.*;
 }
 
 @lexer::members 
@@ -29,18 +19,18 @@ grammar dapoql;
 
 @parser::members {
   
-  public POQLFunctions poql = new POQLFunctions();
+  public DAPOQLFunctions dapoql = new DAPOQLFunctions();
   
   @Override
   public void notifyErrorListeners(Token offendingToken, String msg, RecognitionException ex)
   {
   	IntervalSet expectedTokens = getExpectedTokens();
 	Set<Integer> set = expectedTokens.toSet();
-	Token offTok = poql.getOffendingToken();
+	Token offTok = dapoql.getOffendingToken();
 	if (offTok == null) {
 		offTok = offendingToken;
 	}
-	poql.computeSuggestions(offTok,set);
+	dapoql.computeSuggestions(offTok,set);
 	
     throw new RuntimeException(msg); 
   }

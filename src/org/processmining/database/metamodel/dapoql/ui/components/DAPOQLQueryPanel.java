@@ -22,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import org.processmining.database.metamodel.dapoql.DAPOQLRunner;
 import org.processmining.database.metamodel.dapoql.QueryResult;
 import org.processmining.openslex.metamodel.*;
+import javax.swing.JSplitPane;
 
 public class DAPOQLQueryPanel extends JPanel {
 	
@@ -48,9 +49,9 @@ public class DAPOQLQueryPanel extends JPanel {
 	private static final String COMMIT_ACTION = "commit";
 	private static final String SHIFT_ACTION = "shift";
 	
-	private static final String EXECUTE_BUTTON_TEXT = "Execute POQL Query";
-	private static final String STOP_BUTTON_TEXT = "Stop POQL Query";
-	private static final String STOPPING_BUTTON_TEXT = "Stopping POQL Query";
+	private static final String EXECUTE_BUTTON_TEXT = "<html>Execute<br/>DAPOQL<br/>Query</html>";
+	private static final String STOP_BUTTON_TEXT = "Stop DAPOQL Query";
+	private static final String STOPPING_BUTTON_TEXT = "Stopping DAPOQL Query";
 	
 	public int getId() {
 		return this.id;
@@ -70,7 +71,7 @@ public class DAPOQLQueryPanel extends JPanel {
 		this.setLayout(new BorderLayout(0, 0));
 
 		JPanel sqlQueryPanel = new JPanel();
-		this.add(sqlQueryPanel, BorderLayout.NORTH);
+		//this.add(sqlQueryPanel, BorderLayout.NORTH);
 
 		
 		poqlQueryField = new JTextArea(5, 0);
@@ -96,9 +97,16 @@ public class DAPOQLQueryPanel extends JPanel {
 		sqlQueryPanel.add(scrollQueryPane, BorderLayout.CENTER);
 		sqlQueryPanel.add(btnExecutePOQLQuery, BorderLayout.EAST);
 		sqlQueryPanel.add(progressBar, BorderLayout.SOUTH);
+		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		add(splitPane, BorderLayout.CENTER);
+		splitPane.setTopComponent(sqlQueryPanel);
 
 		scrollPane1 = new JScrollPane();
-		this.add(scrollPane1, BorderLayout.CENTER);
+		//this.add(scrollPane1, BorderLayout.CENTER);
+		
+		splitPane.setBottomComponent(scrollPane1);
 
 		sqlResultTable = new JTable();
 		sqlResultTable.setFillsViewportHeight(true);
