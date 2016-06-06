@@ -960,7 +960,13 @@ public class MetaModelTableUtils {
 				SLEXMMPeriod p = (SLEXMMPeriod) o;
 
 				Date startDate = new Date(p.getStart());
-				Date endDate = new Date(p.getEnd());
+				Date endDate = null;
+				
+				if (p.getEnd() == -1) {
+					endDate = new Date(Long.MAX_VALUE);
+				} else {
+					endDate = new Date(p.getEnd());
+				}
 				
 				model.addRow(new Object[] { startDate, endDate });
 			}

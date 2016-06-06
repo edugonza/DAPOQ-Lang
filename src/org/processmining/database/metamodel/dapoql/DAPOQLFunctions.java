@@ -915,9 +915,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMObjectResultSet orset = slxmm.getObjectsForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMObjectResultSet orset = slxmm.getObjectsForPeriod(p);
 				SLEXMMObject slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -1084,9 +1084,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMCaseResultSet orset = slxmm.getCasesForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMCaseResultSet orset = slxmm.getCasesForPeriod(p);
 				SLEXMMCase slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -1255,9 +1255,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMEventResultSet orset = slxmm.getEventsForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMEventResultSet orset = slxmm.getEventsForPeriod(p);
 				SLEXMMEvent slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -1426,9 +1426,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMObjectVersionResultSet orset = slxmm.getVersionsForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMObjectVersionResultSet orset = slxmm.getVersionsForPeriod(p);
 				SLEXMMObjectVersion slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -1595,9 +1595,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMActivityResultSet orset = slxmm.getActivitiesForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMActivityResultSet orset = slxmm.getActivitiesForPeriod(p);
 				SLEXMMActivity slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -1764,9 +1764,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMClassResultSet orset = slxmm.getClassesForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMClassResultSet orset = slxmm.getClassesForPeriod(p);
 				SLEXMMClass slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -1933,9 +1933,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMRelationResultSet orset = slxmm.getRelationsForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMRelationResultSet orset = slxmm.getRelationsForPeriod(p);
 				SLEXMMRelation slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -2102,9 +2102,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMRelationshipResultSet orset = slxmm.getRelationshipsForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMRelationshipResultSet orset = slxmm.getRelationshipsForPeriod(p);
 				SLEXMMRelationship slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -2271,9 +2271,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMActivityInstanceResultSet orset = slxmm.getActivityInstancesForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMActivityInstanceResultSet orset = slxmm.getActivityInstancesForPeriod(p);
 				SLEXMMActivityInstance slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -2440,9 +2440,9 @@ public class DAPOQLFunctions {
 		} else if (type == SLEXMMAttribute.class) {
 			return list;
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMAttributeResultSet orset = slxmm.getAttributesForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMAttributeResultSet orset = slxmm.getAttributesForPeriod(p);
 				SLEXMMAttribute slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -2619,9 +2619,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMDataModelResultSet orset = slxmm.getDatamodelsForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMDataModelResultSet orset = slxmm.getDatamodelsForPeriod(p);
 				SLEXMMDataModel slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -2788,9 +2788,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMProcessResultSet orset = slxmm.getProcessesForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMProcessResultSet orset = slxmm.getProcessesForPeriod(p);
 				SLEXMMProcess slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -2957,9 +2957,9 @@ public class DAPOQLFunctions {
 				}
 			}
 		} else if (type == SLEXMMPeriod.class) {
-			int[][] ids = getArrayIds(list.keySet(),type);
-			for (int i = 0; i < ids.length; i++) {
-				SLEXMMLogResultSet orset = slxmm.getLogsForPeriods(ids[i]);
+			for (Object o: list.keySet()) {
+				SLEXMMPeriod p = (SLEXMMPeriod) o;
+				SLEXMMLogResultSet orset = slxmm.getLogsForPeriod(p);
 				SLEXMMLog slxo = null;
 				while ((slxo = orset.getNext()) != null) {
 					if (!listResult.containsKey(slxo)) {
@@ -3353,14 +3353,10 @@ public class DAPOQLFunctions {
 	public HashMap<Object,HashSet<Integer>> getAllClasses() {
 		HashMap<Object,HashSet<Integer>> list = new HashMap<>();
 		if (!isCheckerModeEnabled()) {
-			SLEXMMDataModelResultSet dms = slxmm.getDataModels();
-			SLEXMMDataModel dm = null;
-			while ((dm = dms.getNext()) != null) {
-				SLEXMMClassResultSet crset = slxmm.getClassesForDataModel(dm);
-				SLEXMMClass cl = null;
-				while ((cl = crset.getNext()) != null) {
-					list.put(cl,null);
-				}
+			SLEXMMClassResultSet crset = slxmm.getClasses();
+			SLEXMMClass cl = null;
+			while ((cl = crset.getNext()) != null) {
+				list.put(cl,null);
 			}
 		}
 		return list;

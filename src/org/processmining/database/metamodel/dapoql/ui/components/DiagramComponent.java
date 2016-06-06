@@ -114,7 +114,7 @@ public class DiagramComponent extends JPanel {
 		widgetNameToClassMap = new HashMap<>();
 		classToWidgetIdMap = new HashMap<>();
 		
-		SLEXMMClassResultSet crset = mmstrg.getClassesForDataModel(dm);
+		SLEXMMClassResultSet crset = mmstrg.getClassesForDatamodels(new int[] {dm.getId()});
 		SLEXMMClass c = null;
 		
 		while ((c = crset.getNext()) != null) {
@@ -132,7 +132,7 @@ public class DiagramComponent extends JPanel {
 			
 		}
 		
-		crset = mmstrg.getClassesForDataModel(dm);
+		crset = mmstrg.getClassesForDatamodels(new int[] {dm.getId()});
 		c = null;
 		
 		while ((c = crset.getNext()) != null) {
