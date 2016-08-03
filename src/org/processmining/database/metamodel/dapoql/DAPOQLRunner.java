@@ -1,5 +1,6 @@
 package org.processmining.database.metamodel.dapoql;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class DAPOQLRunner {
 		}
 	}
 	
-	public SuggestionsResult executeQueryForSuggestions(String query) {
+	public SuggestionsResult executeQueryForSuggestions(String query, Set<DAPOQLVariable> vars) {
 
 		System.out.println("Executing query: "+query);
 		long start_time = System.currentTimeMillis();
@@ -42,6 +43,12 @@ public class DAPOQLRunner {
 			parser.dapoql.setCheckerMode(true);
 			parser.dapoql.setVocabulary(dapoqlLexer.VOCABULARY);
         
+			if (vars != null) {
+				for (DAPOQLVariable v : vars) {
+					parser.dapoql.createVariable(v.getName(), v.getType(), new HashMap<>());
+				}
+			}
+			
 			ProgContext progC = parser.prog(); // begin parsing at rule 'prog'
 			System.out.println(progC.toStringTree(parser)); // print LISP-style tree
 			
@@ -79,7 +86,7 @@ public class DAPOQLRunner {
         return result;
 	}
 	
-	public QueryResult executeQuery(SLEXMMStorageMetaModel slxmm, String query) throws Exception {
+	public QueryResult executeQuery(SLEXMMStorageMetaModel slxmm, String query, Set<DAPOQLVariable> vars) throws Exception {
 		this.slxmm = slxmm;
 
 		System.out.println("Executing query: "+query);
@@ -97,11 +104,18 @@ public class DAPOQLRunner {
 			parser.dapoql = new DAPOQLFunctions();
 			parser.dapoql.setMetaModel(slxmm);
 			parser.dapoql.setVocabulary(lexer.getVocabulary());
+			
+			if (vars != null) {
+				for (DAPOQLVariable v : vars) {
+					parser.dapoql.createVariable(v.getName(), v.getType(), v.getValue());
+				}
+			}
 
 			ParseTree tree = parser.prog();
 			DAPOQLBaseVisitor visitor = new DAPOQLBaseVisitor(parser.dapoql);
 			DAPOQLValue v = visitor.visit(tree);
 
+			qres.mapResult = v.result;
 			qres.result = v.result.keySet();
 			qres.type = v.type;
 

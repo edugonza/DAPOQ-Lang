@@ -21,12 +21,12 @@
     <info
         organisation="db-process-mining"
         module="DAPOQ-Lang"
-        revision="0.5">
+        revision="0.6">
 	</info>
 	
 	<dependencies>
 		<dependency org="org.antlr" name="antlr4" rev="4.5.1-1"/>
 		<dependency org="in.jlibs" name="org-netbeans-api-visual" rev="RELEASE65"/>
-		<dependency org="db-process-mining" name="OpenSLEX" rev="0.5"/>
+		<dependency org="db-process-mining" name="OpenSLEX" rev="0.6"/>
 	</dependencies>
 </ivy-module>

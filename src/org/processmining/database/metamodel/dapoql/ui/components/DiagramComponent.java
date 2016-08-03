@@ -55,7 +55,17 @@ public class DiagramComponent extends JPanel {
 	}
 	
 	private void init() {
-		scene = new VMDGraphScene (VMDFactory.getNetBeans60Scheme ());
+		try {
+			scene = new VMDGraphScene (VMDFactory.getNetBeans60Scheme ());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			try {
+				scene = new VMDGraphScene (VMDFactory.getOriginalScheme());
+			} catch (Exception e2) {
+				e2.printStackTrace();
+				return;
+			}
+		}
 		
 		myView = scene.createView();
 		

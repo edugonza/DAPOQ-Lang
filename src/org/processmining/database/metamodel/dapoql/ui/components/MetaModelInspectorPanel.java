@@ -112,14 +112,16 @@ public class MetaModelInspectorPanel extends JPanel {
 			SLEXMMActivityInstanceResultSet airset = getMetaModel().getActivityInstances();
 			MetaModelTableUtils.setActivityInstancesTableContent(tableActivityInstancesAll, airset);
 
-			datamodelPanel.setDataModel(getDataModel());
+			if (datamodelPanel != null) {
+				datamodelPanel.setDataModel(getDataModel());
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public MetaModelInspectorPanel(SLEXMMStorageMetaModel mm) {
+	public MetaModelInspectorPanel(SLEXMMStorageMetaModel mm, boolean datamodel) {
 
 		this.slxmm = mm;
 
@@ -652,9 +654,15 @@ public class MetaModelInspectorPanel extends JPanel {
 			}
 		};
 
-		datamodelPanel = new DiagramComponent(classSelectionHandler);
-		datamodelPanel.setMinimumSize(new Dimension(300, 200));
-		leftBottomPanel.add(datamodelPanel, BorderLayout.CENTER);
+		if (datamodel) {
+			try {
+				datamodelPanel = new DiagramComponent(classSelectionHandler);
+				datamodelPanel.setMinimumSize(new Dimension(300, 200));
+				leftBottomPanel.add(datamodelPanel, BorderLayout.CENTER);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
 		tableObjectsAll = new JTable();
 		tableObjectsAll.setFillsViewportHeight(true);

@@ -95,7 +95,7 @@ public class Autocomplete implements DocumentListener {
 			SuggestionsResult suggRes = null;
 			try {
 				DAPOQLRunner runner = new DAPOQLRunner();
-				suggRes = runner.executeQueryForSuggestions(content);
+				suggRes = runner.executeQueryForSuggestions(content,null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

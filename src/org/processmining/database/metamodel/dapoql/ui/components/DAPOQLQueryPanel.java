@@ -2,6 +2,7 @@ package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -33,21 +34,23 @@ public class DAPOQLQueryPanel extends JPanel {
 	private int id = 0;
 	private SLEXMMStorageMetaModel slxmm = null;
 	
-	private JTable sqlResultTable = null;
-	private JTable detailsTable = null;
-	private JTextArea poqlQueryField = null;
+//	private JTable sqlResultTable = null;
+//	private JTable detailsTable = null;
+//	private JTextArea poqlQueryField = null;
+	private DAPOQLQueryField queryPane = null;
+	private JPanel resultsPanel = null;
 	private JButton btnExecutePOQLQuery = null;
 	
 	private JProgressBar progressBar = null;
-	private JScrollPane scrollPane1 = null;
-	private JScrollPane scrollPane2 = null;
+//	private JScrollPane scrollPane1 = null;
+//	private JScrollPane scrollPane2 = null;
 	
 	private QueryThread queryThread = null;
 	private boolean queryRunning = false;
 	
 	/**/
-	private static final String COMMIT_ACTION = "commit";
-	private static final String SHIFT_ACTION = "shift";
+//	private static final String COMMIT_ACTION = "commit";
+//	private static final String SHIFT_ACTION = "shift";
 	
 	private static final String EXECUTE_BUTTON_TEXT = "<html>Execute<br/>DAPOQL<br/>Query</html>";
 	private static final String STOP_BUTTON_TEXT = "Stop DAPOQL Query";
@@ -73,28 +76,30 @@ public class DAPOQLQueryPanel extends JPanel {
 		JPanel sqlQueryPanel = new JPanel();
 		//this.add(sqlQueryPanel, BorderLayout.NORTH);
 
+		queryPane = new DAPOQLQueryField();
+		resultsPanel = new JPanel(new BorderLayout());
 		
-		poqlQueryField = new JTextArea(5, 0);
-		JScrollPane scrollQueryPane = new JScrollPane(poqlQueryField);
+//		poqlQueryField = new JTextArea(5, 0);
+//		JScrollPane scrollQueryPane = new JScrollPane(poqlQueryField);
 		
 		// Without this, cursor always leaves text field
-		poqlQueryField.setFocusTraversalKeysEnabled(false);
-		Autocomplete autoComplete = new Autocomplete(poqlQueryField, new ArrayList<String>());
-		poqlQueryField.getDocument().addDocumentListener(autoComplete);
+//		poqlQueryField.setFocusTraversalKeysEnabled(false);
+//		Autocomplete autoComplete = new Autocomplete(poqlQueryField, new ArrayList<String>());
+//		poqlQueryField.getDocument().addDocumentListener(autoComplete);
 		// Maps the tab key to the commit action, which finishes the
 		// autocomplete
 		// when given a suggestion
-		poqlQueryField.getInputMap().put(KeyStroke.getKeyStroke("TAB"),SHIFT_ACTION);
-		poqlQueryField.getInputMap().put(KeyStroke.getKeyStroke("SPACE"),COMMIT_ACTION);
-		poqlQueryField.getActionMap().put(COMMIT_ACTION,autoComplete.new CommitAction());
-		poqlQueryField.getActionMap().put(SHIFT_ACTION,autoComplete.new ShiftAction());
+//		poqlQueryField.getInputMap().put(KeyStroke.getKeyStroke("TAB"),SHIFT_ACTION);
+//		poqlQueryField.getInputMap().put(KeyStroke.getKeyStroke("SPACE"),COMMIT_ACTION);
+//		poqlQueryField.getActionMap().put(COMMIT_ACTION,autoComplete.new CommitAction());
+//		poqlQueryField.getActionMap().put(SHIFT_ACTION,autoComplete.new ShiftAction());
 
 		btnExecutePOQLQuery = new JButton(EXECUTE_BUTTON_TEXT);
 		sqlQueryPanel.setLayout(new BorderLayout(0, 0));
 
 		progressBar = new JProgressBar();
 		
-		sqlQueryPanel.add(scrollQueryPane, BorderLayout.CENTER);
+		sqlQueryPanel.add(queryPane, BorderLayout.CENTER);
 		sqlQueryPanel.add(btnExecutePOQLQuery, BorderLayout.EAST);
 		sqlQueryPanel.add(progressBar, BorderLayout.SOUTH);
 		
@@ -103,24 +108,26 @@ public class DAPOQLQueryPanel extends JPanel {
 		add(splitPane, BorderLayout.CENTER);
 		splitPane.setTopComponent(sqlQueryPanel);
 
-		scrollPane1 = new JScrollPane();
+//		scrollPane1 = new JScrollPane();
 		//this.add(scrollPane1, BorderLayout.CENTER);
 		
-		splitPane.setBottomComponent(scrollPane1);
-
-		sqlResultTable = new JTable();
-		sqlResultTable.setFillsViewportHeight(true);
-		scrollPane1.setViewportView(sqlResultTable);
+//		splitPane.setBottomComponent(scrollPane1);
 		
-		scrollPane2 = new JScrollPane();
-		this.add(scrollPane2, BorderLayout.SOUTH);
+		splitPane.setBottomComponent(resultsPanel);
 
-		detailsTable = new JTable();
-		detailsTable.setFillsViewportHeight(true);
-		scrollPane2.setViewportView(detailsTable);
-		scrollPane2.setPreferredSize(new Dimension(0, 250));
+//		sqlResultTable = new JTable();
+//		sqlResultTable.setFillsViewportHeight(true);
+//		scrollPane1.setViewportView(sqlResultTable);
 		
-		scrollPane2.setVisible(false);
+//		scrollPane2 = new JScrollPane();
+//		this.add(scrollPane2, BorderLayout.SOUTH);
+
+//		detailsTable = new JTable();
+//		detailsTable.setFillsViewportHeight(true);
+//		scrollPane2.setViewportView(detailsTable);
+//		scrollPane2.setPreferredSize(new Dimension(0, 250));
+		
+//		scrollPane2.setVisible(false);
 		
 		btnExecutePOQLQuery.addActionListener(new ExecutePOQLQueryAction());
 		
@@ -129,21 +136,22 @@ public class DAPOQLQueryPanel extends JPanel {
 	private void setMessage(String msg) {
 		JLabel msgLabel = new JLabel();
 		msgLabel.setText(msg);
-		scrollPane1.setViewportView(msgLabel);
+		resultsPanel.removeAll();
+		resultsPanel.add(msgLabel);
 	}
 	
-	private void setTable(JTable table) {
-		scrollPane1.setViewportView(table);
-	}
+//	private void setTable(JTable table) {
+//		scrollPane1.setViewportView(table);
+//	}
 	
-	private void setSelectionListener(final Class type) {
-		sqlResultTable.setSelectionModel(new DefaultListSelectionModel());
-		if (type == SLEXMMEvent.class) {
-			sqlResultTable.getSelectionModel().addListSelectionListener(new EventSelectionListener());
-		} else if (type == SLEXMMObjectVersion.class) {
-			sqlResultTable.getSelectionModel().addListSelectionListener(new ObjectVersionSelectionListener());
-		}
-	}
+//	private void setSelectionListener(final Class type) {
+//		sqlResultTable.setSelectionModel(new DefaultListSelectionModel());
+//		if (type == SLEXMMEvent.class) {
+//			sqlResultTable.getSelectionModel().addListSelectionListener(new EventSelectionListener());
+//		} else if (type == SLEXMMObjectVersion.class) {
+//			sqlResultTable.getSelectionModel().addListSelectionListener(new ObjectVersionSelectionListener());
+//		}
+//	}
 	
 	public boolean isQueryRunning() {
 		return this.queryRunning;
@@ -159,7 +167,7 @@ public class DAPOQLQueryPanel extends JPanel {
 				@Override
 				public void run() {
 					queryThread.stopThread();
-					poqlQueryField.setEnabled(true);
+					queryPane.setEnabled(true);
 					progressBar.setIndeterminate(false);
 					queryRunning = false;
 					btnExecutePOQLQuery.setText(EXECUTE_BUTTON_TEXT);
@@ -175,50 +183,50 @@ public class DAPOQLQueryPanel extends JPanel {
 		}
 	}
 	
-	private class EventSelectionListener implements ListSelectionListener {
-		@Override
-		public void valueChanged(ListSelectionEvent e) {
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					Integer selected = MetaModelTableUtils.getSelectedEvent(sqlResultTable);
-					if (selected != null) {
-						SLEXMMEvent ev = slxmm.getEventForId(selected);
-						try {
-							MetaModelTableUtils.setEventAttributesTableContent(detailsTable,
-									ev.getAttributeValues(),ev.getLifecycle(),ev.getResource(),
-									String.valueOf(ev.getTimestamp()));
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
-			}).start();
-		}
-	}
+//	private class EventSelectionListener implements ListSelectionListener {
+//		@Override
+//		public void valueChanged(ListSelectionEvent e) {
+//			new Thread(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					Integer selected = MetaModelTableUtils.getSelectedEvent(sqlResultTable);
+//					if (selected != null) {
+//						SLEXMMEvent ev = slxmm.getEventForId(selected);
+//						try {
+//							MetaModelTableUtils.setEventAttributesTableContent(detailsTable,
+//									ev.getAttributeValues(),ev.getLifecycle(),ev.getResource(),
+//									String.valueOf(ev.getTimestamp()));
+//						} catch (Exception ex) {
+//							ex.printStackTrace();
+//						}
+//					}
+//				}
+//			}).start();
+//		}
+//	}
 	
-	private class ObjectVersionSelectionListener implements ListSelectionListener {
-		@Override
-		public void valueChanged(ListSelectionEvent e) {
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					Integer selected = MetaModelTableUtils.getSelectedEvent(sqlResultTable);
-					if (selected != null) {
-						HashMap<SLEXMMAttribute, SLEXMMAttributeValue> atts =
-								slxmm.getAttributeValuesForObjectVersion(selected);
-						try {
-							MetaModelTableUtils.setObjectVersionAttributesTableContent(detailsTable,atts);
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
-			}).start();
-		}
-	}
+//	private class ObjectVersionSelectionListener implements ListSelectionListener {
+//		@Override
+//		public void valueChanged(ListSelectionEvent e) {
+//			new Thread(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					Integer selected = MetaModelTableUtils.getSelectedEvent(sqlResultTable);
+//					if (selected != null) {
+//						HashMap<SLEXMMAttribute, SLEXMMAttributeValue> atts =
+//								slxmm.getAttributeValuesForObjectVersion(selected);
+//						try {
+//							MetaModelTableUtils.setObjectVersionAttributesTableContent(detailsTable,atts);
+//						} catch (Exception ex) {
+//							ex.printStackTrace();
+//						}
+//					}
+//				}
+//			}).start();
+//		}
+//	}
 	
 	public class ExecutePOQLQueryAction implements ActionListener {
 		
@@ -256,55 +264,57 @@ public class DAPOQLQueryPanel extends JPanel {
 			queryRunning = true;
 			
 			try {
-				poqlQueryField.setEnabled(false);
+				queryPane.setEnabled(false);
 				//btnExecutePOQLQuery.setEnabled(false);
 				btnExecutePOQLQuery.setText(STOP_BUTTON_TEXT);
 				progressBar.setIndeterminate(true);
-				String query = poqlQueryField.getText();
+				String query = queryPane.getQuery();
 				runner = new DAPOQLRunner();
-				QueryResult qr = runner.executeQuery(slxmm, query);
+				QueryResult qr = runner.executeQuery(slxmm, query, null);
 				
-				setTable(sqlResultTable);
-				setSelectionListener(qr.type);
-				scrollPane2.setVisible(false);
+				resultsPanel.removeAll();
+				resultsPanel.add(new DAPOQLResultsPanel(slxmm, qr.type, qr.result));
+//				setTable(sqlResultTable);
+//				setSelectionListener(qr.type);
+//				scrollPane2.setVisible(false);
+//				
+//				if (qr.type == SLEXMMObject.class) {
+//					MetaModelTableUtils.setObjectsTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMObjectVersion.class) {
+//					MetaModelTableUtils.setObjectVersionsTableContent(sqlResultTable, qr.result);
+//					scrollPane2.setVisible(true);
+//				} else if (qr.type == SLEXMMEvent.class) {
+//					MetaModelTableUtils.setEventsTableContent(sqlResultTable, qr.result, null);
+//					scrollPane2.setVisible(true);
+//				} else if (qr.type == SLEXMMActivity.class) {
+//					MetaModelTableUtils.setActivitiesTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMCase.class) {
+//					MetaModelTableUtils.setCasesTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMActivityInstance.class) {
+//					MetaModelTableUtils.setActivityInstancesTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMClass.class) {
+//					MetaModelTableUtils.setClassesTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMRelation.class) {
+//					MetaModelTableUtils.setObjectRelationsTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMRelationship.class) {
+//					MetaModelTableUtils.setRelationshipsTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMAttribute.class) {
+//					MetaModelTableUtils.setAttributesTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMPeriod.class) {
+//					MetaModelTableUtils.setPeriodsTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMDataModel.class) {
+//					MetaModelTableUtils.setDatamodelsTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMLog.class) {
+//					MetaModelTableUtils.setLogsTableContent(sqlResultTable, qr.result);
+//				} else if (qr.type == SLEXMMProcess.class) {
+//					MetaModelTableUtils.setProcessesTableContent(sqlResultTable, qr.result);
+//				} else {
+//					String msg = "ERROR: Unknown type of result "+qr.type;
+//					System.err.println(msg);
+//					setMessage(msg);
+//				}
 				
-				if (qr.type == SLEXMMObject.class) {
-					MetaModelTableUtils.setObjectsTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMObjectVersion.class) {
-					MetaModelTableUtils.setObjectVersionsTableContent(sqlResultTable, qr.result);
-					scrollPane2.setVisible(true);
-				} else if (qr.type == SLEXMMEvent.class) {
-					MetaModelTableUtils.setEventsTableContent(sqlResultTable, qr.result, null);
-					scrollPane2.setVisible(true);
-				} else if (qr.type == SLEXMMActivity.class) {
-					MetaModelTableUtils.setActivitiesTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMCase.class) {
-					MetaModelTableUtils.setCasesTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMActivityInstance.class) {
-					MetaModelTableUtils.setActivityInstancesTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMClass.class) {
-					MetaModelTableUtils.setClassesTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMRelation.class) {
-					MetaModelTableUtils.setObjectRelationsTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMRelationship.class) {
-					MetaModelTableUtils.setRelationshipsTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMAttribute.class) {
-					MetaModelTableUtils.setAttributesTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMPeriod.class) {
-					MetaModelTableUtils.setPeriodsTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMDataModel.class) {
-					MetaModelTableUtils.setDatamodelsTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMLog.class) {
-					MetaModelTableUtils.setLogsTableContent(sqlResultTable, qr.result);
-				} else if (qr.type == SLEXMMProcess.class) {
-					MetaModelTableUtils.setProcessesTableContent(sqlResultTable, qr.result);
-				} else {
-					String msg = "ERROR: Unknown type of result "+qr.type;
-					System.err.println(msg);
-					setMessage(msg);
-				}
-				
-				revalidate();
+//				revalidate();
 			
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -314,7 +324,7 @@ public class DAPOQLQueryPanel extends JPanel {
 				}
 				setMessage(msg);
 			} finally {
-				poqlQueryField.setEnabled(true);
+				queryPane.setEnabled(true);
 				//btnExecutePOQLQuery.setEnabled(true);
 				progressBar.setIndeterminate(false);
 				queryRunning = false;
