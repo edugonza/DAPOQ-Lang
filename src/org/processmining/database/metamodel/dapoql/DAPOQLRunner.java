@@ -1,6 +1,7 @@
 package org.processmining.database.metamodel.dapoql;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +46,7 @@ public class DAPOQLRunner {
         
 			if (vars != null) {
 				for (DAPOQLVariable v : vars) {
-					parser.dapoql.createVariable(v.getName(), v.getType(), new HashMap<>());
+					parser.dapoql.createVariable(v.getName(), v.getType(), new HashMap<Object,HashSet<Integer>>());
 				}
 			}
 			

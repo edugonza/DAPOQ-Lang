@@ -27,6 +27,10 @@
 	<dependencies>
 		<dependency org="org.antlr" name="antlr4" rev="4.5.1-1"/>
 		<dependency org="in.jlibs" name="org-netbeans-api-visual" rev="RELEASE65"/>
+<!--		<dependency org="org.rapidprom" name="GraphViz" rev="6.5.142" />-->
+		<dependency org="prom" name="GraphViz" rev="latest" />
+		<dependency org="org.apache.commons" name="commons-io" rev="1.3.2"/>
+		<dependency org="org.apache.commons" name="commons-compress" rev="1.12"/>
 		<dependency org="db-process-mining" name="OpenSLEX" rev="0.6"/>
 	</dependencies>
 </ivy-module>
