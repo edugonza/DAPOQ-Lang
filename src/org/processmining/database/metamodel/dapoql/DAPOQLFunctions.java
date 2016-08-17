@@ -3266,21 +3266,24 @@ public class DAPOQLFunctions {
 		HashMap<Object,HashSet<Integer>> setResult = new HashMap<>();
 
 		if (type == SLEXMMObjectVersion.class) {
+			int[] ids = new int[list.size()];
+			int i = 0;
 			for (Object o : list) {
 				SLEXMMObjectVersion ob = (SLEXMMObjectVersion) o;
-
-				SLEXMMObjectVersionResultSet ovrset = slxmm
-						.getVersionsRelatedToObjectVersion(ob);
-
-				SLEXMMObjectVersion ov = null;
-
-				while ((ov = ovrset.getNext()) != null) {
-					Integer originId = ovrset.getOriginId();
-					if (!setResult.containsKey(ov)) {
-						setResult.put(ov,new HashSet<Integer>());
-					}
-					setResult.get(ov).add(originId);
+				ids[i] = ob.getId();
+				i++;
+			}
+			
+			SLEXMMObjectVersionResultSet ovrset = slxmm
+					.getVersionsRelatedToObjectVersions(ids);
+			
+			SLEXMMObjectVersion ov = null;
+			while ((ov = ovrset.getNext()) != null) {
+				Integer originId = ovrset.getOriginId();
+				if (!setResult.containsKey(ov)) {
+					setResult.put(ov,new HashSet<Integer>());
 				}
+				setResult.get(ov).add(originId);
 			}
 		} else {
 			// ERROR
