@@ -13,6 +13,8 @@ import org.antlr.v4.runtime.Vocabulary;
 import org.processmining.database.metamodel.dapoql.dapoqlParser;
 import org.processmining.openslex.metamodel.*;
 
+import groovy.lang.Script;
+
 public class DAPOQLFunctions {
 
 	private SLEXMMStorageMetaModel slxmm = null;

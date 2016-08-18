@@ -26,7 +26,7 @@ import org.processmining.database.metamodel.dapoql.QueryResult;
 import org.processmining.openslex.metamodel.*;
 import javax.swing.JSplitPane;
 
-public class DAPOQLQueryPanel extends JPanel {
+public class DAPOQLGroovyQueryPanel extends JPanel {
 	
 	/**
 	 * 
@@ -38,7 +38,7 @@ public class DAPOQLQueryPanel extends JPanel {
 //	private JTable sqlResultTable = null;
 //	private JTable detailsTable = null;
 //	private JTextArea poqlQueryField = null;
-	private DAPOQLQueryField queryPane = null;
+	private DAPOQLGroovyQueryField queryPane = null;
 	private JPanel resultsPanel = null;
 	private JButton btnExecutePOQLQuery = null;
 	
@@ -61,7 +61,7 @@ public class DAPOQLQueryPanel extends JPanel {
 		return this.id;
 	}
 	
-	public DAPOQLQueryPanel(SLEXMMStorageMetaModel mm, int id) {
+	public DAPOQLGroovyQueryPanel(SLEXMMStorageMetaModel mm, int id) {
 		super();
 		
 		this.id = id;
@@ -77,7 +77,7 @@ public class DAPOQLQueryPanel extends JPanel {
 		JPanel sqlQueryPanel = new JPanel();
 		//this.add(sqlQueryPanel, BorderLayout.NORTH);
 
-		queryPane = new DAPOQLQueryField();
+		queryPane = new DAPOQLGroovyQueryField();
 		resultsPanel = new JPanel(new BorderLayout());
 		
 //		poqlQueryField = new JTextArea(5, 0);
@@ -250,7 +250,7 @@ public class DAPOQLQueryPanel extends JPanel {
 	
 	private class QueryThread extends Thread {
 		
-		DAPOQLRunner runner = null;
+		DAPOQLRunnerGroovy runner = null;
 		
 		private void stopThread() {
 			if (runner != null) {
@@ -270,7 +270,7 @@ public class DAPOQLQueryPanel extends JPanel {
 				btnExecutePOQLQuery.setText(STOP_BUTTON_TEXT);
 				progressBar.setIndeterminate(true);
 				String query = queryPane.getQuery();
-				runner = new DAPOQLRunner();
+				runner = new DAPOQLRunnerGroovy();
 				QueryResult qr = runner.executeQuery(slxmm, query, null);
 				
 				resultsPanel.removeAll();

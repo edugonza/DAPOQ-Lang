@@ -9,4 +9,5 @@ public class QueryResult {
 	public HashMap<Object,HashSet<Integer>> mapResult;
 	public Set<Object> result;
 	public Class type;
+	
 }
