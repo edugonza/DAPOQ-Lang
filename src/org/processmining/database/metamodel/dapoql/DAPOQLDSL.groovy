@@ -41,9 +41,13 @@ class DAPOQLDSL extends Script {
 			qr.mapResult = new HashMap<>(); // FIXME
 			qr.type = this.type;
 			
+			body.resolveStrategy = Closure.DELEGATE_ONLY;
+			
 			result.each {
+				body.delegate = it;
 				if (body(it) == true) {
 					qr.result.add(it);
+					qr.mapResult.put(it,this.mapResult.get(it));
 				}
 			}
 			return qr;

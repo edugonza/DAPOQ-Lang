@@ -113,7 +113,7 @@ public class DAPOQLRunner {
 			}
 
 			ParseTree tree = parser.prog();
-			DAPOQLBaseVisitor visitor = new DAPOQLBaseVisitor(parser.dapoql);
+			DAPOQLVisitorImpl visitor = new DAPOQLVisitorImpl(parser.dapoql);
 			DAPOQLValue v = visitor.visit(tree);
 
 			qres.mapResult = v.result;

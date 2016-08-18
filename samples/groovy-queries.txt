@@ -1,0 +1,23 @@
+allClasses() where { getId() == 1 }
+
+allClasses() where { id > 1 } where { id > 0 } where { name.contains("S") }
+
+//allClasses() where { id > 1 } where { id > 0 } where { name.contains("S") }
+
+//versionsOf ( allClasses().where { id == 3} ) where { id == 3257 }
+
+// versionsOf allClasses().where { id == 3} where { id == 3257 } 
+
+//classesOf(versionsOf(allClasses()))
+
+def a = allClasses() where { name == "TICKET" }
+
+def b = 
+classesOf(
+	versionsOf(
+		allClasses().where{ id == 1})
+	.where{ id == 3158 })
+.where { name == "CONCERT" }
+.union(
+	allClasses().where { name == "SEAT" }
+)

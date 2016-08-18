@@ -28,11 +28,11 @@ import org.processmining.openslex.metamodel.SLEXMMProcess;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
 
-public class DAPOQLBaseVisitor extends dapoqlBaseVisitor<DAPOQLValue> {
+public class DAPOQLVisitorImpl extends dapoqlBaseVisitor<DAPOQLValue> {
 
 	private DAPOQLFunctions poql;
 
-	public DAPOQLBaseVisitor(DAPOQLFunctions poql) {
+	public DAPOQLVisitorImpl(DAPOQLFunctions poql) {
 		this.poql = poql;
 	}
 
