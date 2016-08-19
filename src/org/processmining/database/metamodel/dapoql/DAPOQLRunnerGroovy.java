@@ -16,6 +16,7 @@ import org.processmining.database.metamodel.dapoql.lite.dapoqlParser;
 import org.processmining.database.metamodel.dapoql.lite.dapoqlParser.ProgContext;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
+import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
@@ -134,11 +135,10 @@ public class DAPOQLRunnerGroovy {
 		try {
 			CompilerConfiguration config = new CompilerConfiguration();
 			config.setScriptBaseClass("org.processmining.database.metamodel.dapoql.DAPOQLDSL");
-			GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), config);
+			Binding binding = new Binding();
+			GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), binding, config);
 			Script script = shell.parse(query);
 			script.invokeMethod("init", slxmm);
-			
-			
 			
 			//script.setProperty("slxmm", slxmm);
 			Object result = script.run();
