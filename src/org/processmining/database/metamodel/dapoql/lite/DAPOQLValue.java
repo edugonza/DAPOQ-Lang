@@ -1,12 +1,10 @@
-package org.processmining.database.metamodel.dapoql;
+package org.processmining.database.metamodel.dapoql.lite;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.processmining.database.metamodel.dapoql.lite.FilterTree;
-
-import org.processmining.database.metamodel.dapoql.lite.FilterTree;
+import org.processmining.database.metamodel.dapoql.DAPOQLTimestamp;
 
 public class DAPOQLValue {
 	

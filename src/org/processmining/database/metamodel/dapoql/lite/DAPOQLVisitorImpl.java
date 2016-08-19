@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 import org.processmining.database.metamodel.dapoql.DAPOQLTimestamp;
-import org.processmining.database.metamodel.dapoql.DAPOQLValue;
+import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
 import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
 import org.processmining.database.metamodel.dapoql.lite.dapoqlParser.ActivitiesOfContext;
 import org.processmining.database.metamodel.dapoql.lite.dapoqlParser.ActivityInstancesOfContext;

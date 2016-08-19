@@ -21,3 +21,12 @@ classesOf(
 .union(
 	allClasses().where { name == "SEAT" }
 )
+
+allEvents() where { at.TABLE_NAME == "CUSTOMER" }
+
+
+allVersions() where { at.PRICE == "35" }
+
+def b = versionsOf(allClasses().where { name == "CUSTOMER"})
+
+def a = allVersions().where { at.CUSTOMER_NAME.contains("141")}

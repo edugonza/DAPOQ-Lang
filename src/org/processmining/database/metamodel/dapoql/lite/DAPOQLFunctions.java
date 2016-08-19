@@ -11,6 +11,7 @@ import java.util.Set;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
 import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
+import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
 import org.processmining.openslex.metamodel.SLEXMMActivity;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstanceResultSet;

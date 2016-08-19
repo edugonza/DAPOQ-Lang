@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.processmining.database.metamodel.dapoql.DAPOQLValue;
+import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
 import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
 import org.processmining.database.metamodel.dapoql.QueryResult;
 import org.processmining.database.metamodel.dapoql.lite.dapoqlParser.ProgContext;

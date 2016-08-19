@@ -1,29 +1,36 @@
 package org.processmining.database.metamodel.dapoql
 
-import java.util.HashMap;
-import java.util.HashSet
-import java.util.concurrent.ConcurrentHashMap.ForEachEntryTask
-
-import org.processmining.openslex.metamodel.SLEXMMActivity;
-import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
-import org.processmining.openslex.metamodel.SLEXMMAttribute;
-import org.processmining.openslex.metamodel.SLEXMMCase;
-import org.processmining.openslex.metamodel.SLEXMMClass;
+import org.processmining.openslex.metamodel.SLEXMMActivity
+import org.processmining.openslex.metamodel.SLEXMMActivityInstance
+import org.processmining.openslex.metamodel.SLEXMMAttribute
+import org.processmining.openslex.metamodel.SLEXMMAttributeValue
+import org.processmining.openslex.metamodel.SLEXMMCase
+import org.processmining.openslex.metamodel.SLEXMMCaseAttribute
+import org.processmining.openslex.metamodel.SLEXMMCaseAttributeValue
+import org.processmining.openslex.metamodel.SLEXMMClass
 import org.processmining.openslex.metamodel.SLEXMMDataModel
-import org.processmining.openslex.metamodel.SLEXMMEvent;
-import org.processmining.openslex.metamodel.SLEXMMLog;
-import org.processmining.openslex.metamodel.SLEXMMObject;
-import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
-import org.processmining.openslex.metamodel.SLEXMMProcess;
-import org.processmining.openslex.metamodel.SLEXMMRelation;
-import org.processmining.openslex.metamodel.SLEXMMRelationship;
-import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
+import org.processmining.openslex.metamodel.SLEXMMEvent
+import org.processmining.openslex.metamodel.SLEXMMEventAttribute
+import org.processmining.openslex.metamodel.SLEXMMEventAttributeValue
+import org.processmining.openslex.metamodel.SLEXMMEventResultSet
+import org.processmining.openslex.metamodel.SLEXMMLog
+import org.processmining.openslex.metamodel.SLEXMMLogAttribute
+import org.processmining.openslex.metamodel.SLEXMMLogAttributeValue
+import org.processmining.openslex.metamodel.SLEXMMObject
+import org.processmining.openslex.metamodel.SLEXMMObjectVersion
+import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet
+import org.processmining.openslex.metamodel.SLEXMMProcess
+import org.processmining.openslex.metamodel.SLEXMMRelation
+import org.processmining.openslex.metamodel.SLEXMMRelationship
+import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel
 
 class DAPOQLDSL extends Script {
 
 	private DAPOQLFunctionsGroovy dapoqlfunc = null;
+	private SLEXMMStorageMetaModel slxmm = null;
 	
 	protected void init(SLEXMMStorageMetaModel slxmm) {
+		this.slxmm = slxmm;
 		this.dapoqlfunc = new DAPOQLFunctionsGroovy();
 		this.dapoqlfunc.setMetaModel(slxmm);
 	}
@@ -33,18 +40,86 @@ class DAPOQLDSL extends Script {
 		super.run();
 	}
 	
+	class DAPOQLAttributeHolder {
+
+		Object o = null;
+		Class type = null;
+
+		def getProperty(String propertyName) {
+			if (type == SLEXMMEvent.class) {
+				SLEXMMEvent e = (SLEXMMEvent) o;
+				HashMap<SLEXMMEventAttribute,SLEXMMEventAttributeValue> atValsMap = e.getAttributeValues();
+
+				for (SLEXMMEventAttribute eat: atValsMap.keySet()) {
+					if (eat.getName() == propertyName) {
+						return atValsMap.get(eat).getValue();
+					}
+				}
+			} else if (type == SLEXMMObjectVersion.class) {
+				SLEXMMObjectVersion ov = (SLEXMMObjectVersion) o;
+				HashMap<SLEXMMAttribute,SLEXMMAttributeValue> atValsMap = ov.getAttributeValues();
+
+				for (SLEXMMAttribute ovat: atValsMap.keySet()) {
+					if (ovat.getName() == propertyName) {
+						return atValsMap.get(ovat).getValue();
+					}
+				}
+			} else if (type == SLEXMMCase.class) {
+				SLEXMMCase c = (SLEXMMCase) o;
+				HashMap<SLEXMMCaseAttribute,SLEXMMCaseAttributeValue> atValsMap = c.getAttributeValues();
+
+				for (SLEXMMCaseAttribute cat: atValsMap.keySet()) {
+					if (cat.getName() == propertyName) {
+						return atValsMap.get(cat).getValue();
+					}
+				}
+			} else if (type == SLEXMMLog.class) {
+				SLEXMMLog l = (SLEXMMLog) o;
+				HashMap<SLEXMMLogAttribute,SLEXMMLogAttributeValue> atValsMap = l.getAttributeValues();
+
+				for (SLEXMMLogAttribute lat: atValsMap.keySet()) {
+					if (lat.getName() == propertyName) {
+						return atValsMap.get(lat).getValue();
+					}
+				}
+			}
+			
+			return "";
+		}
+	}
+	
+	class DAPOQLDelegate {
+		
+		Object o = null;
+		Class type = null;
+				
+		def getProperty(String propertyName) {
+			if (propertyName == "at") {
+				DAPOQLAttributeHolder dapoqlAtHolder = new DAPOQLAttributeHolder();
+				dapoqlAtHolder.o = o;
+				dapoqlAtHolder.type = type;
+				return dapoqlAtHolder;
+			} else {
+				return o.getProperties().get(propertyName);
+			}
+		}
+	}
+	
 	class QueryGroovyResult extends QueryResult {
 		
 		def where(Closure body) {
 			QueryGroovyResult qr = new QueryGroovyResult();
 			qr.result = new HashSet<>();
-			qr.mapResult = new HashMap<>(); // FIXME
+			qr.mapResult = new HashMap<>();
 			qr.type = this.type;
 			
 			body.resolveStrategy = Closure.DELEGATE_ONLY;
+			DAPOQLDelegate dapoqldelegate = new DAPOQLDelegate();
+			body.delegate = dapoqldelegate;
+			dapoqldelegate.type = qr.type;
 			
 			result.each {
-				body.delegate = it;
+				dapoqldelegate.o = it;
 				if (body(it) == true) {
 					qr.result.add(it);
 					qr.mapResult.put(it,this.mapResult.get(it));
@@ -56,7 +131,7 @@ class DAPOQLDSL extends Script {
 		def union(QueryGroovyResult qrB) {
 			QueryGroovyResult qr = new QueryGroovyResult();
 			qr.result = new HashSet<>();
-			qr.result.addAll(this.result);
+			qr.result.addAll(this.result); //FIXME
 			qr.type = this.type;
 			qr.result.addAll(qrB.result);
 			return qr;
@@ -65,7 +140,7 @@ class DAPOQLDSL extends Script {
 		def excluding(QueryGroovyResult qrB) {
 			QueryGroovyResult qr = new QueryGroovyResult();
 			qr.result = new HashSet<>();
-			qr.result.addAll(this.result);
+			qr.result.addAll(this.result); //FIXME
 			qr.type = this.type;
 			qr.result.removeAll(qrB.result);
 			return qr;
@@ -74,7 +149,7 @@ class DAPOQLDSL extends Script {
 		def intersection(QueryGroovyResult qrB) {
 			QueryGroovyResult qrAux = new QueryGroovyResult();
 			qrAux.result = new HashSet<>();
-			qrAux.result.addAll(this.result);
+			qrAux.result.addAll(this.result); //FIXME
 			qrAux.type = this.type;
 			qrAux.result.removeAll(qrB.result);
 			
@@ -94,6 +169,25 @@ class DAPOQLDSL extends Script {
 		qr.result = map.keySet();
 		qr.type = type;
 		
+		if (type == SLEXMMEvent) {
+			qr.mapResult = new HashMap<>();
+			SLEXMMEventResultSet erset = slxmm.getEventsAndAttributeValues(qr.result);
+			SLEXMMEvent e = null;
+			while ((e = erset.getNextWithAttributes()) != null) {
+				qr.mapResult.put(e,map.get(e));
+			}
+			qr.result = qr.mapResult.keySet();
+			
+		} else if (type == SLEXMMObjectVersion) {
+			qr.mapResult = new HashMap<>();
+			SLEXMMObjectVersionResultSet erset = slxmm.getVersionsAndAttributeValues(qr.result);
+			SLEXMMObjectVersion e = null;
+			while ((e = erset.getNextWithAttributes()) != null) {
+				qr.mapResult.put(e,map.get(e));
+			}
+			qr.result = qr.mapResult.keySet();
+		}
+		// FIXME
 		return qr;
 	}
 	

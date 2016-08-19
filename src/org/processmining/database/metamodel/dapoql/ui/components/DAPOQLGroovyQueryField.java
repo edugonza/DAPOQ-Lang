@@ -40,7 +40,9 @@ public class DAPOQLGroovyQueryField extends JPanel {
 		dapoqlQueryField = new RSyntaxTextArea(20, 60);
 		dapoqlQueryField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 		dapoqlQueryField.setCodeFoldingEnabled(true);
-	    RTextScrollPane sp = new RTextScrollPane(dapoqlQueryField);
+	    //RTextScrollPane sp = new RTextScrollPane(dapoqlQueryField);
+	    RTextScrollPane sp = new RTextScrollPane();
+	    sp.setViewportView(dapoqlQueryField);
 	    sqlQueryPanel.add(sp, BorderLayout.CENTER);
 				
 //		dapoqlQueryField = new JTextArea(5, 0);
