@@ -2,28 +2,33 @@ package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
 import javax.swing.DefaultListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.processmining.database.metamodel.dapoql.DAPOQLRunner;
-import org.processmining.database.metamodel.dapoql.QueryResult;
-import org.processmining.openslex.metamodel.*;
-import javax.swing.JSplitPane;
+import org.processmining.openslex.metamodel.SLEXMMActivity;
+import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
+import org.processmining.openslex.metamodel.SLEXMMAttribute;
+import org.processmining.openslex.metamodel.SLEXMMAttributeValue;
+import org.processmining.openslex.metamodel.SLEXMMCase;
+import org.processmining.openslex.metamodel.SLEXMMClass;
+import org.processmining.openslex.metamodel.SLEXMMDataModel;
+import org.processmining.openslex.metamodel.SLEXMMEvent;
+import org.processmining.openslex.metamodel.SLEXMMLog;
+import org.processmining.openslex.metamodel.SLEXMMObject;
+import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
+import org.processmining.openslex.metamodel.SLEXMMPeriod;
+import org.processmining.openslex.metamodel.SLEXMMProcess;
+import org.processmining.openslex.metamodel.SLEXMMRelation;
+import org.processmining.openslex.metamodel.SLEXMMRelationship;
+import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
+import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
 
 public class DAPOQLResultsPanel extends JPanel {
 	

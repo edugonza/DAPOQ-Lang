@@ -1,4 +1,6 @@
-package org.processmining.database.metamodel.dapoql;
+package org.processmining.database.metamodel.dapoql.lite;
+
+import org.processmining.database.metamodel.dapoql.lite.FilterTree;
 
 public class FilterTree {
 	

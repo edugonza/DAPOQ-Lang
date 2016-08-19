@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.dapoql;
+package org.processmining.database.metamodel.dapoql.lite;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,10 +10,44 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.Vocabulary;
-import org.processmining.database.metamodel.dapoql.dapoqlParser;
-import org.processmining.openslex.metamodel.*;
-
-import groovy.lang.Script;
+import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
+import org.processmining.openslex.metamodel.SLEXMMActivity;
+import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
+import org.processmining.openslex.metamodel.SLEXMMActivityInstanceResultSet;
+import org.processmining.openslex.metamodel.SLEXMMActivityResultSet;
+import org.processmining.openslex.metamodel.SLEXMMAttribute;
+import org.processmining.openslex.metamodel.SLEXMMAttributeResultSet;
+import org.processmining.openslex.metamodel.SLEXMMAttributeValue;
+import org.processmining.openslex.metamodel.SLEXMMCase;
+import org.processmining.openslex.metamodel.SLEXMMCaseAttribute;
+import org.processmining.openslex.metamodel.SLEXMMCaseAttributeValue;
+import org.processmining.openslex.metamodel.SLEXMMCaseResultSet;
+import org.processmining.openslex.metamodel.SLEXMMClass;
+import org.processmining.openslex.metamodel.SLEXMMClassResultSet;
+import org.processmining.openslex.metamodel.SLEXMMDataModel;
+import org.processmining.openslex.metamodel.SLEXMMDataModelResultSet;
+import org.processmining.openslex.metamodel.SLEXMMEvent;
+import org.processmining.openslex.metamodel.SLEXMMEventAttribute;
+import org.processmining.openslex.metamodel.SLEXMMEventAttributeResultSet;
+import org.processmining.openslex.metamodel.SLEXMMEventAttributeValue;
+import org.processmining.openslex.metamodel.SLEXMMEventResultSet;
+import org.processmining.openslex.metamodel.SLEXMMLog;
+import org.processmining.openslex.metamodel.SLEXMMLogAttribute;
+import org.processmining.openslex.metamodel.SLEXMMLogAttributeValue;
+import org.processmining.openslex.metamodel.SLEXMMLogResultSet;
+import org.processmining.openslex.metamodel.SLEXMMObject;
+import org.processmining.openslex.metamodel.SLEXMMObjectResultSet;
+import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
+import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
+import org.processmining.openslex.metamodel.SLEXMMPeriod;
+import org.processmining.openslex.metamodel.SLEXMMPeriodResultSet;
+import org.processmining.openslex.metamodel.SLEXMMProcess;
+import org.processmining.openslex.metamodel.SLEXMMProcessResultSet;
+import org.processmining.openslex.metamodel.SLEXMMRelation;
+import org.processmining.openslex.metamodel.SLEXMMRelationResultSet;
+import org.processmining.openslex.metamodel.SLEXMMRelationship;
+import org.processmining.openslex.metamodel.SLEXMMRelationshipResultSet;
+import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
 public class DAPOQLFunctions {
 

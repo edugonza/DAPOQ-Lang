@@ -12,16 +12,19 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
 import org.processmining.openslex.metamodel.SLEXMMAttribute;
 import org.processmining.openslex.metamodel.SLEXMMClass;
 import org.processmining.openslex.metamodel.SLEXMMClassResultSet;
 import org.processmining.openslex.metamodel.SLEXMMDataModel;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
+import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.dot.DotEdge;
 import org.processmining.plugins.graphviz.dot.DotElement;
 import org.processmining.plugins.graphviz.dot.DotNode;
 import org.processmining.plugins.graphviz.visualisation.listeners.DotElementSelectionListener;
+
 import com.kitfox.svg.SVGDiagram;
 
 public class DiagramComponent extends JPanel {
@@ -36,7 +39,7 @@ public class DiagramComponent extends JPanel {
 
 	private NodeSelectionHandler nodeSelectionHandler;
 
-	private ExtendedDot dot = null;
+	private Dot dot = null;
 	private ExtendedDotPanel dotpanel = null;
 	private JScrollPane scrollPane = null;
 
@@ -112,7 +115,7 @@ public class DiagramComponent extends JPanel {
 	}
 
 	private void init() {
-		dot = new ExtendedDot();
+		dot = new Dot();
 		dotpanel = new ExtendedDotPanel(dot);
 		scrollPane.setViewportView(dotpanel);
 	}

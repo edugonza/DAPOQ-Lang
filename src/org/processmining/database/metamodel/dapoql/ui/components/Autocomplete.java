@@ -15,8 +15,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
-import org.processmining.database.metamodel.dapoql.DAPOQLRunner;
-import org.processmining.database.metamodel.dapoql.SuggestionsResult;
+import org.processmining.database.metamodel.dapoql.lite.DAPOQLRunner;
+import org.processmining.database.metamodel.dapoql.lite.SuggestionsResult;
 
 public class Autocomplete implements DocumentListener {
 

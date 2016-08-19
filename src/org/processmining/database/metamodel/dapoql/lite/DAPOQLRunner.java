@@ -1,16 +1,18 @@
-package org.processmining.database.metamodel.dapoql;
+package org.processmining.database.metamodel.dapoql.lite;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.IntervalSet;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.processmining.database.metamodel.dapoql.dapoqlLexer;
-import org.processmining.database.metamodel.dapoql.dapoqlParser;
-import org.processmining.database.metamodel.dapoql.dapoqlParser.ProgContext;
+import org.processmining.database.metamodel.dapoql.DAPOQLValue;
+import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
+import org.processmining.database.metamodel.dapoql.QueryResult;
+import org.processmining.database.metamodel.dapoql.lite.dapoqlParser.ProgContext;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
 public class DAPOQLRunner {

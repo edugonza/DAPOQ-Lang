@@ -1,13 +1,9 @@
 package org.processmining.database.metamodel.dapoql.ui.components;
 
-import java.awt.Color;
 import java.util.List;
-import java.util.Set;
 
 import org.processmining.plugins.graphviz.dot.Dot;
 import org.processmining.plugins.graphviz.visualisation.DotPanel;
-import org.processmining.plugins.graphviz.visualisation.listeners.GraphChangedListener;
-import org.processmining.plugins.graphviz.visualisation.listeners.GraphChangedListener.GraphChangedReason;
 
 import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGElement;
@@ -25,7 +21,6 @@ public class ExtendedDotPanel extends DotPanel {
 
 	public ExtendedDotPanel(Dot dot) {
 		super(dot);
-		this.setBackground(Color.RED);
 	}
 
 	@Override

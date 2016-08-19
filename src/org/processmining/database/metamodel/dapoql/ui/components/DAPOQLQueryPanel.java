@@ -1,30 +1,19 @@
 package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.processmining.database.metamodel.dapoql.DAPOQLRunner;
-import org.processmining.database.metamodel.dapoql.DAPOQLRunnerGroovy;
-import org.processmining.database.metamodel.dapoql.QueryResult;
-import org.processmining.openslex.metamodel.*;
 import javax.swing.JSplitPane;
+
+import org.processmining.database.metamodel.dapoql.QueryResult;
+import org.processmining.database.metamodel.dapoql.lite.DAPOQLRunner;
+import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
+import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
 
 public class DAPOQLQueryPanel extends JPanel {
 	

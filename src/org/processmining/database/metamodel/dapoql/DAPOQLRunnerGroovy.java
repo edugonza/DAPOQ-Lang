@@ -5,16 +5,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.IntervalSet;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Token;
 import org.codehaus.groovy.control.CompilerConfiguration;
-import org.processmining.database.metamodel.dapoql.dapoqlLexer;
-import org.processmining.database.metamodel.dapoql.dapoqlParser;
-import org.processmining.database.metamodel.dapoql.dapoqlParser.ProgContext;
+import org.processmining.database.metamodel.dapoql.lite.SuggestionsResult;
+import org.processmining.database.metamodel.dapoql.lite.SuggestionsResult;
+import org.processmining.database.metamodel.dapoql.lite.dapoqlLexer;
+import org.processmining.database.metamodel.dapoql.lite.dapoqlParser;
+import org.processmining.database.metamodel.dapoql.lite.dapoqlParser.ProgContext;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
-import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 

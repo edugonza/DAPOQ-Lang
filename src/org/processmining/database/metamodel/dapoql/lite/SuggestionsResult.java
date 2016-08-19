@@ -1,4 +1,4 @@
-package org.processmining.database.metamodel.dapoql;
+package org.processmining.database.metamodel.dapoql.lite;
 
 import java.util.List;
 
