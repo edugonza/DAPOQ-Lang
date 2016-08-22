@@ -1,5 +1,11 @@
 package org.processmining.database.metamodel.dapoql
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import org.junit.internal.runners.statements.InvokeMethod;
 import org.processmining.openslex.metamodel.SLEXMMActivity
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance
 import org.processmining.openslex.metamodel.SLEXMMAttribute
@@ -7,6 +13,7 @@ import org.processmining.openslex.metamodel.SLEXMMAttributeValue
 import org.processmining.openslex.metamodel.SLEXMMCase
 import org.processmining.openslex.metamodel.SLEXMMCaseAttribute
 import org.processmining.openslex.metamodel.SLEXMMCaseAttributeValue
+import org.processmining.openslex.metamodel.SLEXMMCaseResultSet
 import org.processmining.openslex.metamodel.SLEXMMClass
 import org.processmining.openslex.metamodel.SLEXMMDataModel
 import org.processmining.openslex.metamodel.SLEXMMEvent
@@ -16,18 +23,24 @@ import org.processmining.openslex.metamodel.SLEXMMEventResultSet
 import org.processmining.openslex.metamodel.SLEXMMLog
 import org.processmining.openslex.metamodel.SLEXMMLogAttribute
 import org.processmining.openslex.metamodel.SLEXMMLogAttributeValue
+import org.processmining.openslex.metamodel.SLEXMMLogResultSet
 import org.processmining.openslex.metamodel.SLEXMMObject
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion
 import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet
+import org.processmining.openslex.metamodel.SLEXMMPeriod;
 import org.processmining.openslex.metamodel.SLEXMMProcess
 import org.processmining.openslex.metamodel.SLEXMMRelation
 import org.processmining.openslex.metamodel.SLEXMMRelationship
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel
+import org.processmining.openslex.metamodel.SLEXMMUtils;
+import org.stringtemplate.v4.compiler.CodeGenerator.args_return;
 
 class DAPOQLDSL extends Script {
 
 	private DAPOQLFunctionsGroovy dapoqlfunc = null;
 	private SLEXMMStorageMetaModel slxmm = null;
+	
+	private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
 	protected void init(SLEXMMStorageMetaModel slxmm) {
 		this.slxmm = slxmm;
@@ -130,34 +143,61 @@ class DAPOQLDSL extends Script {
 		
 		def union(QueryGroovyResult qrB) {
 			QueryGroovyResult qr = new QueryGroovyResult();
-			qr.result = new HashSet<>();
-			qr.result.addAll(this.result); //FIXME
+			qr.mapResult = new HashMap<>();
+			
+			for (Object o: this.result) {
+				qr.mapResult.put(o,this.mapResult.get(o));
+			}
+			
+			for (Object o: qrB.result) {
+				qr.mapResult.put(o,qrB.mapResult.get(o));
+			}
+			
 			qr.type = this.type;
-			qr.result.addAll(qrB.result);
+			qr.result = qr.mapResult.keySet();
 			return qr;
 		}
 		
 		def excluding(QueryGroovyResult qrB) {
 			QueryGroovyResult qr = new QueryGroovyResult();
-			qr.result = new HashSet<>();
-			qr.result.addAll(this.result); //FIXME
+			qr.mapResult = new HashMap<>();
+			
+			for (Object o : this.result) {
+				qr.mapResult.put(o,this.mapResult.get(o));
+			}
+			
+			for (Object o : qrB.result) {
+				qr.mapResult.remove(o);
+			}
+			
 			qr.type = this.type;
-			qr.result.removeAll(qrB.result);
+			qr.result = qr.mapResult.keySet();
 			return qr;
 		}
 		
 		def intersection(QueryGroovyResult qrB) {
 			QueryGroovyResult qrAux = new QueryGroovyResult();
+			
 			qrAux.result = new HashSet<>();
-			qrAux.result.addAll(this.result); //FIXME
+			qrAux.result.addAll(this.result);
 			qrAux.type = this.type;
 			qrAux.result.removeAll(qrB.result);
-			
+						
 			QueryGroovyResult qr = new QueryGroovyResult();
-			qr.result = new HashSet<>();
-			qr.result.addAll(this.result);
+			
+			qr.mapResult = new HashMap<>();
+			
+			for (Object o : this.result) {
+				qr.mapResult.put(o,this.mapResult.get(o));
+			}
+			
+			for (Object o : qrAux.result) {
+				qr.mapResult.remove(o);
+			}
+			
 			qr.type = this.type;
-			qr.result.removeAll(qrAux.result);
+			qr.result = qr.mapResult.keySet();
+			
 			return qr;
 		}
 	}
@@ -186,8 +226,23 @@ class DAPOQLDSL extends Script {
 				qr.mapResult.put(e,map.get(e));
 			}
 			qr.result = qr.mapResult.keySet();
+		} else if (type == SLEXMMCase) {
+			qr.mapResult = new HashMap<>();
+			SLEXMMCaseResultSet crset = slxmm.getCasesAndAttributeValues(qr.result);
+			SLEXMMCase c = null;
+			while ((c = crset.getNextWithAttributes()) != null) {
+				qr.mapResult.put(c,map.get(c));
+			}
+			qr.result = qr.mapResult.keySet();
+		} else if (type == SLEXMMLog) {
+			qr.mapResult = new HashMap<>();
+			SLEXMMLogResultSet lrset = slxmm.getLogsAndAttributeValues(qr.result);
+			SLEXMMLog log = null;
+			while ((log = lrset.getNextWithAttributes()) != null) {
+				qr.mapResult.put(log,map.get(log));
+			}
+			qr.result = qr.mapResult.keySet();
 		}
-		// FIXME
 		return qr;
 	}
 	
@@ -300,6 +355,148 @@ class DAPOQLDSL extends Script {
 	
 	def QueryResult processesOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.processesOf(qr.mapResult, qr.type),SLEXMMProcess.class);
+	}
+
+	def QueryResult periodsOf(QueryResult qr) {
+		return buildResult(dapoqlfunc.periodsOf(qr.mapResult,qr.type),SLEXMMPeriod.class);
+	}
+	
+	def SLEXMMPeriod globalPeriod(QueryResult qr) {
+				
+		if (qr.type == SLEXMMPeriod) {
+			long startTimestamp = -1L;
+			long endTimestamp = -2L;
+			
+			for (SLEXMMPeriod po: qr.result) {
+				startTimestamp = SLEXMMUtils.earliest(startTimestamp,po.getStart());
+				endTimestamp = SLEXMMUtils.latest(endTimestamp,po.getEnd());
+			}
+			
+			SLEXMMPeriod p = new SLEXMMPeriod(startTimestamp, endTimestamp);
+			return p;
+		} else {
+			return globalPeriod(periodsOf(qr));
+		}
+	}
+	
+	def methodMissing(String name, args) {
+		
+        if (!(args instanceof QueryResult)) {
+			
+			boolean equalType = true;
+			Class type = null;
+			
+			for (Object o: args) {
+				if (type == null) {
+					type = o.getClass();
+				}
+				if (!(equalType && o.getClass() == type)) {
+					equalType = false;
+				}
+			}
+			
+			if (equalType) {
+				QueryResult qr = new QueryResult();
+				qr.type = type;
+				qr.mapResult = new HashMap<>();
+				
+				for (Object o: args) {
+					qr.mapResult.put(o,new ArrayList<>());
+				}
+				
+				qr.result = qr.mapResult.keySet();
+				return invokeMethod(name,qr);
+			}
+			
+        }
+		
+        throw new MissingMethodException(name, this.class, args);
+    }
+	
+	def SLEXMMPeriod createPeriod(String start, String end) {
+		return createPeriod(start,end,DEFAULT_TIMESTAMP_FORMAT);
+	}
+	
+	def SLEXMMPeriod createPeriod(String start, String end, String format) {
+		long startTimestamp = 0L;
+		long endTimestamp = 0L;
+		
+		DateFormat dformat = new SimpleDateFormat(format, Locale.ENGLISH);
+		
+		Date dateStart = null;
+		Date dateEnd = null;
+		try {
+			dateStart = dformat.parse(start);
+			dateEnd = dformat.parse(end);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Date format not valid");
+		}
+		
+		startTimestamp = dateStart.getTime();
+		endTimestamp = dateEnd.getTime();
+		
+		SLEXMMPeriod p = new SLEXMMPeriod(startTimestamp, endTimestamp);
+		return p;
+	}
+	
+	def boolean before(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return (SLEXMMUtils.before(a.getEnd(),b.getStart()));
+	}
+	
+	def boolean after(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return before(b,a);
+	}
+	
+	def boolean meets(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return (a.getEnd() == b.getStart());
+	}
+	
+	def boolean meetsInv(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return meets(b,a);
+	}
+
+	def boolean overlaps(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return (SLEXMMUtils.before(a.getStart(),b.getStart()) &&
+			    SLEXMMUtils.after(a.getEnd(),b.getStart()) &&
+				SLEXMMUtils.before(a.getEnd(),b.getEnd()));
+	}
+	
+	def boolean overlapsInv(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return overlaps(b,a);
+	}
+
+	def boolean starts(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return (a.getStart() == b.getStart() &&
+			    SLEXMMUtils.before(a.getEnd(),b.getEnd()));
+	}
+	
+	def boolean startsInv(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return starts(b,a);
+	}
+	
+	def boolean during(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return ((SLEXMMUtils.after(a.getStart(),b.getStart()) &&
+			     SLEXMMUtils.beforeOrEqual(a.getEnd(),b.getEnd())) ||
+				(SLEXMMUtils.afterOrEqual(a.getStart(),b.getStart()) &&
+			     SLEXMMUtils.before(a.getEnd(),b.getEnd())));		 
+	}
+	
+	def boolean duringInv(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return during(b,a);
+	}
+	
+	def boolean finishes(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return (SLEXMMUtils.after(a.getStart(),b.getStart()) &&
+			    a.getEnd() == b.getEnd());
+	}
+	
+	def boolean finishesInv(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return finishes(b,a);
+	}
+	
+	def boolean matches(SLEXMMPeriod a, SLEXMMPeriod b) {
+		return (a.getStart() == b.getStart() && a.getEnd() == b.getEnd());
 	}
 	
 }
