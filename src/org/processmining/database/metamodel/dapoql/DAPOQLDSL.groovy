@@ -3,8 +3,9 @@ package org.processmining.database.metamodel.dapoql
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+import java.util.Locale
 
+import org.codehaus.groovy.runtime.callsite.MetaClassConstructorSite;
 import org.junit.internal.runners.statements.InvokeMethod;
 import org.processmining.openslex.metamodel.SLEXMMActivity
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance
@@ -33,7 +34,8 @@ import org.processmining.openslex.metamodel.SLEXMMRelation
 import org.processmining.openslex.metamodel.SLEXMMRelationship
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel
 import org.processmining.openslex.metamodel.SLEXMMUtils;
-import org.stringtemplate.v4.compiler.CodeGenerator.args_return;
+
+import groovy.lang.MetaClass;;
 
 class DAPOQLDSL extends Script {
 
@@ -57,8 +59,9 @@ class DAPOQLDSL extends Script {
 
 		Object o = null;
 		Class type = null;
-
+				
 		def getProperty(String propertyName) {
+			
 			if (type == SLEXMMEvent.class) {
 				SLEXMMEvent e = (SLEXMMEvent) o;
 				HashMap<SLEXMMEventAttribute,SLEXMMEventAttributeValue> atValsMap = e.getAttributeValues();
@@ -97,7 +100,7 @@ class DAPOQLDSL extends Script {
 				}
 			}
 			
-			return "";
+			return null;
 		}
 	}
 	
@@ -106,6 +109,10 @@ class DAPOQLDSL extends Script {
 		Object o = null;
 		Class type = null;
 				
+		def has(p) {
+			return p ? true: false;
+		}
+		
 		def getProperty(String propertyName) {
 			if (propertyName == "at") {
 				DAPOQLAttributeHolder dapoqlAtHolder = new DAPOQLAttributeHolder();
@@ -115,6 +122,15 @@ class DAPOQLDSL extends Script {
 			} else {
 				return o.getProperties().get(propertyName);
 			}
+		}
+		
+		def changed(Object p, String a, String b) {
+//			if (p instanceof SLEXMMObjectVersion) {
+//				
+//			} else {
+//				return false;
+//			}
+			// TODO
 		}
 	}
 	
@@ -381,34 +397,36 @@ class DAPOQLDSL extends Script {
 	
 	def methodMissing(String name, args) {
 		
-        if (!(args instanceof QueryResult)) {
-			
-			boolean equalType = true;
-			Class type = null;
-			
-			for (Object o: args) {
-				if (type == null) {
-					type = o.getClass();
-				}
-				if (!(equalType && o.getClass() == type)) {
-					equalType = false;
-				}
-			}
-			
-			if (equalType) {
-				QueryResult qr = new QueryResult();
-				qr.type = type;
-				qr.mapResult = new HashMap<>();
-				
+		if (getMetaClass().respondsTo(this, name, QueryResult)) {
+
+			if (!(args instanceof QueryResult)) {
+
+				boolean equalType = true;
+				Class type = null;
+
 				for (Object o: args) {
-					qr.mapResult.put(o,new ArrayList<>());
+					if (type == null) {
+						type = o.getClass();
+					}
+					if (!(equalType && o.getClass() == type)) {
+						equalType = false;
+					}
 				}
-				
-				qr.result = qr.mapResult.keySet();
-				return invokeMethod(name,qr);
+
+				if (equalType) {
+					QueryResult qr = new QueryResult();
+					qr.type = type;
+					qr.mapResult = new HashMap<>();
+
+					for (Object o: args) {
+						qr.mapResult.put(o,new ArrayList<>());
+					}
+
+					qr.result = qr.mapResult.keySet();
+					return invokeMethod(name,qr);
+				}
 			}
-			
-        }
+		}
 		
         throw new MissingMethodException(name, this.class, args);
     }

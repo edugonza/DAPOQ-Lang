@@ -22,7 +22,7 @@ classesOf(
 	allClasses().where { name == "SEAT" }
 )
 
-allEvents() where { at.TABLE_NAME == "CUSTOMER" }
+allEvents() where { has(at.TABLE_NAME) && at.TABLE_NAME == "CUSTOMER" }
 
 
 allVersions() where { at.PRICE == "35" }
@@ -62,17 +62,38 @@ allActivities().where {
 	before(globalPeriod(it),p)
 }
 */
+
+
+/**/
 def allC = allCases();
-/*
+
 def results = allActivities().where { false };
 
 for (Object c : allC.result) {
-	def e = eventsOf(c).where { !activityOf(it).where { name.contains("Afwijzing") }.result.isEmpty() };
+	def e = eventsOf(c).where { !activitiesOf(it).where { name.contains("Afwijzing") }.result.isEmpty() };
 	def pe = globalPeriod(e);
 	def ebef = eventsOf(c).where { before(globalPeriod(it),pe) };
 	results = results.union(activitiesOf(ebef));
 }
-*/
 
-return allC
+return results
 /**/
+
+allVersions() where { (at.CustomerId as Float) > 30470 }
+
+allEvents() where { ( (at.CustomerID ?: "0") as Float) > 30 }
+
+//
+def p = createPeriod("2016-01-01 00:00:00","2016-01-03 00:00:00");
+
+casesOf(p)
+//
+
+allEvents() where { has(at.CustomerID) }
+
+
+
+//def b = allEvents() where {at.CustomerID && ((at.CustomerID as Float) > 85000) }
+
+allEvents() where { !blabla }
+
