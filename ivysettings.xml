@@ -7,16 +7,16 @@
             <artifact pattern="https://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/raw/master/Releases/[module]/[module]-[revision].[ext]" />
         </url>
          <url name="rapidprom" checkmodified="true" checksums="">
-         	<ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/[release]/prom/[module]-[revision]/ivy-[module]-[revision].xml" />
-            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/[release]/prom/[module]-[revision]/[module]-[revision].[ext]" />
+         	<ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/prom/[module]-[revision]/ivy-[module]-[revision].xml" />
+            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/prom/[module]-[revision]/[module]-[revision].[ext]" />
         </url>
         <url name="rapidprom-thirdparty-lib" checkmodified="true" checksums="">
-            <ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/[release]/thirdparty/lib/[module]-[revision]/ivy-[module]-[revision].xml" />
-            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/[release]/prom/[module]-[revision]/[module]-[revision].[ext]" />
+            <ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/lib/[module]-[revision]/ivy-[module]-[revision].xml" />
+            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/lib/[module]-[revision]/[module]-[revision].[ext]" />
         </url>
         <url name="rapidprom-thirdparty-resource" checkmodified="true" checksums="">
-            <ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/[release]/thirdparty/resource/[module]-[revision]/ivy-[module]-[revision].xml" />
-            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/[release]/prom/[module]-[revision]/[module]-[revision].[ext]" />
+            <ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/resource/[module]-[revision]/ivy-[module]-[revision].xml" />
+            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/resource/[module]-[revision]/[module]-[revision].[ext]" />
         </url>
         <ibiblio name="maven2" m2compatible="true"/>
         <chain name="default" returnFirst="true">
