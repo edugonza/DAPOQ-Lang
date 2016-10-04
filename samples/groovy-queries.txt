@@ -97,3 +97,24 @@ allEvents() where { has(at.CustomerID) }
 
 allEvents() where { !blabla }
 
+
+/**/
+def allC = allCases().where { id < 10} ;
+
+def results = allActivities().where { false };
+
+def eventsN = eventsOf(allActivities().where{ name.contains("Afwijzing") });
+
+int i = 0;
+for (Object c : allC.result) {
+	def ec = eventsOf(c);
+	def e = eventsN.intersection(ec);	
+	def pe = globalPeriod(e);
+	def ebef = ec.where { before(globalPeriod(it),pe) };
+	results = results.union(activitiesOf(ebef));
+	i++;
+	System.out.println(i);
+}
+
+return results
+/**/

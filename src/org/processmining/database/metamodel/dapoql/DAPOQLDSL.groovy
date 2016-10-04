@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.Locale
 
 import org.codehaus.groovy.runtime.callsite.MetaClassConstructorSite;
-import org.junit.internal.runners.statements.InvokeMethod;
+import org.junit.internal.runners.statements.InvokeMethod
+import org.processmining.database.metamodel.dapoql.lite.DAPOQLFunctions;
 import org.processmining.openslex.metamodel.SLEXMMActivity
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance
 import org.processmining.openslex.metamodel.SLEXMMAttribute
@@ -124,13 +125,14 @@ class DAPOQLDSL extends Script {
 			}
 		}
 		
-		def changed(Object p, String a, String b) {
-//			if (p instanceof SLEXMMObjectVersion) {
-//				
-//			} else {
-//				return false;
-//			}
-			// TODO
+		def changed(p, String from, String to) {
+			
+			if ( type == SLEXMMObjectVersion && has(p)) {
+				SLEXMMAttribute at = ((SLEXMMObjectVersion) o).
+				return DAPOQLDSL.this.dapoqlfunc.filterChangedOperation(o,at,v,from,to);
+			}
+			
+			return false;
 		}
 	}
 	
