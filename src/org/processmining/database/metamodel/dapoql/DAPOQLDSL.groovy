@@ -40,7 +40,7 @@ import groovy.lang.MetaClass;;
 
 class DAPOQLDSL extends Script {
 
-	private DAPOQLFunctionsGroovy dapoqlfunc = null;
+	protected DAPOQLFunctionsGroovy dapoqlfunc = null;
 	private SLEXMMStorageMetaModel slxmm = null;
 	
 	private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -125,11 +125,25 @@ class DAPOQLDSL extends Script {
 			}
 		}
 		
-		def changed(p, String from, String to) {
+		def changed(Map args) {
 			
-			if ( type == SLEXMMObjectVersion && has(p)) {
-				SLEXMMAttribute at = ((SLEXMMObjectVersion) o).
-				return DAPOQLDSL.this.dapoqlfunc.filterChangedOperation(o,at,v,from,to);
+			String attributeName = args.get("at");
+			String fromV = args.get("from");
+			String toV = args.get("to");
+			
+			if (attributeName != null) {
+			
+				if (attributeName.startsWith("at.")) {
+					attributeName = attributeName.substring(3);
+				}
+			
+				if ( type == SLEXMMObjectVersion && has(getProperty("at").getProperty(attributeName))) {
+					SLEXMMObjectVersion ov = ((SLEXMMObjectVersion) o);
+					SLEXMMAttributeValue atV = ov.getAttributeValue(attributeName);
+					SLEXMMAttribute atmm = ov.getAttribute(attributeName);
+					return DAPOQLDSL.this.dapoqlfunc.filterChangedOperation(ov,atmm,atV.getValue(),fromV,toV);
+				}
+			
 			}
 			
 			return false;
@@ -268,114 +282,114 @@ class DAPOQLDSL extends Script {
 		return buildResult(dapoqlfunc.getAllDatamodels(),SLEXMMDataModel.class);
 	}
 	
-	def QueryResult allClasses() {
+	def QueryGroovyResult allClasses() {
 		return buildResult(dapoqlfunc.getAllClasses(),SLEXMMClass.class);
 	}
 	
-	def QueryResult allAttributes() {
+	def QueryGroovyResult allAttributes() {
 		return buildResult(dapoqlfunc.getAllAttributes(),SLEXMMAttribute.class);
 	}
 	
-	def QueryResult allRelationships() {
+	def QueryGroovyResult allRelationships() {
 		return buildResult(dapoqlfunc.getAllRelationships(),SLEXMMRelationship.class);
 	}
 	
-	def QueryResult allObjects() {
+	def QueryGroovyResult allObjects() {
 		return buildResult(dapoqlfunc.getAllObjects(),SLEXMMObject.class);
 	}
 	
-	def QueryResult allVersions() {
+	def QueryGroovyResult allVersions() {
 		return buildResult(dapoqlfunc.getAllVersions(),SLEXMMObjectVersion.class);
 	}
 	
-	def QueryResult allRelations() {
+	def QueryGroovyResult allRelations() {
 		return buildResult(dapoqlfunc.getAllRelations(),SLEXMMRelation.class);
 	}
 	
-	def QueryResult allEvents() {
+	def QueryGroovyResult allEvents() {
 		return buildResult(dapoqlfunc.getAllEvents(),SLEXMMEvent.class);
 	}
 	
-	def QueryResult allActivityInstances() {
+	def QueryGroovyResult allActivityInstances() {
 		return buildResult(dapoqlfunc.getAllActivityInstances(),SLEXMMActivityInstance.class);
 	}
 	
-	def QueryResult allCases() {
+	def QueryGroovyResult allCases() {
 		return buildResult(dapoqlfunc.getAllCases(),SLEXMMCase.class);
 	}
 	
-	def QueryResult allLogs() {
+	def QueryGroovyResult allLogs() {
 		return buildResult(dapoqlfunc.getAllLogs(),SLEXMMLog.class);
 	}
 	
-	def QueryResult allActivities() {
+	def QueryGroovyResult allActivities() {
 		return buildResult(dapoqlfunc.getAllActivities(),SLEXMMActivity.class);
 	}
 	
-	def QueryResult allProcesses() {
+	def QueryGroovyResult allProcesses() {
 		return buildResult(dapoqlfunc.getAllProcesses(),SLEXMMProcess.class);
 	}
 	
-	def QueryResult versionsRelatedTo(QueryResult qr) throws Exception {
+	def QueryGroovyResult versionsRelatedTo(QueryResult qr) throws Exception {
 		if (qr.type != SLEXMMObjectVersion.class) {
 			throw new Exception("Argument of versionsRelatedTo must be a set of versions");
 		}
 		return buildResult(dapoqlfunc.versionsRelatedTo(qr.result,qr.type),SLEXMMObjectVersion.class);
 	}
 	
-	def QueryResult datamodelsOf(QueryResult qr) {
+	def QueryGroovyResult datamodelsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.datamodelsOf(qr.mapResult, qr.type),SLEXMMDataModel.class);
 	}
 	
-	def QueryResult classesOf(QueryResult qr) {
+	def QueryGroovyResult classesOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.classesOf(qr.mapResult, qr.type),SLEXMMClass.class);
 	}
 	
-	def QueryResult attributesOf(QueryResult qr) {
+	def QueryGroovyResult attributesOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.attributesOf(qr.mapResult, qr.type),SLEXMMAttribute.class);
 	}
 	
-	def QueryResult relationshipsOf(QueryResult qr) {
+	def QueryGroovyResult relationshipsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.relationshipsOf(qr.mapResult, qr.type),SLEXMMRelationship.class);
 	}
 	
-	def QueryResult objectsOf(QueryResult qr) {
+	def QueryGroovyResult objectsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.objectsOf(qr.mapResult, qr.type),SLEXMMObject.class);
 	}
 	
-	def QueryResult versionsOf(QueryResult qr) {
+	def QueryGroovyResult versionsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.versionsOf(qr.mapResult, qr.type),SLEXMMObjectVersion.class);
 	}
 	
-	def QueryResult relationsOf(QueryResult qr) {
+	def QueryGroovyResult relationsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.relationsOf(qr.mapResult, qr.type),SLEXMMRelation.class);
 	}
 	
-	def QueryResult eventsOf(QueryResult qr) {
+	def QueryGroovyResult eventsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.eventsOf(qr.mapResult, qr.type),SLEXMMEvent.class);
 	}
 	
-	def QueryResult activityInstancesOf(QueryResult qr) {
+	def QueryGroovyResult activityInstancesOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.activityInstancesOf(qr.mapResult, qr.type),SLEXMMActivityInstance.class);
 	}
 	
-	def QueryResult activitiesOf(QueryResult qr) {
+	def QueryGroovyResult activitiesOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.activitiesOf(qr.mapResult, qr.type),SLEXMMActivity.class);
 	}
 	
-	def QueryResult casesOf(QueryResult qr) {
+	def QueryGroovyResult casesOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.casesOf(qr.mapResult, qr.type),SLEXMMCase.class);
 	}
 	
-	def QueryResult logsOf(QueryResult qr) {
+	def QueryGroovyResult logsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.logsOf(qr.mapResult, qr.type),SLEXMMLog.class);
 	}
 	
-	def QueryResult processesOf(QueryResult qr) {
+	def QueryGroovyResult processesOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.processesOf(qr.mapResult, qr.type),SLEXMMProcess.class);
 	}
 
-	def QueryResult periodsOf(QueryResult qr) {
+	def QueryGroovyResult periodsOf(QueryResult qr) {
 		return buildResult(dapoqlfunc.periodsOf(qr.mapResult,qr.type),SLEXMMPeriod.class);
 	}
 	

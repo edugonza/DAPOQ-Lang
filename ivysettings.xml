@@ -19,12 +19,14 @@
             <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/resource/[module]-[revision]/[module]-[revision].[ext]" />
         </url>
         <ibiblio name="maven2" m2compatible="true"/>
+        <ibiblio name="netbeans" m2compatible="true" root="http://bits.netbeans.org/maven2/"/>
         <chain name="default" returnFirst="true">
         	<resolver ref="db-process-mining" />
         	<resolver ref="rapidprom"/>
             <resolver ref="rapidprom-thirdparty-lib"/>
             <resolver ref="rapidprom-thirdparty-resource"/>  
-            <resolver ref="maven2" />  
+            <resolver ref="maven2" />
+            <resolver ref="netbeans" />
         </chain>  
     </resolvers>
 </ivysettings>
