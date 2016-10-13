@@ -35,7 +35,7 @@ public class DAPOQLRunnerGroovy {
 			
 			if (vars != null) {
 				for (DAPOQLVariable v : vars) {
-					QueryResult vr = new QueryResult();
+					QueryGroovyResult vr = new QueryGroovyResult();
 					vr.mapResult = v.getValue();
 					vr.result = vr.mapResult.keySet();
 					vr.type = v.getType();

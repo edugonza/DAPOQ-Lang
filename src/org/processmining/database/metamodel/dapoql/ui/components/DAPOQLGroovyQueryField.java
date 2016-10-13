@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import org.fife.rsta.ac.java.JavaTemplateCompletion;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.Completion;
@@ -29,8 +28,8 @@ public class DAPOQLGroovyQueryField extends JPanel {
 	private RSyntaxTextArea dapoqlQueryField = null;
 	// private Console console = null;
 
-	private static final String COMMIT_ACTION = "commit";
-	private static final String SHIFT_ACTION = "shift";
+//	private static final String COMMIT_ACTION = "commit";
+//	private static final String SHIFT_ACTION = "shift";
 
 	public DAPOQLGroovyQueryField() {
 		super();

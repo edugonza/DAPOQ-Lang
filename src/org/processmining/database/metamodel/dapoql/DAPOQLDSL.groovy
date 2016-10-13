@@ -35,8 +35,7 @@ import org.processmining.openslex.metamodel.SLEXMMRelation
 import org.processmining.openslex.metamodel.SLEXMMRelationship
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel
 import org.processmining.openslex.metamodel.SLEXMMUtils;
-
-import groovy.lang.MetaClass;;
+import groovy.lang.MetaClass;
 
 class DAPOQLDSL extends Script {
 
@@ -105,141 +104,13 @@ class DAPOQLDSL extends Script {
 		}
 	}
 	
-	class DAPOQLDelegate {
-		
-		Object o = null;
-		Class type = null;
-				
-		def has(p) {
-			return p ? true: false;
-		}
-		
-		def getProperty(String propertyName) {
-			if (propertyName == "at") {
-				DAPOQLAttributeHolder dapoqlAtHolder = new DAPOQLAttributeHolder();
-				dapoqlAtHolder.o = o;
-				dapoqlAtHolder.type = type;
-				return dapoqlAtHolder;
-			} else {
-				return o.getProperties().get(propertyName);
-			}
-		}
-		
-		def changed(Map args) {
-			
-			String attributeName = args.get("at");
-			String fromV = args.get("from");
-			String toV = args.get("to");
-			
-			if (attributeName != null) {
-			
-				if (attributeName.startsWith("at.")) {
-					attributeName = attributeName.substring(3);
-				}
-			
-				if ( type == SLEXMMObjectVersion && has(getProperty("at").getProperty(attributeName))) {
-					SLEXMMObjectVersion ov = ((SLEXMMObjectVersion) o);
-					SLEXMMAttributeValue atV = ov.getAttributeValue(attributeName);
-					SLEXMMAttribute atmm = ov.getAttribute(attributeName);
-					return DAPOQLDSL.this.dapoqlfunc.filterChangedOperation(ov,atmm,atV.getValue(),fromV,toV);
-				}
-			
-			}
-			
-			return false;
-		}
-	}
-	
-	class QueryGroovyResult extends QueryResult {
-		
-		def where(Closure body) {
-			QueryGroovyResult qr = new QueryGroovyResult();
-			qr.result = new HashSet<>();
-			qr.mapResult = new HashMap<>();
-			qr.type = this.type;
-			
-			body.resolveStrategy = Closure.DELEGATE_ONLY;
-			DAPOQLDelegate dapoqldelegate = new DAPOQLDelegate();
-			body.delegate = dapoqldelegate;
-			dapoqldelegate.type = qr.type;
-			
-			result.each {
-				dapoqldelegate.o = it;
-				if (body(it) == true) {
-					qr.result.add(it);
-					qr.mapResult.put(it,this.mapResult.get(it));
-				}
-			}
-			return qr;
-		}
-		
-		def union(QueryGroovyResult qrB) {
-			QueryGroovyResult qr = new QueryGroovyResult();
-			qr.mapResult = new HashMap<>();
-			
-			for (Object o: this.result) {
-				qr.mapResult.put(o,this.mapResult.get(o));
-			}
-			
-			for (Object o: qrB.result) {
-				qr.mapResult.put(o,qrB.mapResult.get(o));
-			}
-			
-			qr.type = this.type;
-			qr.result = qr.mapResult.keySet();
-			return qr;
-		}
-		
-		def excluding(QueryGroovyResult qrB) {
-			QueryGroovyResult qr = new QueryGroovyResult();
-			qr.mapResult = new HashMap<>();
-			
-			for (Object o : this.result) {
-				qr.mapResult.put(o,this.mapResult.get(o));
-			}
-			
-			for (Object o : qrB.result) {
-				qr.mapResult.remove(o);
-			}
-			
-			qr.type = this.type;
-			qr.result = qr.mapResult.keySet();
-			return qr;
-		}
-		
-		def intersection(QueryGroovyResult qrB) {
-			QueryGroovyResult qrAux = new QueryGroovyResult();
-			
-			qrAux.result = new HashSet<>();
-			qrAux.result.addAll(this.result);
-			qrAux.type = this.type;
-			qrAux.result.removeAll(qrB.result);
-						
-			QueryGroovyResult qr = new QueryGroovyResult();
-			
-			qr.mapResult = new HashMap<>();
-			
-			for (Object o : this.result) {
-				qr.mapResult.put(o,this.mapResult.get(o));
-			}
-			
-			for (Object o : qrAux.result) {
-				qr.mapResult.remove(o);
-			}
-			
-			qr.type = this.type;
-			qr.result = qr.mapResult.keySet();
-			
-			return qr;
-		}
-	}
-	
 	private QueryGroovyResult buildResult(HashMap<Object, HashSet<Integer>> map, Class type) {
 		QueryGroovyResult qr = new QueryGroovyResult();
 		
 		qr.mapResult = map;
 		qr.result = map.keySet();
 		qr.type = type;
+		qr.dapoqlfunc = dapoqlfunc;
 		
 		if (type == SLEXMMEvent) {
 			qr.mapResult = new HashMap<>();
@@ -330,70 +201,70 @@ class DAPOQLDSL extends Script {
 		return buildResult(dapoqlfunc.getAllProcesses(),SLEXMMProcess.class);
 	}
 	
-	def QueryGroovyResult versionsRelatedTo(QueryResult qr) throws Exception {
+	def QueryGroovyResult versionsRelatedTo(QueryGroovyResult qr) throws Exception {
 		if (qr.type != SLEXMMObjectVersion.class) {
 			throw new Exception("Argument of versionsRelatedTo must be a set of versions");
 		}
 		return buildResult(dapoqlfunc.versionsRelatedTo(qr.result,qr.type),SLEXMMObjectVersion.class);
 	}
 	
-	def QueryGroovyResult datamodelsOf(QueryResult qr) {
+	def QueryGroovyResult datamodelsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.datamodelsOf(qr.mapResult, qr.type),SLEXMMDataModel.class);
 	}
 	
-	def QueryGroovyResult classesOf(QueryResult qr) {
+	def QueryGroovyResult classesOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.classesOf(qr.mapResult, qr.type),SLEXMMClass.class);
 	}
 	
-	def QueryGroovyResult attributesOf(QueryResult qr) {
+	def QueryGroovyResult attributesOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.attributesOf(qr.mapResult, qr.type),SLEXMMAttribute.class);
 	}
 	
-	def QueryGroovyResult relationshipsOf(QueryResult qr) {
+	def QueryGroovyResult relationshipsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.relationshipsOf(qr.mapResult, qr.type),SLEXMMRelationship.class);
 	}
 	
-	def QueryGroovyResult objectsOf(QueryResult qr) {
+	def QueryGroovyResult objectsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.objectsOf(qr.mapResult, qr.type),SLEXMMObject.class);
 	}
 	
-	def QueryGroovyResult versionsOf(QueryResult qr) {
+	def QueryGroovyResult versionsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.versionsOf(qr.mapResult, qr.type),SLEXMMObjectVersion.class);
 	}
 	
-	def QueryGroovyResult relationsOf(QueryResult qr) {
+	def QueryGroovyResult relationsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.relationsOf(qr.mapResult, qr.type),SLEXMMRelation.class);
 	}
 	
-	def QueryGroovyResult eventsOf(QueryResult qr) {
+	def QueryGroovyResult eventsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.eventsOf(qr.mapResult, qr.type),SLEXMMEvent.class);
 	}
 	
-	def QueryGroovyResult activityInstancesOf(QueryResult qr) {
+	def QueryGroovyResult activityInstancesOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.activityInstancesOf(qr.mapResult, qr.type),SLEXMMActivityInstance.class);
 	}
 	
-	def QueryGroovyResult activitiesOf(QueryResult qr) {
+	def QueryGroovyResult activitiesOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.activitiesOf(qr.mapResult, qr.type),SLEXMMActivity.class);
 	}
 	
-	def QueryGroovyResult casesOf(QueryResult qr) {
+	def QueryGroovyResult casesOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.casesOf(qr.mapResult, qr.type),SLEXMMCase.class);
 	}
 	
-	def QueryGroovyResult logsOf(QueryResult qr) {
+	def QueryGroovyResult logsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.logsOf(qr.mapResult, qr.type),SLEXMMLog.class);
 	}
 	
-	def QueryGroovyResult processesOf(QueryResult qr) {
+	def QueryGroovyResult processesOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.processesOf(qr.mapResult, qr.type),SLEXMMProcess.class);
 	}
 
-	def QueryGroovyResult periodsOf(QueryResult qr) {
+	def QueryGroovyResult periodsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.periodsOf(qr.mapResult,qr.type),SLEXMMPeriod.class);
 	}
 	
-	def SLEXMMPeriod globalPeriod(QueryResult qr) {
+	def SLEXMMPeriod globalPeriod(QueryGroovyResult qr) {
 				
 		if (qr.type == SLEXMMPeriod) {
 			long startTimestamp = -1L;
@@ -413,9 +284,9 @@ class DAPOQLDSL extends Script {
 	
 	def methodMissing(String name, args) {
 		
-		if (getMetaClass().respondsTo(this, name, QueryResult)) {
+		if (getMetaClass().respondsTo(this, name, QueryGroovyResult)) {
 
-			if (!(args instanceof QueryResult)) {
+			if (!(args instanceof QueryGroovyResult)) {
 
 				boolean equalType = true;
 				Class type = null;
@@ -430,9 +301,10 @@ class DAPOQLDSL extends Script {
 				}
 
 				if (equalType) {
-					QueryResult qr = new QueryResult();
+					QueryGroovyResult qr = new QueryGroovyResult();
 					qr.type = type;
 					qr.mapResult = new HashMap<>();
+					qr.dapoqlfunc = dapoqlfunc;
 
 					for (Object o: args) {
 						qr.mapResult.put(o,new ArrayList<>());
