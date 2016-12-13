@@ -1,15 +1,12 @@
 package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.BorderLayout;
-
 import javax.swing.JPanel;
 
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.autocomplete.BasicCompletion;
-import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
-import org.fife.ui.autocomplete.ParameterizedCompletion;
 import org.fife.ui.autocomplete.ShorthandCompletion;
 import org.fife.ui.autocomplete.TemplateCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -48,6 +45,10 @@ public class DAPOQLGroovyQueryField extends JPanel {
 		dapoqlQueryField = new RSyntaxTextArea(20, 60);
 		dapoqlQueryField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 		dapoqlQueryField.setCodeFoldingEnabled(true);
+		dapoqlQueryField.setAutoIndentEnabled(true);
+		dapoqlQueryField.setAnimateBracketMatching(true);
+		dapoqlQueryField.setAntiAliasingEnabled(true);
+		dapoqlQueryField.setBracketMatchingEnabled(true);
 
 		CompletionProvider provider = createCompletionProvider();
 
@@ -59,6 +60,10 @@ public class DAPOQLGroovyQueryField extends JPanel {
 		// among multiple text components.
 		AutoCompletion ac = new AutoCompletion(provider);
 		ac.setParameterAssistanceEnabled(true);
+		ac.setShowDescWindow(true);
+		ac.setAutoCompleteEnabled(true);
+		ac.setAutoActivationEnabled(true);
+		ac.setAutoCompleteSingleChoices(false);
 		ac.install(dapoqlQueryField);
 
 		// RTextScrollPane sp = new RTextScrollPane(dapoqlQueryField);
@@ -100,35 +105,115 @@ public class DAPOQLGroovyQueryField extends JPanel {
 
 		DefaultCompletionProvider provider = new DefaultCompletionProvider();
 
-		provider.addCompletion(new BasicCompletion(provider, "allClasses()"));
-		provider.addCompletion(new BasicCompletion(provider, "allRelationships()"));
-		provider.addCompletion(new BasicCompletion(provider, "allAttributes()"));
-		provider.addCompletion(new BasicCompletion(provider, "allObjects()"));
-		provider.addCompletion(new BasicCompletion(provider, "allVersions()"));
-		provider.addCompletion(new BasicCompletion(provider, "allRelations()"));
-		provider.addCompletion(new BasicCompletion(provider, "allEvents()"));
-		provider.addCompletion(new BasicCompletion(provider, "allActivityInstances()"));
-		provider.addCompletion(new BasicCompletion(provider, "allCases()"));
-		provider.addCompletion(new BasicCompletion(provider, "allLogs()"));
-		provider.addCompletion(new BasicCompletion(provider, "allActivities()"));
-		provider.addCompletion(new BasicCompletion(provider, "allProcesses()"));
-
-		provider.addCompletion(new TemplateCompletion(provider, "classesOf", "classesOf", "classesOf(${cursor})"));
-
-		provider.addCompletion(new TemplateCompletion(provider, ".where{", "where", ".where{ ${cursor} }"));
+		DAPOQLGroovyCompletionMetaData dgcmd = DAPOQLGroovyCompletionMetaData.getInstance();
 		
-		provider.addCompletion(new TemplateCompletion(provider, "loop", "A loop",
-				"for (int ${i} = 0; ${i} &lt; ${array}.length; ${i}++) {\n ${cursor}\n }"));
+		String[] basicCompArray = {
+				"allDatamodels()",
+				"allClasses()",
+				"allRelationships()",
+				"allAttributes()",
+				"allObjects()",
+				"allVersions()",
+				"allRelations()",
+				"allEvents()",
+				"allActivityInstances()",
+				"allCases()",
+				"allLogs()",
+				"allActivities()",
+				"allProcesses()",
+				};
+		
+		for (String k: basicCompArray) {
+			String d = dgcmd.getDescriptionMap().get(k);
+			String s = dgcmd.getSummaryMap().get(k);
+			provider.addCompletion(new BasicCompletion(provider,k,d,s));
+		}
+		
+		String[] templateCompArray = {
+				"datamodelsOf",
+				"classesOf",
+				"relationshipsOf",
+				"attributesOf",
+				"objectsOf",
+				"versionsOf",
+				"versionsRelatedTo",
+				"relationsOf",
+				"eventsOf",
+				"activityInstancesOf",
+				"casesOf",
+				"logsOf",
+				"activitiesOf",
+				"processesOf",
+				"periodsOf",
+				"globalPeriodOf",
+				"union",
+				"excluding",
+				"intersection"
+				};
+		
+		for (String k: templateCompArray) {
+			String d = dgcmd.getDescriptionMap().get(k);
+			String s = dgcmd.getSummaryMap().get(k);
+			provider.addCompletion(new TemplateCompletion(provider, k, k, k+"(${cursor})", d, s));
+		}
+		
+		provider.addCompletion(new TemplateCompletion(provider, "createPeriod", "createPeriod",
+				"createPeriod(${cursor})",
+				dgcmd.getDescriptionMap().get("createPeriod"),
+				dgcmd.getSummaryMap().get("createPeriod")));
+		
+		provider.addCompletion(new TemplateCompletion(provider, "createPeriod", "createPeriod with Format",
+				"createPeriod(${timestamp},${format})",
+				dgcmd.getDescriptionMap().get("createPeriod with Format"),
+				dgcmd.getSummaryMap().get("createPeriod with Format")));
+		
+		provider.addCompletion(new TemplateCompletion(provider, ".where{", "where", ".where{ ${cursor} }",
+				dgcmd.getDescriptionMap().get("where"),
+				dgcmd.getSummaryMap().get("where")));
+		
+		provider.addCompletion(new TemplateCompletion(provider, "changed", "changed",
+				"changed([at: \"${attribute}\", from: \"${from}\",to: \"${to}\"])${cursor}",
+				dgcmd.getDescriptionMap().get("changed"),
+				dgcmd.getSummaryMap().get("changed")));
+		
+		provider.addCompletion(new TemplateCompletion(provider, "loop", "loop",
+				"for (int ${i} = 0; ${i} < ${array}.length; ${i}++) {\n\t${cursor}\n}",
+				dgcmd.getDescriptionMap().get("loop"),
+				dgcmd.getSummaryMap().get("loop")));
+		
+		provider.addCompletion(new TemplateCompletion(provider, "if", "if",
+				"if (${condition}) {\n\t${//then}\n} else {\n\t${//else}\n}\n${cursor}",
+				dgcmd.getDescriptionMap().get("if"),
+				dgcmd.getSummaryMap().get("if")));
 
+		String[] periodsLogicCompArray = {
+				"before",
+				"after",
+				"meets",
+				"meetsInv",
+				"overlaps",
+				"overlapsInv",
+				"starts",
+				"startsInv",
+				"during",
+				"duringInv",
+				"finishes",
+				"finishesInv",
+				"matches"
+				};
+		
+		for (String k: periodsLogicCompArray) {
+			String d = dgcmd.getDescriptionMap().get(k);
+			String s = dgcmd.getSummaryMap().get(k);
+			provider.addCompletion(new TemplateCompletion(provider, k, k, k+"(${periodA},${periodB})${cursor}", d, s));
+		}
+		
 		// Shorthand completions don't require the input text to be the same
 		// thing as the replacement text.
 		provider.addCompletion(
 				new ShorthandCompletion(provider, "sysout", "System.out.println(", "System.out.println("));
 		provider.addCompletion(
 				new ShorthandCompletion(provider, "syserr", "System.err.println(", "System.err.println("));
-
-		provider.addCompletion(new TemplateCompletion(provider, "changed", "changed",
-				"changed([at: \"${attribute}\", from: \"${from}\",to: \"${to}\"])${cursor}"));
 
 		return provider;
 

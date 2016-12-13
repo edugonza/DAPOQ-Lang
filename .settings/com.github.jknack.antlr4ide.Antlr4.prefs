@@ -1,5 +1,5 @@
-antlr4.antlrRegisteredTools=4.4@/tmp/antlr-4.4-complete.jar\:null@/home/edu/Code/workspace/DAPOQ-Lang/lib/antlr4-4.5.1-1.jar
-antlr4.antlrToolPath=/home/edu/Code/workspace/DAPOQ-Lang/lib/antlr4-4.5.1-1.jar
+antlr4.antlrRegisteredTools=4.4@/tmp/antlr-4.4-complete.jar\:null@/home/eduardo/Code/workspace/DAPOQ-Lang/lib/antlr4-4.5.1-1.jar
+antlr4.antlrToolPath=/home/eduardo/Code/workspace/DAPOQ-Lang/lib/antlr4-4.5.1-1.jar
 antlr4.encoding=UTF-8
 antlr4.listener=false
 antlr4.visitor=true

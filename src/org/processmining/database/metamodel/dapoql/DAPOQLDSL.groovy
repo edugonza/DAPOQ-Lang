@@ -264,7 +264,7 @@ class DAPOQLDSL extends Script {
 		return buildResult(dapoqlfunc.periodsOf(qr.mapResult,qr.type),SLEXMMPeriod.class);
 	}
 	
-	def SLEXMMPeriod globalPeriod(QueryGroovyResult qr) {
+	def SLEXMMPeriod globalPeriodOf(QueryGroovyResult qr) {
 				
 		if (qr.type == SLEXMMPeriod) {
 			long startTimestamp = -1L;
@@ -278,7 +278,7 @@ class DAPOQLDSL extends Script {
 			SLEXMMPeriod p = new SLEXMMPeriod(startTimestamp, endTimestamp);
 			return p;
 		} else {
-			return globalPeriod(periodsOf(qr));
+			return globalPeriodOf(periodsOf(qr));
 		}
 	}
 	
