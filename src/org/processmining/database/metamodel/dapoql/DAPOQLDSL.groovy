@@ -7,7 +7,6 @@ import java.util.Locale
 
 import org.codehaus.groovy.runtime.callsite.MetaClassConstructorSite;
 import org.junit.internal.runners.statements.InvokeMethod
-import org.processmining.database.metamodel.dapoql.lite.DAPOQLFunctions;
 import org.processmining.openslex.metamodel.SLEXMMActivity
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance
 import org.processmining.openslex.metamodel.SLEXMMAttribute
@@ -36,7 +35,11 @@ import org.processmining.openslex.metamodel.SLEXMMRelationship
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel
 import org.processmining.openslex.metamodel.SLEXMMUtils;
 import groovy.lang.MetaClass;
+import groovy.transform.TypeChecked;
+import groovy.transform.CompileStatic;
 
+@TypeChecked
+@CompileStatic
 class DAPOQLDSL extends Script {
 
 	protected DAPOQLFunctionsGroovy dapoqlfunc = null;
@@ -114,7 +117,7 @@ class DAPOQLDSL extends Script {
 		
 		if (type == SLEXMMEvent) {
 			qr.mapResult = new HashMap<>();
-			SLEXMMEventResultSet erset = slxmm.getEventsAndAttributeValues(qr.result);
+			SLEXMMEventResultSet erset = slxmm.getEventsAndAttributeValues((Set<SLEXMMEvent>)qr.result);
 			SLEXMMEvent e = null;
 			while ((e = erset.getNextWithAttributes()) != null) {
 				qr.mapResult.put(e,map.get(e));
@@ -123,7 +126,7 @@ class DAPOQLDSL extends Script {
 			
 		} else if (type == SLEXMMObjectVersion) {
 			qr.mapResult = new HashMap<>();
-			SLEXMMObjectVersionResultSet erset = slxmm.getVersionsAndAttributeValues(qr.result);
+			SLEXMMObjectVersionResultSet erset = slxmm.getVersionsAndAttributeValues((Set<SLEXMMObjectVersion>)qr.result);
 			SLEXMMObjectVersion e = null;
 			while ((e = erset.getNextWithAttributes()) != null) {
 				qr.mapResult.put(e,map.get(e));
@@ -131,7 +134,7 @@ class DAPOQLDSL extends Script {
 			qr.result = qr.mapResult.keySet();
 		} else if (type == SLEXMMCase) {
 			qr.mapResult = new HashMap<>();
-			SLEXMMCaseResultSet crset = slxmm.getCasesAndAttributeValues(qr.result);
+			SLEXMMCaseResultSet crset = slxmm.getCasesAndAttributeValues((Set<SLEXMMCase>)qr.result);
 			SLEXMMCase c = null;
 			while ((c = crset.getNextWithAttributes()) != null) {
 				qr.mapResult.put(c,map.get(c));
@@ -139,7 +142,7 @@ class DAPOQLDSL extends Script {
 			qr.result = qr.mapResult.keySet();
 		} else if (type == SLEXMMLog) {
 			qr.mapResult = new HashMap<>();
-			SLEXMMLogResultSet lrset = slxmm.getLogsAndAttributeValues(qr.result);
+			SLEXMMLogResultSet lrset = slxmm.getLogsAndAttributeValues((Set<SLEXMMLog>) qr.result);
 			SLEXMMLog log = null;
 			while ((log = lrset.getNextWithAttributes()) != null) {
 				qr.mapResult.put(log,map.get(log));
@@ -270,7 +273,8 @@ class DAPOQLDSL extends Script {
 			long startTimestamp = -1L;
 			long endTimestamp = -2L;
 			
-			for (SLEXMMPeriod po: qr.result) {
+			for (Object o: qr.result) {
+				SLEXMMPeriod po = (SLEXMMPeriod) o;
 				startTimestamp = SLEXMMUtils.earliest(startTimestamp,po.getStart());
 				endTimestamp = SLEXMMUtils.latest(endTimestamp,po.getEnd());
 			}
@@ -307,7 +311,7 @@ class DAPOQLDSL extends Script {
 					qr.dapoqlfunc = dapoqlfunc;
 
 					for (Object o: args) {
-						qr.mapResult.put(o,new ArrayList<>());
+						qr.mapResult.put(o,new HashSet<>());
 					}
 
 					qr.result = qr.mapResult.keySet();
