@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Locale
 
 import org.codehaus.groovy.runtime.callsite.MetaClassConstructorSite;
-import org.junit.internal.runners.statements.InvokeMethod
 import org.processmining.openslex.metamodel.SLEXMMActivity
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance
 import org.processmining.openslex.metamodel.SLEXMMAttribute

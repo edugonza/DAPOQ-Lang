@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'groovy'
 apply plugin: 'ivy-publish'
 
 version = '0.8'
@@ -46,6 +47,9 @@ repositories {
 sourceSets {
 	main {
 		java {
+			srcDirs = []
+		}
+		groovy{
 			srcDirs = ['src/']
 		}
 		resources {
@@ -67,13 +71,15 @@ publishing {
 	}
 }
 
+//compileJava.dependsOn(compileGroovy)
+
 dependencies {
 	compile  'org.rapidprom:GraphViz:6.7.185'
 	compile  'org.apache.commons:commons-io:1.3.2'
 	compile  'org.apache.commons:commons-compress:1.12'
 	compile  'org.processmining:OpenSLEX:0.8'
-	compile  'org.codehaus.groovy:groovy-all:2.3.3'
-	compile  'com.fifesoft:rsyntaxtextarea:2.5.8'
+	compile  'org.codehaus.groovy:groovy-all:2.4.7'
+	compile  'com.fifesoft:rsyntaxtextarea:2.6.0'
 	compile  'com.fifesoft:autocomplete:2.6.0'
 	compile  'com.fifesoft:languagesupport:2.6.0'
 }
