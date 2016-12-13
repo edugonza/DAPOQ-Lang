@@ -1,32 +1,39 @@
 <ivysettings>
-    <settings defaultResolver="default" />
-    
-    <resolvers>
-    	<url name="db-process-mining">
-            <ivy pattern="https://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/raw/master/Releases/[module]/[module]-[revision]-ivy.xml" />
-            <artifact pattern="https://git.yerappa.com/gitbucket/TUE-PhD/DatabaseProcessMining-Repository/raw/master/Releases/[module]/[module]-[revision].[ext]" />
-        </url>
-         <url name="rapidprom" checkmodified="true" checksums="">
-         	<ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/prom/[module]-[revision]/ivy-[module]-[revision].xml" />
-            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/prom/[module]-[revision]/[module]-[revision].[ext]" />
-        </url>
-        <url name="rapidprom-thirdparty-lib" checkmodified="true" checksums="">
-            <ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/lib/[module]-[revision]/ivy-[module]-[revision].xml" />
-            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/lib/[module]-[revision]/[module]-[revision].[ext]" />
-        </url>
-        <url name="rapidprom-thirdparty-resource" checkmodified="true" checksums="">
-            <ivy pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/resource/[module]-[revision]/ivy-[module]-[revision].xml" />
-            <artifact pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.1/thirdparty/resource/[module]-[revision]/[module]-[revision].[ext]" />
-        </url>
-        <ibiblio name="maven2" m2compatible="true"/>
-        <ibiblio name="netbeans" m2compatible="true" root="http://bits.netbeans.org/maven2/"/>
-        <chain name="default" returnFirst="true">
-        	<resolver ref="db-process-mining" />
-        	<resolver ref="rapidprom"/>
-            <resolver ref="rapidprom-thirdparty-lib"/>
-            <resolver ref="rapidprom-thirdparty-resource"/>  
-            <resolver ref="maven2" />
-            <resolver ref="netbeans" />
-        </chain>  
-    </resolvers>
+	<settings defaultResolver="default" />
+	<resolvers>
+		<url name="db-process-mining">
+			<ivy
+				pattern="https://github.com/edugonza/DatabaseProcessMining-Repository/raw/master/Releases/[organisation]/[module]/[revision]/ivy-[revision].xml" />
+			<artifact
+				pattern="https://github.com/edugonza/DatabaseProcessMining-Repository/raw/master/Releases/[organisation]/[module]/[revision]/[module]-[revision].[ext]" />
+		</url>
+		<url name="rapidprom" checkmodified="true" checksums="">
+			<ivy
+				pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.2/prom/[module]-[revision]/ivy-[module]-[revision].xml" />
+			<artifact
+				pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.2/prom/[module]-[revision]/[module]-[revision].[ext]" />
+		</url>
+		<url name="rapidprom-thirdparty-lib" checkmodified="true"
+			checksums="">
+			<ivy
+				pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.2/thirdparty/lib/[module]-[revision]/ivy-[module]-[revision].xml" />
+			<artifact
+				pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.2/thirdparty/lib/[module]-[revision]/[module]-[revision].[ext]" />
+		</url>
+		<url name="rapidprom-thirdparty-resource" checkmodified="true"
+			checksums="">
+			<ivy
+				pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.2/thirdparty/resource/[module]-[revision]/ivy-[module]-[revision].xml" />
+			<artifact
+				pattern="https://github.com/rapidprom/rapidprom-libraries/raw/4.0.2/thirdparty/resource/[module]-[revision]/[module]-[revision].[ext]" />
+		</url>
+		<ibiblio name="maven2" m2compatible="true" />
+		<chain name="default" returnFirst="true">
+			<resolver ref="db-process-mining" />
+			<resolver ref="rapidprom" />
+			<resolver ref="rapidprom-thirdparty-lib" />
+			<resolver ref="rapidprom-thirdparty-resource" />
+			<resolver ref="maven2" />
+		</chain>
+	</resolvers>
 </ivysettings>
