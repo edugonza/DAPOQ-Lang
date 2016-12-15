@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'ivy-publish'
 
-version = '0.8'
+version = '0.9'
 group = 'org.processmining'
 
 println name+" v"+version
@@ -70,8 +70,6 @@ publishing {
 		}
 	}
 }
-
-//compileJava.dependsOn(compileGroovy)
 
 dependencies {
 	compile  'org.rapidprom:GraphViz:6.7.185'

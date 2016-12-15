@@ -64,6 +64,13 @@ class DAPOQLDSL extends Script {
 				
 		def getProperty(String propertyName) {
 			
+			def p = getPropertyRaw(propertyName);
+			
+			return p ? p : new String();
+		}
+		
+		def getPropertyRaw(String propertyName) {
+			
 			if (type == SLEXMMEvent.class) {
 				SLEXMMEvent e = (SLEXMMEvent) o;
 				HashMap<SLEXMMEventAttribute,SLEXMMEventAttributeValue> atValsMap = e.getAttributeValues();
