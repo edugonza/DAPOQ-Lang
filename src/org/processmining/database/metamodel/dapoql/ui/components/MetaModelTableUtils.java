@@ -1,5 +1,6 @@
 package org.processmining.database.metamodel.dapoql.ui.components;
 
+import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -12,8 +13,10 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -44,7 +47,7 @@ public class MetaModelTableUtils {
 			return null;
 		}
 	}
-	
+
 	public static Integer getSelectedActivity(JTable table) {
 		int selectedRow = table.getSelectedRow();
 		if (selectedRow >= 0) {
@@ -53,7 +56,7 @@ public class MetaModelTableUtils {
 			return null;
 		}
 	}
-	
+
 	public static Integer getSelectedCase(JTable table) {
 		int selectedRow = table.getSelectedRow();
 		if (selectedRow >= 0) {
@@ -71,7 +74,7 @@ public class MetaModelTableUtils {
 			return null;
 		}
 	}
-	
+
 	public static Integer getSelectedActivityInstance(JTable table) {
 		int selectedRow = table.getSelectedRow();
 		if (selectedRow >= 0) {
@@ -80,11 +83,10 @@ public class MetaModelTableUtils {
 			return null;
 		}
 	}
-	
-	
+
 	public static class ActivitiesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class};
+		Class[] columnTypes = new Class[] { Integer.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
 		public Class getColumnClass(int columnIndex) {
@@ -96,58 +98,73 @@ public class MetaModelTableUtils {
 		}
 
 		public ActivitiesTableModel() {
-			super(new String[] { "Activity Id", "Name"}, 0);
+			super(new String[] { "Activity Id", "Name" }, 0);
 		}
 
 	}
 
-	public static void setActivitiesTableContent(final JTable table, SLEXMMActivityResultSet actrset) throws Exception {
-		final ActivitiesTableModel model = new ActivitiesTableModel();
+	public static void setActivitiesTableContent(final JTable table, SLEXMMActivityResultSet actrset) {
+		Thread thread = new Thread(new Runnable() {
 
-		SLEXMMActivity act = null;
-		
-		while ((act = actrset.getNext()) != null) {
-			model.addRow(new Object[] { act.getId(), act.getName()});
-		}
-		
-		SwingUtilities.invokeAndWait(new Runnable() {
-			
 			@Override
 			public void run() {
-				table.setModel(model);
-		
-				table.getColumnModel().getColumn(0).setMinWidth(75);
-				table.getColumnModel().getColumn(1).setMinWidth(75);
+				final ActivitiesTableModel model = new ActivitiesTableModel();
+
+				SLEXMMActivity act = null;
+
+				while ((act = actrset.getNext()) != null) {
+					model.addRow(new Object[] { act.getId(), act.getName() });
+				}
+
+				try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+
+						@Override
+						public void run() {
+							table.setModel(model);
+
+							table.getColumnModel().getColumn(0).setMinWidth(75);
+							table.getColumnModel().getColumn(1).setMinWidth(75);
+						}
+					});
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 
+		thread.start();
+
 	}
-	
+
 	public static void setActivitiesTableContent(final JTable table, Collection<Object> actrset) throws Exception {
 		final ActivitiesTableModel model = new ActivitiesTableModel();
-		
-		for (Object o: actrset) {
+
+		for (Object o : actrset) {
 			SLEXMMActivity act = (SLEXMMActivity) o;
-			model.addRow(new Object[] { act.getId(), act.getName()});
+			model.addRow(new Object[] { act.getId(), act.getName() });
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
 		});
 
 	}
-	
+
 	public static class LogsTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class,
-				Integer.class };
+		Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
 		public Class getColumnClass(int columnIndex) {
@@ -163,56 +180,80 @@ public class MetaModelTableUtils {
 		}
 
 	}
-	
+
 	public static void setLogsTableContent(final JTable table, Collection<Object> logSet) throws Exception {
-		
-		final LogsTableModel model = new LogsTableModel();
+		Thread thread = new Thread(new Runnable() {
 
-		for (Object o: logSet) {
-			SLEXMMLog log = (SLEXMMLog) o;
-			model.addRow(new Object[] { log.getId(), log.getName(), log.getProcessId()});
-		}
-		
-		SwingUtilities.invokeAndWait(new Runnable() {
-			
 			@Override
 			public void run() {
-				table.setModel(model);
-		
-				table.getColumnModel().getColumn(0).setMinWidth(75);
-				table.getColumnModel().getColumn(1).setMinWidth(75);
-				table.getColumnModel().getColumn(2).setMinWidth(75);
+				final LogsTableModel model = new LogsTableModel();
+
+				for (Object o : logSet) {
+					SLEXMMLog log = (SLEXMMLog) o;
+					model.addRow(new Object[] { log.getId(), log.getName(), log.getProcessId() });
+				}
+
+				try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+
+						@Override
+						public void run() {
+							table.setModel(model);
+
+							table.getColumnModel().getColumn(0).setMinWidth(75);
+							table.getColumnModel().getColumn(1).setMinWidth(75);
+							table.getColumnModel().getColumn(2).setMinWidth(75);
+						}
+					});
+				} catch (InvocationTargetException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
+		thread.start();
+
 	}
-	
+
 	public static void setLogsTableContent(final JTable table, SLEXMMLogResultSet logrset) throws Exception {
-		
-		final LogsTableModel model = new LogsTableModel();
 
-		SLEXMMLog log = null;
-		
-		while ((log = logrset.getNext()) != null) {
-			model.addRow(new Object[] { log.getId(), log.getName(), log.getProcessId()});
-		}
-		
-		SwingUtilities.invokeAndWait(new Runnable() {
-			
+		Thread thread = new Thread(new Runnable() {
+
 			@Override
 			public void run() {
-				table.setModel(model);
-		
-				table.getColumnModel().getColumn(0).setMinWidth(75);
-				table.getColumnModel().getColumn(1).setMinWidth(75);
-				table.getColumnModel().getColumn(2).setMinWidth(75);
+				final LogsTableModel model = new LogsTableModel();
+
+				SLEXMMLog log = null;
+
+				while ((log = logrset.getNext()) != null) {
+					model.addRow(new Object[] { log.getId(), log.getName(), log.getProcessId() });
+				}
+
+				try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+
+						@Override
+						public void run() {
+							table.setModel(model);
+
+							table.getColumnModel().getColumn(0).setMinWidth(75);
+							table.getColumnModel().getColumn(1).setMinWidth(75);
+							table.getColumnModel().getColumn(2).setMinWidth(75);
+						}
+					});
+				} catch (InvocationTargetException | InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
+		thread.start();
+
 	}
-	
+
 	public static class ClassesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class,
-				Integer.class };
+		Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
 		public Class getColumnClass(int columnIndex) {
@@ -231,32 +272,28 @@ public class MetaModelTableUtils {
 
 	public static void setClassesTableContent(final JTable table, Collection<Object> classes) throws Exception {
 		final ClassesTableModel model = new ClassesTableModel();
-		
-		
 
 		for (Object o : classes) {
 			SLEXMMClass c = (SLEXMMClass) o;
-			model.addRow(new Object[] { c.getId(), c.getName(),
-					c.getDataModelId() });
+			model.addRow(new Object[] { c.getId(), c.getName(), c.getDataModelId() });
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 				table.getColumnModel().getColumn(2).setMinWidth(75);
 			}
 		});
 	}
-	
+
 	public static class AttributesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, Integer.class,
-				String.class };
+		Class[] columnTypes = new Class[] { Integer.class, Integer.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
 		public Class getColumnClass(int columnIndex) {
@@ -275,20 +312,18 @@ public class MetaModelTableUtils {
 
 	public static void setAttributesTableContent(final JTable table, Collection<Object> classes) throws Exception {
 		final AttributesTableModel model = new AttributesTableModel();
-		
 
 		for (Object o : classes) {
 			SLEXMMAttribute c = (SLEXMMAttribute) o;
-			model.addRow(new Object[] { c.getId(), c.getClassId(),
-					c.getName() });
+			model.addRow(new Object[] { c.getId(), c.getClassId(), c.getName() });
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 				table.getColumnModel().getColumn(2).setMinWidth(75);
@@ -317,7 +352,7 @@ public class MetaModelTableUtils {
 
 	public static void setObjectsTableContent(final JTable table, SLEXMMObjectResultSet orset) throws Exception {
 		final ObjectsTableModel model = new ObjectsTableModel();
-		
+
 		SLEXMMObject obj = null;
 
 		while ((obj = orset.getNext()) != null) {
@@ -325,11 +360,11 @@ public class MetaModelTableUtils {
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
@@ -347,11 +382,11 @@ public class MetaModelTableUtils {
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
@@ -377,9 +412,10 @@ public class MetaModelTableUtils {
 
 	}
 
-	public static void setActivityInstancesTableContent(final JTable table, SLEXMMActivityInstanceResultSet airset) throws Exception {
+	public static void setActivityInstancesTableContent(final JTable table, SLEXMMActivityInstanceResultSet airset)
+			throws Exception {
 		final ActivityInstanceTableModel model = new ActivityInstanceTableModel();
-		
+
 		SLEXMMActivityInstance ai = null;
 
 		while ((ai = airset.getNext()) != null) {
@@ -387,11 +423,11 @@ public class MetaModelTableUtils {
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
@@ -401,7 +437,6 @@ public class MetaModelTableUtils {
 
 	public static void setActivityInstancesTableContent(final JTable table, Collection<Object> list) throws Exception {
 		final ActivityInstanceTableModel model = new ActivityInstanceTableModel();
-		
 
 		SLEXMMActivityInstance ai = null;
 		for (Object o : list) {
@@ -410,17 +445,17 @@ public class MetaModelTableUtils {
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
 		});
 	}
-	
+
 	public static class ObjectVersionsTableModel extends DefaultTableModel {
 
 		ArrayList<Class> columnTypes = new ArrayList<>();
@@ -438,8 +473,7 @@ public class MetaModelTableUtils {
 		}
 
 		public ObjectVersionsTableModel() {
-			super(new String[] { "Version Id", "Object Id", "Start Timestamp",
-					"End Timestamp" }, 0);
+			super(new String[] { "Version Id", "Object Id", "Start Timestamp", "End Timestamp" }, 0);
 			columnTypes.add(Integer.class);
 			columnTypes.add(Integer.class);
 			columnTypes.add(Long.class);
@@ -448,10 +482,9 @@ public class MetaModelTableUtils {
 
 	}
 
-	public static void setObjectVersionsTableContent(final JTable table, SLEXMMObjectVersionResultSet orset) throws Exception {
+	public static void setObjectVersionsTableContent(final JTable table, SLEXMMObjectVersionResultSet orset)
+			throws Exception {
 		final ObjectVersionsTableModel model = new ObjectVersionsTableModel();
-
-		
 
 		SLEXMMObjectVersion objv = null;
 
@@ -468,7 +501,7 @@ public class MetaModelTableUtils {
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
@@ -491,18 +524,17 @@ public class MetaModelTableUtils {
 
 			model.addRow(row);
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
 			}
 		});
-		
 
 	}
-	
+
 	public static class RelationshipTableModel extends DefaultTableModel {
 
 		ArrayList<Class> columnTypes = new ArrayList<>();
@@ -520,8 +552,7 @@ public class MetaModelTableUtils {
 		}
 
 		public RelationshipTableModel() {
-			super(new String[] { "Relationship Id", "Source Class Id", "Target Class Id",
-					"Name" }, 0);
+			super(new String[] { "Relationship Id", "Source Class Id", "Target Class Id", "Name" }, 0);
 			columnTypes.add(Integer.class);
 			columnTypes.add(Integer.class);
 			columnTypes.add(Integer.class);
@@ -545,9 +576,9 @@ public class MetaModelTableUtils {
 
 			model.addRow(row);
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
@@ -573,9 +604,8 @@ public class MetaModelTableUtils {
 		}
 
 		public ObjectRelationsTableModel() {
-			super(new String[] { "Relation Id", "Relationship Id",
-					"Source Object Version Id", "Target Object Version Id",
-					"Start Timestamp", "End Timestamp" }, 0);
+			super(new String[] { "Relation Id", "Relationship Id", "Source Object Version Id",
+					"Target Object Version Id", "Start Timestamp", "End Timestamp" }, 0);
 			columnTypes.add(Integer.class);
 			columnTypes.add(Integer.class);
 			columnTypes.add(Integer.class);
@@ -586,15 +616,16 @@ public class MetaModelTableUtils {
 
 	}
 
-	public static void setObjectRelationsTableContent(final JTable table, SLEXMMRelationResultSet[] orrset) throws Exception {
+	public static void setObjectRelationsTableContent(final JTable table, SLEXMMRelationResultSet[] orrset)
+			throws Exception {
 		final ObjectRelationsTableModel model = new ObjectRelationsTableModel();
 
 		for (int i = 0; i < orrset.length; i++) {
-		
+
 			SLEXMMRelation rel = null;
-		
+
 			while ((rel = orrset[i].getNext()) != null) {
-				
+
 				Object[] row = new Object[model.getColumnCount()];
 
 				row[0] = Integer.valueOf(rel.getId());
@@ -609,21 +640,21 @@ public class MetaModelTableUtils {
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
 			}
 		});
 	}
-	
+
 	public static void setObjectRelationsTableContent(final JTable table, Collection<Object> list) throws Exception {
 		final ObjectRelationsTableModel model = new ObjectRelationsTableModel();
 
-		for  (Object o: list) {
-				
+		for (Object o : list) {
+
 			SLEXMMRelation rel = (SLEXMMRelation) o;
-				
+
 			Object[] row = new Object[model.getColumnCount()];
 
 			row[0] = Integer.valueOf(rel.getId());
@@ -635,9 +666,9 @@ public class MetaModelTableUtils {
 
 			model.addRow(row);
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
@@ -675,7 +706,7 @@ public class MetaModelTableUtils {
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
@@ -685,20 +716,19 @@ public class MetaModelTableUtils {
 		});
 
 	}
-	
+
 	public static void setCasesTableContent(final JTable table, Collection<Object> list) throws Exception {
 		try {
 			final CasesTableModel model = new CasesTableModel();
-			
 
 			for (Object o : list) {
 				SLEXMMCase c = (SLEXMMCase) o;
 
 				model.addRow(new Object[] { c.getId(), c.getName() });
 			}
-			
+
 			SwingUtilities.invokeAndWait(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					table.setModel(model);
@@ -706,13 +736,12 @@ public class MetaModelTableUtils {
 					table.getColumnModel().getColumn(1).setMinWidth(75);
 				}
 			});
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 	}
-
 
 	public static class EventsTableModel extends DefaultTableModel {
 
@@ -733,7 +762,8 @@ public class MetaModelTableUtils {
 
 	}
 
-	public static void setEventsTableContent(final JTable table, final SLEXMMEventResultSet orset, final JProgressBar progress) throws Exception {
+	public static void setEventsTableContent(final JTable table, final SLEXMMEventResultSet orset,
+			final JProgressBar progress) throws Exception {
 
 		Thread thread = new Thread(new Runnable() {
 
@@ -747,27 +777,23 @@ public class MetaModelTableUtils {
 
 					final EventsTableModel model = new EventsTableModel();
 
-					
-
 					SLEXMMEvent ev = null;
 
 					while ((ev = orset.getNext()) != null) {
 						model.addRow(new Object[] { ev.getId(), ev.getOrder() });
 					}
-					
+
 					SwingUtilities.invokeAndWait(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							table.setModel(model);
 
-							table.getColumnModel().getColumn(0)
-								.setMinWidth(75);
-							table.getColumnModel().getColumn(1)
-								.setMinWidth(75);
+							table.getColumnModel().getColumn(0).setMinWidth(75);
+							table.getColumnModel().getColumn(1).setMinWidth(75);
 						}
 					});
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -781,8 +807,9 @@ public class MetaModelTableUtils {
 		thread.start();
 
 	}
-	
-	public static void setEventsTableContent(final JTable table, final Collection<Object> list, final JProgressBar progress) throws Exception {
+
+	public static void setEventsTableContent(final JTable table, final Collection<Object> list,
+			final JProgressBar progress) throws Exception {
 
 		Thread thread = new Thread(new Runnable() {
 
@@ -796,8 +823,6 @@ public class MetaModelTableUtils {
 
 					final EventsTableModel model = new EventsTableModel();
 
-					
-
 					SLEXMMEvent ev = null;
 
 					for (Object o : list) {
@@ -805,18 +830,16 @@ public class MetaModelTableUtils {
 						model.addRow(new Object[] { ev.getId(), ev.getOrder() });
 					}
 					SwingUtilities.invokeAndWait(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							table.setModel(model);
 
-							table.getColumnModel().getColumn(0)
-									.setMinWidth(75);
-							table.getColumnModel().getColumn(1)
-									.setMinWidth(75);
+							table.getColumnModel().getColumn(0).setMinWidth(75);
+							table.getColumnModel().getColumn(1).setMinWidth(75);
 						}
 					});
-					
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -833,8 +856,7 @@ public class MetaModelTableUtils {
 
 	public static class EventAttributesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { String.class, String.class,
-				String.class };
+		Class[] columnTypes = new Class[] { String.class, String.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
 		public Class getColumnClass(int columnIndex) {
@@ -852,26 +874,22 @@ public class MetaModelTableUtils {
 	}
 
 	public static void setEventAttributesTableContent(final JTable table,
-			HashMap<SLEXMMEventAttribute, SLEXMMEventAttributeValue> attrs,
-			String lifecycle, String resource, String timestamp) throws Exception {
+			HashMap<SLEXMMEventAttribute, SLEXMMEventAttributeValue> attrs, String lifecycle, String resource,
+			String timestamp) throws Exception {
 
 		final EventAttributesTableModel model = new EventAttributesTableModel();
 
-		
-
 		for (SLEXMMEventAttribute at : attrs.keySet()) {
 			SLEXMMEventAttributeValue attV = attrs.get(at);
-			model.addRow(new Object[] { at.getName(), attV.getValue(),
-					attV.getType() });
+			model.addRow(new Object[] { at.getName(), attV.getValue(), attV.getType() });
 		}
 
-		model.addRow(new Object[] { "Event Lifecycle", lifecycle,
-				"STRING" });
+		model.addRow(new Object[] { "Event Lifecycle", lifecycle, "STRING" });
 		model.addRow(new Object[] { "Event Resource", resource, "STRING" });
 		model.addRow(new Object[] { "Event Timestamp", timestamp, "LONG" });
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
@@ -885,8 +903,7 @@ public class MetaModelTableUtils {
 
 	public static class ObjectVersionAttributesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { String.class, String.class,
-				String.class };
+		Class[] columnTypes = new Class[] { String.class, String.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
 		public Class getColumnClass(int columnIndex) {
@@ -908,26 +925,20 @@ public class MetaModelTableUtils {
 
 		final ObjectVersionAttributesTableModel model = new ObjectVersionAttributesTableModel();
 
-		
-
 		for (SLEXMMAttribute at : attrs.keySet()) {
 			SLEXMMAttributeValue attV = attrs.get(at);
-			model.addRow(new Object[] { at.getName(), attV.getValue(),
-					attV.getType() });
+			model.addRow(new Object[] { at.getName(), attV.getValue(), attV.getType() });
 		}
 
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
 
-				table.getColumnModel().getColumn(0)
-					.setMinWidth(75);
-				table.getColumnModel().getColumn(1)
-					.setMinWidth(75);
-				table.getColumnModel().getColumn(1)
-					.setMinWidth(75);
+				table.getColumnModel().getColumn(0).setMinWidth(75);
+				table.getColumnModel().getColumn(1).setMinWidth(75);
+				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
 		});
 	}
@@ -950,9 +961,8 @@ public class MetaModelTableUtils {
 		}
 
 	}
-	
-	public static void setPeriodsTableContent(final JTable table,
-			Collection<Object> list) throws Exception {
+
+	public static void setPeriodsTableContent(final JTable table, Collection<Object> list) throws Exception {
 		try {
 			final PeriodsTableModel model = new PeriodsTableModel();
 
@@ -961,18 +971,18 @@ public class MetaModelTableUtils {
 
 				Date startDate = new Date(p.getStart());
 				Date endDate = null;
-				
+
 				if (p.getEnd() == -1) {
 					endDate = new Date(Long.MAX_VALUE);
 				} else {
 					endDate = new Date(p.getEnd());
 				}
-				
+
 				model.addRow(new Object[] { startDate, endDate });
 			}
-			
+
 			SwingUtilities.invokeAndWait(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					table.setModel(model);
@@ -982,56 +992,56 @@ public class MetaModelTableUtils {
 					table.getColumnModel().getColumn(1).setCellRenderer(new DateRenderer());
 				}
 			});
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 	}
-	
+
 	public static void setProcessesTableContent(final JTable table, Collection<Object> procSet) throws Exception {
-		
+
 		final ProcessesTableModel model = new ProcessesTableModel();
 
-		for (Object o: procSet) {
+		for (Object o : procSet) {
 			SLEXMMProcess proc = (SLEXMMProcess) o;
-			model.addRow(new Object[] { proc.getId(), proc.getName()});
+			model.addRow(new Object[] { proc.getId(), proc.getName() });
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
 		});
 	}
-	
+
 	public static void setProcessesTableContent(final JTable table, SLEXMMProcessResultSet procrset) throws Exception {
-		
+
 		final ProcessesTableModel model = new ProcessesTableModel();
 
 		SLEXMMProcess proc = null;
-		
+
 		while ((proc = procrset.getNext()) != null) {
-			model.addRow(new Object[] { proc.getId(), proc.getName()});
+			model.addRow(new Object[] { proc.getId(), proc.getName() });
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
 		});
 	}
-	
+
 	public static class ProcessesTableModel extends DefaultTableModel {
 
 		Class[] columnTypes = new Class[] { Integer.class, String.class };
@@ -1046,65 +1056,86 @@ public class MetaModelTableUtils {
 		}
 
 		public ProcessesTableModel() {
-			super(new String[] { "Process Id", "Name"}, 0);
+			super(new String[] { "Process Id", "Name" }, 0);
 		}
 
-	}	
-	
+	}
+
+	public static final class SLEXMMProcessListCellRenderer implements ListCellRenderer {
+		private final ListCellRenderer originalRenderer;
+
+		public SLEXMMProcessListCellRenderer(final ListCellRenderer originalRenderer) {
+			this.originalRenderer = originalRenderer;
+		}
+
+		public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+				final boolean isSelected, final boolean cellHasFocus) {
+			return originalRenderer.getListCellRendererComponent(list, ((SLEXMMProcess) value).getName(), index,
+					isSelected, cellHasFocus);
+		}
+	}
+
 	public static void setProcessesDropboxContent(JComboBox<SLEXMMProcess> processComboBox,
 			SLEXMMProcessResultSet prset) throws Exception {
+
+		processComboBox.removeAllItems();
 
 		SLEXMMProcess p = null;
 
 		while ((p = prset.getNext()) != null) {
 			processComboBox.addItem(p);
 		}
-		
+
+		if (!(processComboBox.getRenderer() instanceof SLEXMMProcessListCellRenderer)) {
+			processComboBox
+					.setRenderer(new SLEXMMProcessListCellRenderer(processComboBox.getRenderer()));
+		}
+
 	}
 
 	public static void setDatamodelsTableContent(final JTable table, Collection<Object> dmSet) throws Exception {
-		
+
 		final ProcessesTableModel model = new ProcessesTableModel();
 
-		for (Object o: dmSet) {
+		for (Object o : dmSet) {
 			SLEXMMDataModel proc = (SLEXMMDataModel) o;
-			model.addRow(new Object[] { proc.getId(), proc.getName()});
+			model.addRow(new Object[] { proc.getId(), proc.getName() });
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
 		});
 	}
-	
+
 	public static void setDatamodelsTableContent(final JTable table, SLEXMMDataModelResultSet dmrset) throws Exception {
-		
+
 		final DatamodelsTableModel model = new DatamodelsTableModel();
 
 		SLEXMMDataModel dm = null;
-		
+
 		while ((dm = dmrset.getNext()) != null) {
-			model.addRow(new Object[] { dm.getId(), dm.getName()});
+			model.addRow(new Object[] { dm.getId(), dm.getName() });
 		}
-		
+
 		SwingUtilities.invokeAndWait(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				table.setModel(model);
-		
+
 				table.getColumnModel().getColumn(0).setMinWidth(75);
 				table.getColumnModel().getColumn(1).setMinWidth(75);
 			}
 		});
 	}
-	
+
 	public static class DatamodelsTableModel extends DefaultTableModel {
 
 		Class[] columnTypes = new Class[] { Integer.class, String.class };
@@ -1119,9 +1150,9 @@ public class MetaModelTableUtils {
 		}
 
 		public DatamodelsTableModel() {
-			super(new String[] { "DataModel Id", "Name"}, 0);
+			super(new String[] { "DataModel Id", "Name" }, 0);
 		}
 
-	}	
-	
+	}
+
 }

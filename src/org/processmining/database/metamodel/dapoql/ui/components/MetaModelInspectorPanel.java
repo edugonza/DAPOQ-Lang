@@ -180,7 +180,7 @@ public class MetaModelInspectorPanel extends JPanel {
 
 					@Override
 					public void run() {
-						Integer selected = MetaModelTableUtils.getSelectedLog(tableLogsAll);
+						Integer selected = MetaModelTableUtils.getSelectedLog(tableLogsPerProcess);
 						if (selected != null) {
 							try {
 								MetaModelTableUtils.setCasesTableContent(tableCasesPerLog,
