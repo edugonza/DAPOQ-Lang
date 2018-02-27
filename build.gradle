@@ -1,6 +1,11 @@
+plugins {
+  id 'net.saliman.cobertura' version '2.5.4'
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'net.saliman.cobertura'
 
 version = '0.9'
 group = 'com.github.edugonza'
@@ -50,6 +55,11 @@ sourceSets {
 			srcDirs = ['resources/']
 		}
 	}
+	test {
+		java {
+			srcDirs = ['test/']
+		}
+	}
 }
 
 dependencies {
@@ -61,6 +71,8 @@ dependencies {
 	compile  'com.fifesoft:rsyntaxtextarea:2.6.0'
 	compile  'com.fifesoft:autocomplete:2.6.0'
 	compile  'com.fifesoft:languagesupport:2.6.0'
+	
+	testCompile 'junit:junit:4.12'
 }
 
 		
