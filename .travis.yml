@@ -1,14 +1,4 @@
 language: java
+
 after_success:
-- "./gradlew cobertura coveralls"
-before_deploy:
-  ./gradlew install
-deploy:
-  provider: releases
-  api_key:
-    secure: G7uDYWJQLx2ly8jxIdH5G7p1MkemCwi1oG5z+XVIsxYok+KS0X3Ceg+MkjWsBdwKqysn/sDlx1A35we7Dcup4ypCUHOtNV6mAJsLKSHDtpVNHu8R7t0PI3wL4pFJzpER95a3Pp0pFDATcYds4hHBOBXHwrtbdknFgtHrF0HofSZdaeUIp/mrh52PbE5KXBfwKItLePHe/APOn2KB7guL7SSSS5/8QcF2eXWBVsHOz4gYB0ARLADb1D9AUGqRmk1fd4NuGSFonMhAG1m9UKJxGqxxFuCd7BDkpxKfkyJIMjnrGFH9H4plO6sHu6Tvkem1vKBBz3tF/62SgzM/2bp5EqHj7DqkuQ0OemKtGu9Lc8MiIwJCiltA9rZIMrgr3eyclsak/21XX0hMqRqT4MNkhqXIvj1ZiGeZVzvyxhJLo6XObRUdZmL20qnJYvjBbfONRuV/TLfLO+pFPhxgKX7KU5ExCRN+d5AXtLJTNlTIqd86gVuWU20T8LGByEQsm5S+ISsKe9mJKnfXKf8kp4T8u6Hnpgmdovzcfs5MiJS3RsjLs4mW/NMKd7K+U6qLQFu/8izW/y30514/BarzobQMVyjqmsxAEvzIjwEWujiRq9Qh3MykHnwV7v++mfi/vbDtUlwzCT9Oz22gTw/ZnOfoPJXxmxr7wqDoUL6XJXedG18=
-  file_glob: true
-  file: build/libs/*
-  skip_cleanup: true
-  on:
-    tags: true
+- ./gradlew cobertura coveralls
