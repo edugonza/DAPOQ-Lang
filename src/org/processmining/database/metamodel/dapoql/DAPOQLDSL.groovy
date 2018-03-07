@@ -356,6 +356,14 @@ class DAPOQLDSL extends Script {
 		return p;
 	}
 	
+	def SLEXMMPeriod createPeriod(long A, long B) {
+		return new SLEXMMPeriod(A, B);
+	}
+	
+	def SLEXMMPeriod createPeriod(long A) {
+		return new SLEXMMPeriod(A, A);
+	}
+	
 	def boolean before(SLEXMMPeriod a, SLEXMMPeriod b) {
 		return (SLEXMMUtils.before(a.getEnd(),b.getStart()));
 	}

@@ -1,16 +1,16 @@
 plugins {
-  id 'net.saliman.cobertura' version '2.3.1'
-  id 'com.github.kt3k.coveralls' version '2.8.2'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
+apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'net.saliman.cobertura'
+apply plugin: 'maven-publish'
 
-cobertura.coverageFormats = ['html', 'xml']
+wrapper.gradleVersion = '4.6'
 
-version = '0.9'
+version = '1.0-alpha'
 group = 'com.github.edugonza'
 
 println name+" v"+version
@@ -20,6 +20,7 @@ ext {
 }
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 	maven { url 'https://jitpack.io' }
 	ivy {
@@ -60,22 +61,54 @@ sourceSets {
 	}
 	test {
 		java {
-			srcDirs = ['test/']
+			srcDirs = ['test/src/']
+		}
+		resources {
+			srcDirs = ['test/resources/']
 		}
 	}
 }
 
+task benchmark(dependsOn: 'testClasses', type: JavaExec) {
+	main = "org.processmining.database.metamodel.dapoql.test.benchmark.RunBenchmarkTest"
+	classpath = sourceSets.test.runtimeClasspath
+	classpath += sourceSets.main.runtimeClasspath
+	enableAssertions = true
+}
+
+jar {
+	dependsOn javadoc
+	from sourceSets.main.allSource
+	from javadoc.destinationDir
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
+	repositories {
+		mavenLocal()
+	}
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
 dependencies {
 	compile  'org.rapidprom:GraphViz:6.7.185'
-	compile  'org.apache.commons:commons-io:1.3.2'
-	compile  'org.apache.commons:commons-compress:1.12'
+	compile  'commons-io:commons-io:2.6'
+	compile  'org.apache.commons:commons-compress:1.16.1'
 	compile  'com.github.edugonza:OpenSLEX:0.9'
-	compile  'org.codehaus.groovy:groovy-all:2.4.7'
-	compile  'com.fifesoft:rsyntaxtextarea:2.6.0'
-	compile  'com.fifesoft:autocomplete:2.6.0'
+	compile  'org.codehaus.groovy:groovy-all:2.4.14'
+	compile  'com.fifesoft:rsyntaxtextarea:2.6.1'
+	compile  'com.fifesoft:autocomplete:2.6.1'
 	compile  'com.fifesoft:languagesupport:2.6.0'
-	
 	testCompile 'junit:junit:4.12'
 }
 
-		

@@ -22,9 +22,9 @@ public class DAPOQLRunnerGroovy {
 	public QueryResult executeQuery(SLEXMMStorageMetaModel slxmm, String query, Set<DAPOQLVariable> vars) throws Exception {
 		this.slxmm = slxmm;
 
-		System.out.println("Executing query: "+query);
-		long start_time = System.currentTimeMillis();
-		System.out.println("Start time: "+start_time);
+//		System.out.println("Executing query: "+query);
+//		long start_time = System.currentTimeMillis();
+//		System.out.println("Start time: "+start_time);
 				
 		QueryResult qres = new QueryResult();
 
@@ -54,20 +54,20 @@ public class DAPOQLRunnerGroovy {
 				throw new Exception((String) result);
 			}
 			
-			System.out.println(result);
+			//System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 		
-		long end_time = System.currentTimeMillis();
-		double total_time = (double) end_time - start_time;
-		double total_time_secs = total_time / 1000.0;
-		double total_time_mins = total_time_secs / 60.0;
-		System.out.println("End time: " + end_time);
-		System.out.println("Total time (millis): " + total_time);
-		System.out.println("Total time (seconds): " + total_time_secs);
-		System.out.println("Total time (minutes): " + total_time_mins);
+//		long end_time = System.currentTimeMillis();
+//		double total_time = (double) end_time - start_time;
+//		double total_time_secs = total_time / 1000.0;
+//		double total_time_mins = total_time_secs / 60.0;
+//		System.out.println("End time: " + end_time);
+//		System.out.println("Total time (millis): " + total_time);
+//		System.out.println("Total time (seconds): " + total_time_secs);
+//		System.out.println("Total time (minutes): " + total_time_mins);
 
 		return qres;
 	}
