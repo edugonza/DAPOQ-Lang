@@ -1,33 +1,30 @@
 package org.processmining.database.metamodel.dapoql;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 public class DAPOQLVariable {
 	private String name = null;
-	private Class type = null;
-	private HashMap<Object,HashSet<Integer>> value = null;
+	private Class<?> type = null;
+	//private ResultMap value = null;
+	private DAPOQLSet value = null;
 	
-	public DAPOQLVariable(String name, Class type, HashMap<Object,HashSet<Integer>> value) {
+	public DAPOQLVariable(String name, Class<?> type, DAPOQLSet value) {
 		setName(name);
 		setType(type);
 		setValue(value);
 	}
 	
-	public HashMap<Object,HashSet<Integer>> getValue() {
+	public DAPOQLSet getValue() {
 		return value;
 	}
 	
-	public void setValue(HashMap<Object,HashSet<Integer>> value) {
+	public void setValue(DAPOQLSet value) {
 		this.value = value;
 	}
 	
-	public Class getType() {
+	public Class<?> getType() {
 		return type;
 	}
 	
-	public void setType(Class type) {
+	public void setType(Class<?> type) {
 		this.type = type;
 	}
 	

@@ -263,7 +263,7 @@ public class DAPOQLGroovyQueryPanel extends JPanel {
 				QueryResult qr = runner.executeQuery(slxmm, query, null);
 				
 				resultsPanel.removeAll();
-				resultsPanel.add(new DAPOQLResultsPanel(slxmm, qr.type, qr.result));
+				resultsPanel.add(new DAPOQLResultsPanel(slxmm, qr.getType(), qr.getResult()));
 //				setTable(sqlResultTable);
 //				setSelectionListener(qr.type);
 //				scrollPane2.setVisible(false);

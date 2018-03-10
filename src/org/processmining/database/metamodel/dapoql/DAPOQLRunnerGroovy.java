@@ -26,19 +26,16 @@ public class DAPOQLRunnerGroovy {
 //		long start_time = System.currentTimeMillis();
 //		System.out.println("Start time: "+start_time);
 				
-		QueryResult qres = new QueryResult();
+		QueryResult qres = null;
 
 		try {
 			CompilerConfiguration config = new CompilerConfiguration();
 			config.setScriptBaseClass(DAPOQLDSL.class.getName());
 			Binding binding = new Binding();
-			
 			if (vars != null) {
 				for (DAPOQLVariable v : vars) {
-					QueryGroovyResult vr = new QueryGroovyResult();
-					vr.mapResult = v.getValue();
-					vr.result = vr.mapResult.keySet();
-					vr.type = v.getType();
+					QueryGroovyResult vr = new QueryGroovyResult(v.getType(), slxmm);
+					vr.setResult(v.getValue());
 					binding.setVariable(v.getName(), vr);
 				}
 			}

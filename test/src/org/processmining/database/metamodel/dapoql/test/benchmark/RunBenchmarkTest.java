@@ -2,6 +2,7 @@ package org.processmining.database.metamodel.dapoql.test.benchmark;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Set;
 
@@ -63,8 +64,8 @@ public class RunBenchmarkTest {
 				throw new Exception("SQL benchmark file missing: "+sf);
 			}
 			benchmarkQueries[i][0] = prefix;
-			benchmarkQueries[i][1] = IOUtils.toString(dfin);
-			benchmarkQueries[i][2] = IOUtils.toString(sfin);
+			benchmarkQueries[i][1] = IOUtils.toString(dfin, Charset.defaultCharset());
+			benchmarkQueries[i][2] = IOUtils.toString(sfin, Charset.defaultCharset());
 			i++;
 		}
 		

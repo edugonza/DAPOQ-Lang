@@ -12,6 +12,8 @@ import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.processmining.database.metamodel.dapoql.DAPOQLSet;
+import org.processmining.openslex.metamodel.AbstractDBElement;
 import org.processmining.openslex.metamodel.SLEXMMActivity;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
 import org.processmining.openslex.metamodel.SLEXMMAttribute;
@@ -47,7 +49,7 @@ public class DAPOQLResultsPanel extends JPanel {
 	private JScrollPane scrollPane2 = null;
 	
 	private Class<?> type;
-	private Set<Object> set;
+	private DAPOQLSet set;
 	//private QueryThread queryThread = null;
 	//private boolean queryRunning = false;
 	
@@ -63,7 +65,7 @@ public class DAPOQLResultsPanel extends JPanel {
 //		return this.id;
 //	}
 	
-	public DAPOQLResultsPanel(SLEXMMStorageMetaModel mm, Class<?> type, Set<Object> set) {
+	public DAPOQLResultsPanel(SLEXMMStorageMetaModel mm, Class<?> type, DAPOQLSet set) {
 		super();
 		
 //		this.id = id;
@@ -340,35 +342,35 @@ public class DAPOQLResultsPanel extends JPanel {
 		try {
 
 			if (type == SLEXMMObject.class) {
-				MetaModelTableUtils.setObjectsTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setObjectsTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMObjectVersion.class) {
-				MetaModelTableUtils.setObjectVersionsTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setObjectVersionsTableContent(sqlResultTable, set.getObjSet());
 				scrollPane2.setVisible(true);
 			} else if (type == SLEXMMEvent.class) {
-				MetaModelTableUtils.setEventsTableContent(sqlResultTable, set, null);
+				MetaModelTableUtils.setEventsTableContent(sqlResultTable, set.getObjSet(), null);
 				scrollPane2.setVisible(true);
 			} else if (type == SLEXMMActivity.class) {
-				MetaModelTableUtils.setActivitiesTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setActivitiesTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMCase.class) {
-				MetaModelTableUtils.setCasesTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setCasesTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMActivityInstance.class) {
-				MetaModelTableUtils.setActivityInstancesTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setActivityInstancesTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMClass.class) {
-				MetaModelTableUtils.setClassesTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setClassesTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMRelation.class) {
-				MetaModelTableUtils.setObjectRelationsTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setObjectRelationsTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMRelationship.class) {
-				MetaModelTableUtils.setRelationshipsTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setRelationshipsTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMAttribute.class) {
-				MetaModelTableUtils.setAttributesTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setAttributesTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMPeriod.class) {
-				MetaModelTableUtils.setPeriodsTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setPeriodsTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMDataModel.class) {
-				MetaModelTableUtils.setDatamodelsTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setDatamodelsTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMLog.class) {
-				MetaModelTableUtils.setLogsTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setLogsTableContent(sqlResultTable, set.getObjSet());
 			} else if (type == SLEXMMProcess.class) {
-				MetaModelTableUtils.setProcessesTableContent(sqlResultTable, set);
+				MetaModelTableUtils.setProcessesTableContent(sqlResultTable, set.getObjSet());
 			} else {
 				String msg = "ERROR: Unknown type of result " + type;
 				System.err.println(msg);

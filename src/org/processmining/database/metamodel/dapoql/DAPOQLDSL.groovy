@@ -4,8 +4,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale
-
+import java.util.function.Function
 import org.codehaus.groovy.runtime.callsite.MetaClassConstructorSite;
+import org.processmining.openslex.metamodel.AbstractAttDBElement
+import org.processmining.openslex.metamodel.AbstractDBElement
+import org.processmining.openslex.metamodel.AbstractDBElementWithAtts
+import org.processmining.openslex.metamodel.AbstractDBElementWithValue
 import org.processmining.openslex.metamodel.SLEXMMActivity
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance
 import org.processmining.openslex.metamodel.SLEXMMAttribute
@@ -32,29 +36,33 @@ import org.processmining.openslex.metamodel.SLEXMMProcess
 import org.processmining.openslex.metamodel.SLEXMMRelation
 import org.processmining.openslex.metamodel.SLEXMMRelationship
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel
-import org.processmining.openslex.metamodel.SLEXMMUtils;
+import org.processmining.openslex.utils.MMUtils
+
 import groovy.lang.MetaClass;
 import groovy.transform.TypeChecked;
 import groovy.transform.CompileStatic;
 
-@TypeChecked
-@CompileStatic
+//@TypeChecked
+//@CompileStatic
 class DAPOQLDSL extends Script {
 
 	protected DAPOQLFunctionsGroovy dapoqlfunc = null;
-	private SLEXMMStorageMetaModel slxmm = null;
+	private SLEXMMStorageMetaModel storage = null;
 	
 	private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
-	protected void init(SLEXMMStorageMetaModel slxmm) {
-		this.slxmm = slxmm;
-		this.dapoqlfunc = new DAPOQLFunctionsGroovy();
-		this.dapoqlfunc.setMetaModel(slxmm);
+	protected void init(SLEXMMStorageMetaModel storage) {
+		this.storage = storage;
+		this.dapoqlfunc = new DAPOQLFunctionsGroovy(storage);
 	}
 	
 	@Override
 	public Object run() {
 		super.run();
+	}
+	
+	private SLEXMMStorageMetaModel getStorage() {
+		return this.storage;
 	}
 	
 	class DAPOQLAttributeHolder {
@@ -71,221 +79,204 @@ class DAPOQLDSL extends Script {
 		
 		def getPropertyRaw(String propertyName) {
 			
-			if (type == SLEXMMEvent.class) {
-				SLEXMMEvent e = (SLEXMMEvent) o;
-				HashMap<SLEXMMEventAttribute,SLEXMMEventAttributeValue> atValsMap = e.getAttributeValues();
-
-				for (SLEXMMEventAttribute eat: atValsMap.keySet()) {
-					if (eat.getName() == propertyName) {
-						return atValsMap.get(eat).getValue();
-					}
-				}
-			} else if (type == SLEXMMObjectVersion.class) {
-				SLEXMMObjectVersion ov = (SLEXMMObjectVersion) o;
-				HashMap<SLEXMMAttribute,SLEXMMAttributeValue> atValsMap = ov.getAttributeValues();
-
-				for (SLEXMMAttribute ovat: atValsMap.keySet()) {
-					if (ovat.getName() == propertyName) {
-						return atValsMap.get(ovat).getValue();
-					}
-				}
-			} else if (type == SLEXMMCase.class) {
-				SLEXMMCase c = (SLEXMMCase) o;
-				HashMap<SLEXMMCaseAttribute,SLEXMMCaseAttributeValue> atValsMap = c.getAttributeValues();
-
-				for (SLEXMMCaseAttribute cat: atValsMap.keySet()) {
-					if (cat.getName() == propertyName) {
-						return atValsMap.get(cat).getValue();
-					}
-				}
-			} else if (type == SLEXMMLog.class) {
-				SLEXMMLog l = (SLEXMMLog) o;
-				HashMap<SLEXMMLogAttribute,SLEXMMLogAttributeValue> atValsMap = l.getAttributeValues();
-
-				for (SLEXMMLogAttribute lat: atValsMap.keySet()) {
-					if (lat.getName() == propertyName) {
-						return atValsMap.get(lat).getValue();
-					}
-				}
+			if (AbstractDBElementWithAtts.class.isAssignableFrom(type)) {
+				AbstractDBElementWithAtts ae = o;
+				AbstractDBElementWithValue atv = ae.getAttributeValue(propertyName);
+				
+				return atv.getValue();
 			}
 			
 			return null;
+			
+//			if (type == SLEXMMEvent.class) {
+//				SLEXMMEvent e = (SLEXMMEvent) o;
+//				HashMap<SLEXMMEventAttribute,SLEXMMEventAttributeValue> atValsMap = e.getAttributeValues();
+//
+//				for (SLEXMMEventAttribute eat: atValsMap.keySet()) {
+//					if (eat.getName() == propertyName) {
+//						return atValsMap.get(eat).getValue();
+//					}
+//				}
+//			} else if (type == SLEXMMObjectVersion.class) {
+//				SLEXMMObjectVersion ov = (SLEXMMObjectVersion) o;
+//				HashMap<SLEXMMAttribute,SLEXMMAttributeValue> atValsMap = ov.getAttributeValues();
+//
+//				for (SLEXMMAttribute ovat: atValsMap.keySet()) {
+//					if (ovat.getName() == propertyName) {
+//						return atValsMap.get(ovat).getValue();
+//					}
+//				}
+//			} else if (type == SLEXMMCase.class) {
+//				SLEXMMCase c = (SLEXMMCase) o;
+//				HashMap<SLEXMMCaseAttribute,SLEXMMCaseAttributeValue> atValsMap = c.getAttributeValues();
+//
+//				for (SLEXMMCaseAttribute cat: atValsMap.keySet()) {
+//					if (cat.getName() == propertyName) {
+//						return atValsMap.get(cat).getValue();
+//					}
+//				}
+//			} else if (type == SLEXMMLog.class) {
+//				SLEXMMLog l = (SLEXMMLog) o;
+//				HashMap<SLEXMMLogAttribute,SLEXMMLogAttributeValue> atValsMap = l.getAttributeValues();
+//
+//				for (SLEXMMLogAttribute lat: atValsMap.keySet()) {
+//					if (lat.getName() == propertyName) {
+//						return atValsMap.get(lat).getValue();
+//					}
+//				}
+//			}
 		}
 	}
 	
-	private QueryGroovyResult buildResult(HashMap<Object, HashSet<Integer>> map, Class type) {
-		QueryGroovyResult qr = new QueryGroovyResult();
+	// Check ME FIXME
+	private QueryGroovyResult buildResult(DAPOQLSet set) {
+		QueryGroovyResult qr = new QueryGroovyResult(set.getType(), getStorage(), dapoqlfunc);
 		
-		qr.mapResult = map;
-		qr.result = map.keySet();
-		qr.type = type;
-		qr.dapoqlfunc = dapoqlfunc;
+		Class<?> type = set.getType();
 		
-		if (type == SLEXMMEvent) {
-			qr.mapResult = new HashMap<>();
-			SLEXMMEventResultSet erset = slxmm.getEventsAndAttributeValues((Set<SLEXMMEvent>)qr.result);
-			SLEXMMEvent e = null;
-			while ((e = erset.getNextWithAttributes()) != null) {
-				qr.mapResult.put(e,map.get(e));
-			}
-			qr.result = qr.mapResult.keySet();
-			
-		} else if (type == SLEXMMObjectVersion) {
-			qr.mapResult = new HashMap<>();
-			SLEXMMObjectVersionResultSet erset = slxmm.getVersionsAndAttributeValues((Set<SLEXMMObjectVersion>)qr.result);
-			SLEXMMObjectVersion e = null;
-			while ((e = erset.getNextWithAttributes()) != null) {
-				qr.mapResult.put(e,map.get(e));
-			}
-			qr.result = qr.mapResult.keySet();
-		} else if (type == SLEXMMCase) {
-			qr.mapResult = new HashMap<>();
-			SLEXMMCaseResultSet crset = slxmm.getCasesAndAttributeValues((Set<SLEXMMCase>)qr.result);
-			SLEXMMCase c = null;
-			while ((c = crset.getNextWithAttributes()) != null) {
-				qr.mapResult.put(c,map.get(c));
-			}
-			qr.result = qr.mapResult.keySet();
-		} else if (type == SLEXMMLog) {
-			qr.mapResult = new HashMap<>();
-			SLEXMMLogResultSet lrset = slxmm.getLogsAndAttributeValues((Set<SLEXMMLog>) qr.result);
-			SLEXMMLog log = null;
-			while ((log = lrset.getNextWithAttributes()) != null) {
-				qr.mapResult.put(log,map.get(log));
-			}
-			qr.result = qr.mapResult.keySet();
+		if (type == SLEXMMEvent.class) {
+			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getEventsAndAttributeValues));
+		} else if (type == SLEXMMObjectVersion.class) {
+			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getVersionsAndAttributeValues));
+		} else if (type == SLEXMMCase.class) {
+			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getCasesAndAttributeValues));
+		} else if (type == SLEXMMLog.class) {
+			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getLogsAndAttributeValues));
+		} else {
+			qr.setResult(set);
 		}
+		
 		return qr;
 	}
 	
 	def QueryGroovyResult allDatamodels() {
-		return buildResult(dapoqlfunc.getAllDatamodels(),SLEXMMDataModel.class);
+		return buildResult(dapoqlfunc.getAllDatamodels());
 	}
 	
 	def QueryGroovyResult allClasses() {
-		return buildResult(dapoqlfunc.getAllClasses(),SLEXMMClass.class);
+		return buildResult(dapoqlfunc.getAllClasses());
 	}
 	
 	def QueryGroovyResult allAttributes() {
-		return buildResult(dapoqlfunc.getAllAttributes(),SLEXMMAttribute.class);
+		return buildResult(dapoqlfunc.getAllAttributes());
 	}
 	
 	def QueryGroovyResult allRelationships() {
-		return buildResult(dapoqlfunc.getAllRelationships(),SLEXMMRelationship.class);
+		return buildResult(dapoqlfunc.getAllRelationships());
 	}
 	
 	def QueryGroovyResult allObjects() {
-		return buildResult(dapoqlfunc.getAllObjects(),SLEXMMObject.class);
+		return buildResult(dapoqlfunc.getAllObjects());
 	}
 	
 	def QueryGroovyResult allVersions() {
-		return buildResult(dapoqlfunc.getAllVersions(),SLEXMMObjectVersion.class);
+		return buildResult(dapoqlfunc.getAllVersions());
 	}
 	
 	def QueryGroovyResult allRelations() {
-		return buildResult(dapoqlfunc.getAllRelations(),SLEXMMRelation.class);
+		return buildResult(dapoqlfunc.getAllRelations());
 	}
 	
 	def QueryGroovyResult allEvents() {
-		return buildResult(dapoqlfunc.getAllEvents(),SLEXMMEvent.class);
+		return buildResult(dapoqlfunc.getAllEvents());
 	}
 	
 	def QueryGroovyResult allActivityInstances() {
-		return buildResult(dapoqlfunc.getAllActivityInstances(),SLEXMMActivityInstance.class);
+		return buildResult(dapoqlfunc.getAllActivityInstances());
 	}
 	
 	def QueryGroovyResult allCases() {
-		return buildResult(dapoqlfunc.getAllCases(),SLEXMMCase.class);
+		return buildResult(dapoqlfunc.getAllCases());
 	}
 	
 	def QueryGroovyResult allLogs() {
-		return buildResult(dapoqlfunc.getAllLogs(),SLEXMMLog.class);
+		return buildResult(dapoqlfunc.getAllLogs());
 	}
 	
 	def QueryGroovyResult allActivities() {
-		return buildResult(dapoqlfunc.getAllActivities(),SLEXMMActivity.class);
+		return buildResult(dapoqlfunc.getAllActivities());
 	}
 	
 	def QueryGroovyResult allProcesses() {
-		return buildResult(dapoqlfunc.getAllProcesses(),SLEXMMProcess.class);
+		return buildResult(dapoqlfunc.getAllProcesses());
 	}
 	
 	def QueryGroovyResult versionsRelatedTo(QueryGroovyResult qr) throws Exception {
 		if (qr.type != SLEXMMObjectVersion.class) {
 			throw new Exception("Argument of versionsRelatedTo must be a set of versions");
 		}
-		return buildResult(dapoqlfunc.versionsRelatedTo(qr.result,qr.type),SLEXMMObjectVersion.class);
+		return buildResult(dapoqlfunc.versionsRelatedTo(qr.getResult()));
 	}
 	
 	def QueryGroovyResult datamodelsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.datamodelsOf(qr.mapResult, qr.type),SLEXMMDataModel.class);
+		return buildResult(dapoqlfunc.datamodelsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult classesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.classesOf(qr.mapResult, qr.type),SLEXMMClass.class);
+		return buildResult(dapoqlfunc.classesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult attributesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.attributesOf(qr.mapResult, qr.type),SLEXMMAttribute.class);
+		return buildResult(dapoqlfunc.attributesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult relationshipsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.relationshipsOf(qr.mapResult, qr.type),SLEXMMRelationship.class);
+		return buildResult(dapoqlfunc.relationshipsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult objectsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.objectsOf(qr.mapResult, qr.type),SLEXMMObject.class);
+		return buildResult(dapoqlfunc.objectsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult versionsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.versionsOf(qr.mapResult, qr.type),SLEXMMObjectVersion.class);
+		return buildResult(dapoqlfunc.versionsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult relationsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.relationsOf(qr.mapResult, qr.type),SLEXMMRelation.class);
+		return buildResult(dapoqlfunc.relationsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult eventsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.eventsOf(qr.mapResult, qr.type),SLEXMMEvent.class);
+		return buildResult(dapoqlfunc.eventsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult activityInstancesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.activityInstancesOf(qr.mapResult, qr.type),SLEXMMActivityInstance.class);
+		return buildResult(dapoqlfunc.activityInstancesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult activitiesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.activitiesOf(qr.mapResult, qr.type),SLEXMMActivity.class);
+		return buildResult(dapoqlfunc.activitiesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult casesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.casesOf(qr.mapResult, qr.type),SLEXMMCase.class);
+		return buildResult(dapoqlfunc.casesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult logsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.logsOf(qr.mapResult, qr.type),SLEXMMLog.class);
+		return buildResult(dapoqlfunc.logsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult processesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.processesOf(qr.mapResult, qr.type),SLEXMMProcess.class);
+		return buildResult(dapoqlfunc.processesOf(qr.getResult()));
 	}
 
 	def QueryGroovyResult periodsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.periodsOf(qr.mapResult,qr.type),SLEXMMPeriod.class);
+		return buildResult(dapoqlfunc.periodsOf(qr.getResult));
 	}
 	
 	def SLEXMMPeriod globalPeriodOf(QueryGroovyResult qr) {
 				
-		if (qr.type == SLEXMMPeriod) {
+		if (qr.getType() == SLEXMMPeriod) {
 			long startTimestamp = -1L;
 			long endTimestamp = -2L;
 			
-			for (Object o: qr.result) {
+			for (Object o: qr.getResult()) {
 				SLEXMMPeriod po = (SLEXMMPeriod) o;
-				startTimestamp = SLEXMMUtils.earliest(startTimestamp,po.getStart());
-				endTimestamp = SLEXMMUtils.latest(endTimestamp,po.getEnd());
+				startTimestamp = MMUtils.earliest(startTimestamp,po.getStart());
+				endTimestamp = MMUtils.latest(endTimestamp,po.getEnd());
 			}
 			
-			SLEXMMPeriod p = new SLEXMMPeriod(startTimestamp, endTimestamp);
+			SLEXMMPeriod p = new SLEXMMPeriod(getStorage(), startTimestamp, endTimestamp);
 			return p;
 		} else {
 			return globalPeriodOf(periodsOf(qr));
@@ -311,16 +302,12 @@ class DAPOQLDSL extends Script {
 				}
 
 				if (equalType) {
-					QueryGroovyResult qr = new QueryGroovyResult();
-					qr.type = type;
-					qr.mapResult = new HashMap<>();
-					qr.dapoqlfunc = dapoqlfunc;
+					QueryGroovyResult qr = new QueryGroovyResult(type, getStorage(), dapoqlfunc);
 
 					for (Object o: args) {
-						qr.mapResult.put(o,new HashSet<>());
+						qr.getResult().add(o);
 					}
 
-					qr.result = qr.mapResult.keySet();
 					return invokeMethod(name,qr);
 				}
 			}
@@ -352,20 +339,20 @@ class DAPOQLDSL extends Script {
 		startTimestamp = dateStart.getTime();
 		endTimestamp = dateEnd.getTime();
 		
-		SLEXMMPeriod p = new SLEXMMPeriod(startTimestamp, endTimestamp);
+		SLEXMMPeriod p = new SLEXMMPeriod(getStorage(), startTimestamp, endTimestamp);
 		return p;
 	}
 	
 	def SLEXMMPeriod createPeriod(long A, long B) {
-		return new SLEXMMPeriod(A, B);
+		return new SLEXMMPeriod(getStorage(), A, B);
 	}
 	
 	def SLEXMMPeriod createPeriod(long A) {
-		return new SLEXMMPeriod(A, A);
+		return new SLEXMMPeriod(getStorage(), A, A);
 	}
 	
 	def boolean before(SLEXMMPeriod a, SLEXMMPeriod b) {
-		return (SLEXMMUtils.before(a.getEnd(),b.getStart()));
+		return (MMUtils.before(a.getEnd(),b.getStart()));
 	}
 	
 	def boolean after(SLEXMMPeriod a, SLEXMMPeriod b) {
@@ -381,9 +368,9 @@ class DAPOQLDSL extends Script {
 	}
 
 	def boolean overlaps(SLEXMMPeriod a, SLEXMMPeriod b) {
-		return (SLEXMMUtils.before(a.getStart(),b.getStart()) &&
-			    SLEXMMUtils.after(a.getEnd(),b.getStart()) &&
-				SLEXMMUtils.before(a.getEnd(),b.getEnd()));
+		return (MMUtils.before(a.getStart(),b.getStart()) &&
+			    MMUtils.after(a.getEnd(),b.getStart()) &&
+				MMUtils.before(a.getEnd(),b.getEnd()));
 	}
 	
 	def boolean overlapsInv(SLEXMMPeriod a, SLEXMMPeriod b) {
@@ -392,7 +379,7 @@ class DAPOQLDSL extends Script {
 
 	def boolean starts(SLEXMMPeriod a, SLEXMMPeriod b) {
 		return (a.getStart() == b.getStart() &&
-			    SLEXMMUtils.before(a.getEnd(),b.getEnd()));
+			    MMUtils.before(a.getEnd(),b.getEnd()));
 	}
 	
 	def boolean startsInv(SLEXMMPeriod a, SLEXMMPeriod b) {
@@ -400,10 +387,10 @@ class DAPOQLDSL extends Script {
 	}
 	
 	def boolean during(SLEXMMPeriod a, SLEXMMPeriod b) {
-		return ((SLEXMMUtils.after(a.getStart(),b.getStart()) &&
-			     SLEXMMUtils.beforeOrEqual(a.getEnd(),b.getEnd())) ||
-				(SLEXMMUtils.afterOrEqual(a.getStart(),b.getStart()) &&
-			     SLEXMMUtils.before(a.getEnd(),b.getEnd())));		 
+		return ((MMUtils.after(a.getStart(),b.getStart()) &&
+			     MMUtils.beforeOrEqual(a.getEnd(),b.getEnd())) ||
+				(MMUtils.afterOrEqual(a.getStart(),b.getStart()) &&
+			     MMUtils.before(a.getEnd(),b.getEnd())));		 
 	}
 	
 	def boolean duringInv(SLEXMMPeriod a, SLEXMMPeriod b) {
@@ -411,7 +398,7 @@ class DAPOQLDSL extends Script {
 	}
 	
 	def boolean finishes(SLEXMMPeriod a, SLEXMMPeriod b) {
-		return (SLEXMMUtils.after(a.getStart(),b.getStart()) &&
+		return (MMUtils.after(a.getStart(),b.getStart()) &&
 			    a.getEnd() == b.getEnd());
 	}
 	

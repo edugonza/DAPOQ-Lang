@@ -5,11 +5,10 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.processmining.database.metamodel.dapoql.DAPOQLRunnerGroovy;
 import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
 import org.processmining.database.metamodel.dapoql.QueryResult;
-import org.processmining.openslex.metamodel.SLEXMMAbstractDatabaseObject;
+import org.processmining.openslex.metamodel.AbstractDBElement;
 import org.processmining.openslex.metamodel.SLEXMMSQLResult;
 import org.processmining.openslex.metamodel.SLEXMMSQLResultSet;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
@@ -58,10 +57,10 @@ public class ComparisonCase {
 		Instant startDapoql = Instant.now();
 		QueryResult outDapoql = runner.executeQuery(mm, this.dapoqlQuery, vars);
 		int i = 0;
-		for (Object o: outDapoql.result) {
+		for (Object o: outDapoql.getResult()) {
 			// Just to consume the data iterating and making sure all the resultset is retrieved
-			if (o instanceof SLEXMMAbstractDatabaseObject) {
-				dapoqlResultIds.add(((SLEXMMAbstractDatabaseObject) o).getId());
+			if (o instanceof AbstractDBElement) {
+				dapoqlResultIds.add(((AbstractDBElement) o).getId());
 			}
 			i++;
 		}
