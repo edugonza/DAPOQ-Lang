@@ -83,7 +83,9 @@ class DAPOQLDSL extends Script {
 				AbstractDBElementWithAtts ae = o;
 				AbstractDBElementWithValue atv = ae.getAttributeValue(propertyName);
 				
-				return atv.getValue();
+				if (atv != null) {
+					return atv.getValue()
+				}
 			}
 			
 			return null;
@@ -134,16 +136,20 @@ class DAPOQLDSL extends Script {
 		
 		Class<?> type = set.getType();
 		
-		if (type == SLEXMMEvent.class) {
-			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getEventsAndAttributeValues));
-		} else if (type == SLEXMMObjectVersion.class) {
-			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getVersionsAndAttributeValues));
-		} else if (type == SLEXMMCase.class) {
-			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getCasesAndAttributeValues));
-		} else if (type == SLEXMMLog.class) {
-			qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getLogsAndAttributeValues));
+		if (set.attributesFetched()) {
+			qr.setResult(set)
 		} else {
-			qr.setResult(set);
+			if (type == SLEXMMEvent.class) {
+				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getEventsAndAttributeValues));
+			} else if (type == SLEXMMObjectVersion.class) {
+				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getVersionsAndAttributeValues));
+			} else if (type == SLEXMMCase.class) {
+				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getCasesAndAttributeValues));
+			} else if (type == SLEXMMLog.class) {
+				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getLogsAndAttributeValues));
+			} else {
+				qr.setResult(set);
+			}
 		}
 		
 		return qr;

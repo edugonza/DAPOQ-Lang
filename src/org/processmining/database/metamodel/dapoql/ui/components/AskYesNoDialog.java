@@ -9,16 +9,17 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
-import javax.swing.BoxLayout;
 import java.awt.GridLayout;
 
 public class AskYesNoDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 690026171898731459L;
 	private final JPanel contentPanel = new JPanel();
 	private boolean option = false;
 	/**

@@ -56,13 +56,13 @@ public class ComparisonCase {
 		HashSet<Integer> dapoqlResultIds = new HashSet<>();
 		Instant startDapoql = Instant.now();
 		QueryResult outDapoql = runner.executeQuery(mm, this.dapoqlQuery, vars);
-		int i = 0;
+		//int i = 0;
 		for (Object o: outDapoql.getResult()) {
 			// Just to consume the data iterating and making sure all the resultset is retrieved
 			if (o instanceof AbstractDBElement) {
 				dapoqlResultIds.add(((AbstractDBElement) o).getId());
 			}
-			i++;
+			//i++;
 		}
 		Instant endDapoql = Instant.now();
 		
@@ -85,13 +85,13 @@ public class ComparisonCase {
 				k++;
 			}
 		}
-		int j = 0;
+		//int j = 0;
 		while ((r = outSQL.getNext()) != null) {
 			// Just to consume the data iterating and making sure all the resultset is retrieved
 			if (colId >= 0) {
 				sqlResultIds.add(Integer.valueOf(r.getValues()[colId]));
 			}
-			j++;
+			//j++;
 		}
 		outSQL.close();
 		Instant endSQL = Instant.now();

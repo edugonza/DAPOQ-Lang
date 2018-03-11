@@ -15,6 +15,10 @@ import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
 public class DAPOQLGroovyPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2858997601934978052L;
 	private int poqlTabCounter = 0;
 	private SLEXMMStorageMetaModel slxmm = null;
 	

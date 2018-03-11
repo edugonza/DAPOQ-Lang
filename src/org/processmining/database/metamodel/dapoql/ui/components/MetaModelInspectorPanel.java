@@ -38,6 +38,11 @@ import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
 public class MetaModelInspectorPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6742657072248127244L;
+
 	private SLEXMMStorageMetaModel slxmm = null;
 
 	private JTable tableObjectsAll;

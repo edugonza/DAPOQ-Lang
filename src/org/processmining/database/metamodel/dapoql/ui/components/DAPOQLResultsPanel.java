@@ -3,8 +3,6 @@ package org.processmining.database.metamodel.dapoql.ui.components;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.HashMap;
-import java.util.Set;
-
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -13,7 +11,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.processmining.database.metamodel.dapoql.DAPOQLSet;
-import org.processmining.openslex.metamodel.AbstractDBElement;
 import org.processmining.openslex.metamodel.SLEXMMActivity;
 import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
 import org.processmining.openslex.metamodel.SLEXMMAttribute;
@@ -38,7 +35,7 @@ public class DAPOQLResultsPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 6469653854714373032L;
-	private int id = 0;
+	//private int id = 0;
 	private SLEXMMStorageMetaModel slxmm = null;
 	
 	private JTable sqlResultTable = null;
@@ -148,7 +145,7 @@ public class DAPOQLResultsPanel extends JPanel {
 		scrollPane1.setViewportView(table);
 	}
 	
-	private void setSelectionListener(final Class type) {
+	private void setSelectionListener(final Class<?> type) {
 		sqlResultTable.setSelectionModel(new DefaultListSelectionModel());
 		if (type == SLEXMMEvent.class) {
 			sqlResultTable.getSelectionModel().addListSelectionListener(new EventSelectionListener());

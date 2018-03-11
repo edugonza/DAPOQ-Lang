@@ -36,6 +36,7 @@ public class ExtendedDotPanel extends DotPanel {
 	}
 	
 	private void recursiveChangeFontSize(SVGElement root) {
+		@SuppressWarnings("unchecked")
 		List<SVGElement> listEls = root.getChildren(null);
 
 		for (SVGElement element : listEls) {

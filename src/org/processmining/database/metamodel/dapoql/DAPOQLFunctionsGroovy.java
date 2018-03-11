@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.processmining.openslex.metamodel.AbstractAttDBElement;
 import org.processmining.openslex.metamodel.AbstractDBElement;
 import org.processmining.openslex.metamodel.AbstractDBElementWithAtts;
 import org.processmining.openslex.metamodel.AbstractRSetElement;
@@ -407,6 +406,18 @@ public class DAPOQLFunctionsGroovy {
 		return list;
 	}
 	
+	public DAPOQLSet getAllWithAttributes(Class<?> targetType, Supplier<AbstractRSetWithAtts<?,?,?>> s) {
+		DAPOQLSet list = new DAPOQLSet(getStorage(), targetType);
+		
+		AbstractRSetWithAtts<?,?,?> elrset = s.get();
+		AbstractDBElementWithAtts<?,?> el = null;
+		while ((el = (AbstractDBElementWithAtts<?,?>) elrset.getNextWithAttributes()) != null) {
+			list.add(el);
+		}
+		list.setAttributesFetched(true);
+		return list;
+	}
+	
 	public DAPOQLSet ElementsOfPeriod(DAPOQLSet list, Class<?> targetType, Function<SLEXMMPeriod, AbstractRSetElement<?>> f) throws Exception {
 
 		DAPOQLSet listResult = new DAPOQLSet(getStorage(), SLEXMMPeriod.class);
@@ -457,6 +468,7 @@ public class DAPOQLFunctionsGroovy {
 				while ((el = (AbstractDBElementWithAtts<?,?>) elrset.getNextWithAttributes()) != null) {
 					listResult.add(el);
 				}
+				listResult.setAttributesFetched(true);
 			} else {
 				AbstractRSetElement<?> elrset = null;
 				elrset = f.apply(ids[i]);
@@ -502,15 +514,18 @@ public class DAPOQLFunctionsGroovy {
 	}
 	
 	public DAPOQLSet getAllCases() {
-		return getAll(SLEXMMCase.class, getStorage()::getCases);
+		return getAllWithAttributes(SLEXMMCase.class, getStorage()::getAllCasesAndAttributeValues);
+		//return getAll(SLEXMMCase.class, getStorage()::getCases);
 	}
 	
 	public DAPOQLSet getAllEvents() {
-		return getAll(SLEXMMEvent.class, getStorage()::getEvents);
+		return getAllWithAttributes(SLEXMMEvent.class, getStorage()::getAllEventsAndAttributeValues);
+		//return getAll(SLEXMMEvent.class, getStorage()::getEvents);
 	}
 	
 	public DAPOQLSet getAllVersions() {
-		return getAll(SLEXMMObjectVersion.class, getStorage()::getObjectVersions);
+		return getAllWithAttributes(SLEXMMObjectVersion.class, getStorage()::getAllVersionsAndAttributeValues);
+		//return getAll(SLEXMMObjectVersion.class, getStorage()::getObjectVersions);
 	}
 	
 	public DAPOQLSet getAllActivities() {
@@ -542,7 +557,8 @@ public class DAPOQLFunctionsGroovy {
 	}
 
 	public DAPOQLSet getAllLogs() {
-		return getAll(SLEXMMLog.class, getStorage()::getLogs);
+		return getAllWithAttributes(SLEXMMLog.class, getStorage()::getAllLogsAndAttributeValues);
+		//return getAll(SLEXMMLog.class, getStorage()::getLogs);
 	}
 	
 	public DAPOQLSet getAllActivityInstances() {

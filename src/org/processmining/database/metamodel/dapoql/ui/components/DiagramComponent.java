@@ -181,11 +181,11 @@ public class DiagramComponent extends JPanel {
 					"<<TABLE><TR><TD bgcolor=\"blue\"><font color=\"white\">" + name + "</font></TD></TR>");
 
 			List<SLEXMMAttribute> attrs = mmstrg.getListAttributesForClass(c);
-			int i = 1;
+			//int i = 1;
 			for (SLEXMMAttribute at : attrs) {
 				label.append("<TR><TD align=\"left\" bgcolor=\"white\" ><font color=\"black\"> (" + at.getId() + ") "
 						+ at.getName() + "</font></TD></TR>");
-				i++;
+				//i++;
 			}
 
 			label.append("</TABLE>>");

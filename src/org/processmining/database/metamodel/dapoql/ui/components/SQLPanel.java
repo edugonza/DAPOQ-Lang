@@ -12,10 +12,13 @@ import javax.swing.JTabbedPane;
 import org.processmining.openslex.metamodel.SLEXMMDataModel;
 import org.processmining.openslex.metamodel.SLEXMMDataModelResultSet;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
-import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
 
 public class SQLPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4445104587578954961L;
 	private int sqlTabCounter = 0;
 	SLEXMMStorageMetaModel slxmm = null;
 	

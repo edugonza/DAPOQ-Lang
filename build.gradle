@@ -10,7 +10,7 @@ apply plugin: 'maven-publish'
 
 wrapper.gradleVersion = '4.6'
 
-version = '1.0-alpha'
+version = '1.0'
 group = 'com.github.edugonza'
 
 println name+" v"+version
@@ -104,8 +104,7 @@ dependencies {
 	compile  'org.rapidprom:GraphViz:6.7.185'
 	compile  'commons-io:commons-io:2.6'
 	compile  'org.apache.commons:commons-compress:1.16.1'
-//	compile  'com.github.edugonza:OpenSLEX:0.9'
-	compile  'com.github.edugonza:OpenSLEX:development-SNAPSHOT'
+	compile  'com.github.edugonza:OpenSLEX:1.0'
 	compile  'org.codehaus.groovy:groovy-all:2.4.14'
 	compile  'com.fifesoft:rsyntaxtextarea:2.6.1'
 	compile  'com.fifesoft:autocomplete:2.6.1'

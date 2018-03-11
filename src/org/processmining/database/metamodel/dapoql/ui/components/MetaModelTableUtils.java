@@ -2,23 +2,16 @@ package org.processmining.database.metamodel.dapoql.ui.components;
 
 import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Set;
-
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import org.processmining.openslex.metamodel.*;
@@ -86,10 +79,14 @@ public class MetaModelTableUtils {
 
 	public static class ActivitiesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7976767921556278598L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -164,10 +161,14 @@ public class MetaModelTableUtils {
 
 	public static class LogsTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6971439987056221506L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, String.class, Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -253,10 +254,14 @@ public class MetaModelTableUtils {
 
 	public static class ClassesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class, Integer.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 445280393596807731L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, String.class, Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -293,10 +298,14 @@ public class MetaModelTableUtils {
 
 	public static class AttributesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, Integer.class, String.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -8733737889639921485L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, Integer.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -333,10 +342,14 @@ public class MetaModelTableUtils {
 
 	public static class ObjectsTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, Integer.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3096316617084395394L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -395,10 +408,14 @@ public class MetaModelTableUtils {
 
 	public static class ActivityInstanceTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, Integer.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6513136842769853449L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -458,13 +475,17 @@ public class MetaModelTableUtils {
 
 	public static class ObjectVersionsTableModel extends DefaultTableModel {
 
-		ArrayList<Class> columnTypes = new ArrayList<>();
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7819073309125838842L;
+		ArrayList<Class<?>> columnTypes = new ArrayList<>();
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes.get(columnIndex);
 		}
 
-		public void addColumnClass(Class c) {
+		public void addColumnClass(Class<?> c) {
 			columnTypes.add(c);
 		}
 
@@ -537,13 +558,17 @@ public class MetaModelTableUtils {
 
 	public static class RelationshipTableModel extends DefaultTableModel {
 
-		ArrayList<Class> columnTypes = new ArrayList<>();
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7414043803097162904L;
+		ArrayList<Class<?>> columnTypes = new ArrayList<>();
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes.get(columnIndex);
 		}
 
-		public void addColumnClass(Class c) {
+		public void addColumnClass(Class<?> c) {
 			columnTypes.add(c);
 		}
 
@@ -589,13 +614,17 @@ public class MetaModelTableUtils {
 
 	public static class ObjectRelationsTableModel extends DefaultTableModel {
 
-		ArrayList<Class> columnTypes = new ArrayList<>();
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5803039834010423019L;
+		ArrayList<Class<?>> columnTypes = new ArrayList<>();
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes.get(columnIndex);
 		}
 
-		public void addColumnClass(Class c) {
+		public void addColumnClass(Class<?> c) {
 			columnTypes.add(c);
 		}
 
@@ -679,10 +708,14 @@ public class MetaModelTableUtils {
 
 	public static class CasesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1852574149903633265L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -745,10 +778,14 @@ public class MetaModelTableUtils {
 
 	public static class EventsTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, Integer.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7073562173670635694L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, Integer.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -856,10 +893,14 @@ public class MetaModelTableUtils {
 
 	public static class EventAttributesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { String.class, String.class, String.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7996631137189413581L;
+		Class<?>[] columnTypes = new Class[] { String.class, String.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -903,10 +944,14 @@ public class MetaModelTableUtils {
 
 	public static class ObjectVersionAttributesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { String.class, String.class, String.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3566333190377279989L;
+		Class<?>[] columnTypes = new Class[] { String.class, String.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -945,10 +990,14 @@ public class MetaModelTableUtils {
 
 	public static class PeriodsTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Date.class, Date.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7615573961826376351L;
+		Class<?>[] columnTypes = new Class[] { Date.class, Date.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -1044,10 +1093,14 @@ public class MetaModelTableUtils {
 
 	public static class ProcessesTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4662006921660977070L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 
@@ -1061,6 +1114,7 @@ public class MetaModelTableUtils {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static final class SLEXMMProcessListCellRenderer implements ListCellRenderer {
 		private final ListCellRenderer originalRenderer;
 
@@ -1068,6 +1122,7 @@ public class MetaModelTableUtils {
 			this.originalRenderer = originalRenderer;
 		}
 
+		@SuppressWarnings("unchecked")
 		public Component getListCellRendererComponent(final JList list, final Object value, final int index,
 				final boolean isSelected, final boolean cellHasFocus) {
 			return originalRenderer.getListCellRendererComponent(list, ((SLEXMMProcess) value).getName(), index,
@@ -1075,6 +1130,7 @@ public class MetaModelTableUtils {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void setProcessesDropboxContent(JComboBox<SLEXMMProcess> processComboBox,
 			SLEXMMProcessResultSet prset) throws Exception {
 
@@ -1138,10 +1194,14 @@ public class MetaModelTableUtils {
 
 	public static class DatamodelsTableModel extends DefaultTableModel {
 
-		Class[] columnTypes = new Class[] { Integer.class, String.class };
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -9211653875658942083L;
+		Class<?>[] columnTypes = new Class[] { Integer.class, String.class };
 		boolean[] columnEditables = new boolean[] { false, false };
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return columnTypes[columnIndex];
 		}
 

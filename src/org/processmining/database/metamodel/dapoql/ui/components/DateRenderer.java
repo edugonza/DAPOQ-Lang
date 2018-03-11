@@ -6,6 +6,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 public class DateRenderer extends DefaultTableCellRenderer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3036933261008989820L;
 	private SimpleDateFormat sdfNewValue = new SimpleDateFormat("EE MMM dd hh:mm:ss z yyyy");
 	private String valueToString = "";
 

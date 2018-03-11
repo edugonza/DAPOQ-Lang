@@ -1,1 +1,2 @@
 return allEvents().where{ at.TABLE_NAME == "CUSTOMER" }
+//return eventsOf(allClasses().where{ name == "CUSTOMER" })

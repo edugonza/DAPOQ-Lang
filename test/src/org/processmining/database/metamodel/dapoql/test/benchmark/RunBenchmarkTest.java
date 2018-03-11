@@ -19,6 +19,8 @@ import com.google.common.base.Predicate;
 public class RunBenchmarkTest {
 
 	public File outputFile = null;
+	String filename = "metamodel-RL.slexmm";
+	String path = "./data/";
 		
 	public String[][] loadBenchmark() throws Exception {
 		
@@ -76,13 +78,11 @@ public class RunBenchmarkTest {
 	public void queryingBenchmark() throws Exception {
 		String benchmarkQueries[][] = loadBenchmark();
 		
-		String path = "./data/";
-		String filename = "metamodel-RL.slexmm";
 		File datafile = new File(path + File.separator + filename);
 		if (!datafile.exists()) {
 			throw new Exception("Data does not exist: "+datafile.toString());
 		}
-		SLEXMMStorageMetaModel mm = new SLEXMMStorageMetaModelImpl(path, filename);
+		SLEXMMStorageMetaModel mm = new SLEXMMStorageMetaModelImpl(path, filename, true);
 		
 		Duration[][] benchmarkDurations = new Duration[benchmarkQueries.length][2]; 
 		
@@ -92,14 +92,6 @@ public class RunBenchmarkTest {
 			System.out.println("Query Set "+i+": "+qset[0]);
 			ComparisonCase cc = new ComparisonCase(qset[1], qset[2]);
 			benchmarkDurations[i] = cc.runCase(mm, vars);
-			System.out.println("--");
-//			System.out.println(benchmarkDurations[i][0]);
-//			System.out.println(benchmarkDurations[i][1]);
-//			System.out.print("DAPOQL: ");
-//			System.out.print(dur[0].toMillis()+" ms");
-//			System.out.print(" SQL:    ");
-//			System.out.print(dur[1].toMillis()+" ms");
-//			System.out.print("\n");
 		}
 	}
 	
@@ -107,6 +99,8 @@ public class RunBenchmarkTest {
 		File outputFile = new File("benchmark/results.csv");
 		RunBenchmarkTest rbt = new RunBenchmarkTest();
 		rbt.outputFile = outputFile;
+		rbt.filename = "metamodel-RL.slexmm";
+		rbt.path = "./data/";
 		try {
 			rbt.queryingBenchmark();
 		} catch (Exception e) {

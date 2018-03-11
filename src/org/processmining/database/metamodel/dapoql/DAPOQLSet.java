@@ -13,11 +13,21 @@ public class DAPOQLSet implements Iterable<AbstractDBElement> {
 	private Set<Integer> set = null;
 	private SLEXMMStorageMetaModel storage = null;
 	private Class<?> c = null;
+	private boolean attsFetched = false;
 	
 	public DAPOQLSet(SLEXMMStorageMetaModel storage, Class<?> c) {
 		this.storage = storage;
 		this.c = c;
 		this.set = new HashSet<>();
+		this.attsFetched = false;
+	}
+	
+	public boolean attributesFetched() {
+		return this.attsFetched;
+	}
+	
+	public void setAttributesFetched(boolean fetched) {
+		this.attsFetched = fetched;
 	}
 	
 	@Override
