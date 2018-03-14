@@ -23,6 +23,7 @@ import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
 import org.processmining.openslex.metamodel.SLEXMMPeriod;
+import org.processmining.openslex.metamodel.SLEXMMPeriodResultSet;
 import org.processmining.openslex.metamodel.SLEXMMProcess;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
@@ -326,7 +327,6 @@ public class DAPOQLFunctionsGroovy {
 		periodFunctions.put(SLEXMMRelationship.class, getStorage()::getPeriodsForRelationships);
 		periodFunctions.put(SLEXMMRelation.class, getStorage()::getPeriodsForRelations);
 		mapFunctions.put(SLEXMMPeriod.class,periodFunctions);
-		
     }
 	
 	public DAPOQLSet objectsOf(DAPOQLSet list) throws Exception {
@@ -420,7 +420,7 @@ public class DAPOQLFunctionsGroovy {
 	
 	public DAPOQLSet ElementsOfPeriod(DAPOQLSet list, Class<?> targetType, Function<SLEXMMPeriod, AbstractRSetElement<?>> f) throws Exception {
 
-		DAPOQLSet listResult = new DAPOQLSet(getStorage(), SLEXMMPeriod.class);
+		DAPOQLSet listResult = new DAPOQLSet(getStorage(), targetType);
 		
 		for (Object o : list.getObjSet()) {
 			SLEXMMPeriod p = (SLEXMMPeriod) o;
