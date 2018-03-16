@@ -42,8 +42,8 @@ import groovy.lang.MetaClass;
 import groovy.transform.TypeChecked;
 import groovy.transform.CompileStatic;
 
-//@TypeChecked
-//@CompileStatic
+@TypeChecked
+@CompileStatic
 class DAPOQLDSL extends Script {
 
 	protected DAPOQLFunctionsGroovy dapoqlfunc = null;
@@ -80,7 +80,7 @@ class DAPOQLDSL extends Script {
 		def getPropertyRaw(String propertyName) {
 			
 			if (AbstractDBElementWithAtts.class.isAssignableFrom(type)) {
-				AbstractDBElementWithAtts ae = o;
+				AbstractDBElementWithAtts ae = (AbstractDBElementWithAtts) o;
 				AbstractDBElementWithValue atv = ae.getAttributeValue(propertyName);
 				
 				if (atv != null) {
@@ -267,7 +267,7 @@ class DAPOQLDSL extends Script {
 	}
 
 	def QueryGroovyResult periodsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.periodsOf(qr.getResult));
+		return buildResult(dapoqlfunc.periodsOf(qr.getResult()));
 	}
 	
 	def SLEXMMPeriod globalPeriodOf(QueryGroovyResult qr) {
@@ -311,7 +311,7 @@ class DAPOQLDSL extends Script {
 					QueryGroovyResult qr = new QueryGroovyResult(type, getStorage(), dapoqlfunc);
 
 					for (Object o: args) {
-						qr.getResult().add(o);
+						qr.getResult().add((AbstractDBElement) o);
 					}
 
 					return invokeMethod(name,qr);

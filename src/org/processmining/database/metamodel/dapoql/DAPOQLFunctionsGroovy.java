@@ -23,11 +23,11 @@ import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
 import org.processmining.openslex.metamodel.SLEXMMPeriod;
-import org.processmining.openslex.metamodel.SLEXMMPeriodResultSet;
 import org.processmining.openslex.metamodel.SLEXMMProcess;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
+import org.processmining.openslex.utils.MMUtils;
 
 public class DAPOQLFunctionsGroovy {
 
@@ -40,44 +40,121 @@ public class DAPOQLFunctionsGroovy {
 		initMapFunctions();
 	}
 	
-	public boolean filterChangedOperation(SLEXMMObjectVersion ov, SLEXMMAttribute slxAtt, String v, String valueFrom,
-			String valueTo) {
-
+	private SLEXMMObjectVersion getPrevOV(SLEXMMObjectVersion ov) {
+		
 		SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForObject(ov.getObjectId());
 		SLEXMMObjectVersion ova = null;
 		SLEXMMObjectVersion ovb = null;
-
+		
 		while ((ovb = ovrset.getNext()) != null) {
-			if (ovb.getId() == ov.getId()) {
-				break;
-			} else {
-				ova = ovb;
+			if (MMUtils.beforeOrEqual(ovb.getEndTimestamp(),ov.getStartTimestamp())) {
+				if (ova == null || MMUtils.after(ovb.getEndTimestamp(),ova.getEndTimestamp())) {
+					ova = ovb;
+				}
 			}
 		}
-
-		if (ova != null) {
-			SLEXMMAttributeValue prevAtV = ova.getAttributeValues().get(slxAtt);
-			String prevV = prevAtV.getValue();
-			if (valueFrom != null) {
-				if (!prevV.equals(valueFrom)) {
-					return false;
+		
+		if (ova != null && ova.getId() == ov.getId()) {
+			return null;
+		} else {
+			return ova;
+		}
+	}
+	
+	private String getValueOVForAttribute(SLEXMMObjectVersion ov, SLEXMMAttribute at) {
+		
+		if (ov != null) {
+			HashMap<SLEXMMAttribute, SLEXMMAttributeValue> map = ov.getAttributeValues();
+			if (map != null) {
+				SLEXMMAttributeValue atv = map.get(at);
+				if (atv != null) {
+					return atv.getValue();
 				}
 			}
-			if (valueTo != null) {
-				if (!v.equals(valueTo)) {
-					return false;
-				}
-			}
-			if (prevV.equals(v)) {
+		}
+		
+		return null;
+	}
+	
+	private boolean equalValues(String a, String b) {
+		if (a == null) {
+			if (b == null) {
+				// a == null && b == null
+				return true;
+			} else {
+				// a == null && b != null
 				return false;
 			}
 		} else {
-			// ov was already the first Object Version for this object. We
-			// cannot decide what changed.
-			return false;
+			if (b == null) {
+				// a != null && b == null
+				return false;
+			} else {
+				// a != null && b != null
+				return a.equals(b);
+			}
 		}
+	}
+	
+	public boolean filterChangedOperation(SLEXMMObjectVersion ov, SLEXMMAttribute slxAtt, String v, String valueFrom,
+			String valueTo) {
 
-		return true;
+		if (valueFrom == null) {
+			if (valueTo == null) {
+				// valueFrom == null and valueTo == null
+				// check if previous one is different of v.
+				SLEXMMObjectVersion prevOv = getPrevOV(ov);
+				if (prevOv == null) {
+					return false;
+				}
+				String prevV = getValueOVForAttribute(prevOv,slxAtt);
+				return !equalValues(prevV,v);
+			} else {
+				// valueFrom == null and valueTo != null
+				// check if valueTo is equal to v
+				if (equalValues(valueTo,v)) {
+					// check if v is different from previous one
+					SLEXMMObjectVersion prevOv = getPrevOV(ov);
+					if (prevOv == null) {
+						return false;
+					}
+					String prevV = getValueOVForAttribute(prevOv,slxAtt);
+					return !equalValues(prevV,v);
+				} else {
+					return false;
+				}
+			}
+		} else {
+			if (valueTo == null){
+				// valueFrom != null and valueTo == null
+				// check if v is different of valueFrom 
+				if (!equalValues(valueFrom,v)) {
+					// check if previous one is equal to valueFrom
+					SLEXMMObjectVersion prevOv = getPrevOV(ov);
+					if (prevOv == null) {
+						return false;
+					}
+					String prevV = getValueOVForAttribute(prevOv,slxAtt);
+					return equalValues(prevV,valueFrom);
+				} else {
+					return false;
+				}
+			} else {
+				// valueFrom != null and valueTo != null
+				// check if v is equal to valueTo
+				if (equalValues(v,valueTo)) {
+					// check if previous one is equal to valueFrom
+					SLEXMMObjectVersion prevOv = getPrevOV(ov);
+					if (prevOv == null) {
+						return false;
+					}
+					String prevV = getValueOVForAttribute(prevOv,slxAtt);
+					return equalValues(prevV,valueFrom);
+				} else {
+					return false;
+				}
+			}
+		}
 	}
 
 	private SLEXMMStorageMetaModel getStorage() {

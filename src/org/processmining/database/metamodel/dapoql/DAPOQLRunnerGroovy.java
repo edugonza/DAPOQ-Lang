@@ -1,8 +1,10 @@
 package org.processmining.database.metamodel.dapoql;
 
+
 import java.util.Set;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
 import groovy.lang.Binding;
@@ -31,6 +33,9 @@ public class DAPOQLRunnerGroovy {
 		try {
 			CompilerConfiguration config = new CompilerConfiguration();
 			config.setScriptBaseClass(DAPOQLDSL.class.getName());
+			ImportCustomizer icz = new ImportCustomizer();
+			icz.addImport("Duration", "java.time.Duration");
+			config.addCompilationCustomizers(icz);
 			Binding binding = new Binding();
 			if (vars != null) {
 				for (DAPOQLVariable v : vars) {

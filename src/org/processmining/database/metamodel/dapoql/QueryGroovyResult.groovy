@@ -19,7 +19,7 @@ class QueryGroovyResult extends QueryResult {
 	def where(Closure body) {
 		QueryGroovyResult qr = new QueryGroovyResult(getType(),getStorage(),dapoqlfunc);
 
-		body.resolveStrategy = Closure.DELEGATE_ONLY;
+		body.resolveStrategy = Closure.DELEGATE_FIRST;
 		DAPOQLDelegate dapoqldelegate = new DAPOQLDelegate();
 		body.delegate = dapoqldelegate;
 		dapoqldelegate.type = qr.getType();

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -21,6 +22,7 @@ public class RunBenchmarkTest {
 	public File outputFile = null;
 	String filename = "metamodel-RL.slexmm";
 	String path = "./data/";
+	Logger logger = Logger.getLogger(this.getClass().getName());
 		
 	public String[][] loadBenchmark() throws Exception {
 		
@@ -48,7 +50,7 @@ public class RunBenchmarkTest {
 		int n_sql = sqlFiles.size();
 		
 		if (n_dapoql != n_sql) {
-			throw new Exception("DAPOQL and SQL benchmark files are not even.");
+			logger.warning("DAPOQL and SQL benchmark files are not even.");
 		}
 		
 		String benchmarkQueries[][] = new String[n_dapoql][3];
@@ -59,15 +61,17 @@ public class RunBenchmarkTest {
 			String sf = prefix.concat(".sql");
 			InputStream dfin = this.getClass().getResourceAsStream("/"+df);
 			InputStream sfin = this.getClass().getResourceAsStream("/"+sf);
+			benchmarkQueries[i][0] = prefix;
 			if (dfin == null) {
-				throw new Exception("DAPOQL benchmark file missing: "+df);
+				logger.warning("DAPOQL benchmark file missing: "+df);
+			} else {
+				benchmarkQueries[i][1] = IOUtils.toString(dfin, Charset.defaultCharset());
 			}
 			if (sfin == null) {
-				throw new Exception("SQL benchmark file missing: "+sf);
+				logger.warning("SQL benchmark file missing: "+sf);
+			} else {
+				benchmarkQueries[i][2] = IOUtils.toString(sfin, Charset.defaultCharset());
 			}
-			benchmarkQueries[i][0] = prefix;
-			benchmarkQueries[i][1] = IOUtils.toString(dfin, Charset.defaultCharset());
-			benchmarkQueries[i][2] = IOUtils.toString(sfin, Charset.defaultCharset());
 			i++;
 		}
 		
@@ -89,7 +93,7 @@ public class RunBenchmarkTest {
 		Set<DAPOQLVariable> vars = null;
 		for (int i = 0; i < benchmarkQueries.length; i++) {
 			String[] qset = benchmarkQueries[i];
-			System.out.println("Query Set "+i+": "+qset[0]);
+			logger.info("Query Set "+i+": "+qset[0]);
 			ComparisonCase cc = new ComparisonCase(qset[1], qset[2]);
 			benchmarkDurations[i] = cc.runCase(mm, vars);
 		}
@@ -104,6 +108,7 @@ public class RunBenchmarkTest {
 		try {
 			rbt.queryingBenchmark();
 		} catch (Exception e) {
+			rbt.logger.severe(e.getMessage());
 			e.printStackTrace();
 		}
 	}

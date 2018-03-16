@@ -1,0 +1,21 @@
+def actA = allActivities().where { name.contains("INSERT") }
+
+def actB = allActivities().where { name.contains("UPDATE") }
+
+def log01 = allLogs().where {name == "log01"}
+def casesLog01 = casesOf(log01)
+
+def casesA = casesOf(actA).intersection(casesLog01)
+def casesB = casesOf(actB).intersection(casesLog01)
+
+def eventsA = eventsOf(actA).intersection(eventsOf(log01))
+def eventsB = eventsOf(actB).intersection(eventsOf(log01))
+
+casesAB = casesA.intersection(casesB)
+
+casesAB.where {
+        def ev = eventsOf(it)
+        def evA = ev.intersection(eventsA)
+        def evB = ev.intersection(eventsB)
+        before(globalPeriodOf(evA),globalPeriodOf(evB))
+}
