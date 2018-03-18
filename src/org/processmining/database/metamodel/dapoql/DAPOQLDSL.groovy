@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale
 import java.util.function.Function
 import org.codehaus.groovy.runtime.callsite.MetaClassConstructorSite;
+import org.deckfour.xes.model.XLog
 import org.processmining.openslex.metamodel.AbstractAttDBElement
 import org.processmining.openslex.metamodel.AbstractDBElement
 import org.processmining.openslex.metamodel.AbstractDBElementWithAtts
@@ -51,9 +52,9 @@ class DAPOQLDSL extends Script {
 	
 	private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
-	protected void init(SLEXMMStorageMetaModel storage) {
+	protected void init(SLEXMMStorageMetaModel storage, DAPOQLFunctionsGroovy func) {
 		this.storage = storage;
-		this.dapoqlfunc = new DAPOQLFunctionsGroovy(storage);
+		this.dapoqlfunc = func;
 	}
 	
 	@Override
@@ -130,144 +131,119 @@ class DAPOQLDSL extends Script {
 		}
 	}
 	
-	// Check ME FIXME
-	private QueryGroovyResult buildResult(DAPOQLSet set) {
-		QueryGroovyResult qr = new QueryGroovyResult(set.getType(), getStorage(), dapoqlfunc);
-		
-		Class<?> type = set.getType();
-		
-		if (set.attributesFetched()) {
-			qr.setResult(set)
-		} else {
-			if (type == SLEXMMEvent.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getEventsAndAttributeValues));
-			} else if (type == SLEXMMObjectVersion.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getVersionsAndAttributeValues));
-			} else if (type == SLEXMMCase.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getCasesAndAttributeValues));
-			} else if (type == SLEXMMLog.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getLogsAndAttributeValues));
-			} else {
-				qr.setResult(set);
-			}
-		}
-		
-		return qr;
-	}
-	
 	def QueryGroovyResult allDatamodels() {
-		return buildResult(dapoqlfunc.getAllDatamodels());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllDatamodels());
 	}
 	
 	def QueryGroovyResult allClasses() {
-		return buildResult(dapoqlfunc.getAllClasses());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllClasses());
 	}
 	
 	def QueryGroovyResult allAttributes() {
-		return buildResult(dapoqlfunc.getAllAttributes());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllAttributes());
 	}
 	
 	def QueryGroovyResult allRelationships() {
-		return buildResult(dapoqlfunc.getAllRelationships());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllRelationships());
 	}
 	
 	def QueryGroovyResult allObjects() {
-		return buildResult(dapoqlfunc.getAllObjects());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllObjects());
 	}
 	
 	def QueryGroovyResult allVersions() {
-		return buildResult(dapoqlfunc.getAllVersions());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllVersions());
 	}
 	
 	def QueryGroovyResult allRelations() {
-		return buildResult(dapoqlfunc.getAllRelations());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllRelations());
 	}
 	
 	def QueryGroovyResult allEvents() {
-		return buildResult(dapoqlfunc.getAllEvents());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllEvents());
 	}
 	
 	def QueryGroovyResult allActivityInstances() {
-		return buildResult(dapoqlfunc.getAllActivityInstances());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllActivityInstances());
 	}
 	
 	def QueryGroovyResult allCases() {
-		return buildResult(dapoqlfunc.getAllCases());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllCases());
 	}
 	
 	def QueryGroovyResult allLogs() {
-		return buildResult(dapoqlfunc.getAllLogs());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllLogs());
 	}
 	
 	def QueryGroovyResult allActivities() {
-		return buildResult(dapoqlfunc.getAllActivities());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllActivities());
 	}
 	
 	def QueryGroovyResult allProcesses() {
-		return buildResult(dapoqlfunc.getAllProcesses());
+		return dapoqlfunc.buildResult(dapoqlfunc.getAllProcesses());
 	}
 	
 	def QueryGroovyResult versionsRelatedTo(QueryGroovyResult qr) throws Exception {
 		if (qr.type != SLEXMMObjectVersion.class) {
 			throw new Exception("Argument of versionsRelatedTo must be a set of versions");
 		}
-		return buildResult(dapoqlfunc.versionsRelatedTo(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.versionsRelatedTo(qr.getResult()));
 	}
 	
 	def QueryGroovyResult datamodelsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.datamodelsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.datamodelsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult classesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.classesOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.classesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult attributesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.attributesOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.attributesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult relationshipsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.relationshipsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.relationshipsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult objectsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.objectsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.objectsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult versionsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.versionsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.versionsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult relationsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.relationsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.relationsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult eventsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.eventsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.eventsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult activityInstancesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.activityInstancesOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.activityInstancesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult activitiesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.activitiesOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.activitiesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult casesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.casesOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.casesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult logsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.logsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.logsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult processesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.processesOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.processesOf(qr.getResult()));
 	}
 
 	def QueryGroovyResult periodsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.periodsOf(qr.getResult()));
+		return dapoqlfunc.buildResult(dapoqlfunc.periodsOf(qr.getResult()));
 	}
 	
 	def SLEXMMPeriod globalPeriodOf(QueryGroovyResult qr) {
@@ -414,6 +390,36 @@ class DAPOQLDSL extends Script {
 	
 	def boolean matches(SLEXMMPeriod a, SLEXMMPeriod b) {
 		return (a.getStart() == b.getStart() && a.getEnd() == b.getEnd());
+	}
+	
+	def void exportXLogsOf(QueryGroovyResult qr) {
+		if (qr.getType() != SLEXMMLog.class &&
+			qr.getType() != SLEXMMCase.class &&
+			qr.getType() != SLEXMMActivityInstance.class &&
+			qr.getType() != SLEXMMEvent.class) {
+			throw new Exception("First argument of XLogsOf must be a set of logs, cases, activity instances, or events.");
+		} else {
+			// export one XLog per SLEXMMLog in the input 
+			// export one XLog containing the cases in the input 
+			// export one XLog containing the events in the input 
+			// export one XLog containing the events of the activity instances in the input
+			dapoqlfunc.exportXLogsOf(qr, null);
+		}
+	}
+	
+	def void exportXLogsOf(QueryGroovyResult qr, QueryGroovyResult evqr) {
+		if (qr.getType() != SLEXMMLog.class &&
+			qr.getType() != SLEXMMCase.class &&
+			qr.getType() != SLEXMMActivityInstance.class &&
+			qr.getType() != SLEXMMEvent.class) {
+			throw new Exception("First argument of XLogsOf must be a set of logs, cases, activity instances, or events.");
+		} else if (evqr.getType() != SLEXMMEvent.class) {
+			throw new Exception("Second argument of XLogsOf must be a set of events.");
+		} else {
+			// export one XLog per SLEXMMLog in the first argument, including only the events in the second argument
+			// export one XLog containing the cases in the first argument, including only the events in the second argument
+			dapoqlfunc.exportXLogsOf(qr, evqr);
+		}		
 	}
 	
 }

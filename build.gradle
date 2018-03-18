@@ -1,4 +1,5 @@
 plugins {
+    id 'us.kirchmeier.capsule' version '1.0.2'
     id 'jacoco'
     id 'com.github.kt3k.coveralls' version '2.8.2'
 }
@@ -81,6 +82,14 @@ jar {
 	dependsOn javadoc
 	from sourceSets.main.allSource
 	from javadoc.destinationDir
+	into('lib') {
+		from 'lib'
+	}
+}
+
+task fatCapsule(type: FatCapsule) {
+	applicationClass 'org.processmining.database.metamodel.dapoql.DAPOQLcli'
+	classifier "cli"
 }
 
 publishing {
@@ -102,14 +111,17 @@ jacocoTestReport {
 }
 
 dependencies {
+	runtime  fileTree(dir: 'lib', include: ['*.jar'])
 	compile  'org.rapidprom:GraphViz:6.7.185'
+	compile  'org.rapidprom.thirdparty.lib:OpenXES:20160212'
 	compile  'commons-io:commons-io:2.6'
 	compile  'org.apache.commons:commons-compress:1.16.1'
-	compile  'com.github.edugonza:OpenSLEX:development-SNAPSHOT'
+	compile  'com.github.edugonza:OpenSLEX:1.0.3-pre'
 	compile  'org.codehaus.groovy:groovy-all:2.4.14'
 	compile  'com.fifesoft:rsyntaxtextarea:2.6.1'
 	compile  'com.fifesoft:autocomplete:2.6.1'
 	compile  'com.fifesoft:languagesupport:2.6.0'
+	compile  'commons-cli:commons-cli:1.4'
 	testCompile 'junit:junit:4.12'
 }
 

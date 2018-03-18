@@ -32,12 +32,18 @@ import org.processmining.openslex.utils.MMUtils;
 public class DAPOQLFunctionsGroovy {
 
 	private SLEXMMStorageMetaModel slxmm = null;
+	private String logpath = "./dapoql_export_logs/";
 
 	private static final int MAX_IDS_ARRAY_SIZE = 40000;
 
-	public DAPOQLFunctionsGroovy(SLEXMMStorageMetaModel strg) {
+	public DAPOQLFunctionsGroovy(SLEXMMStorageMetaModel strg, String logpath) {
 		this.slxmm = strg;
+		this.logpath = logpath;
 		initMapFunctions();
+	}
+	
+	private String getLogPath() {
+		return this.logpath;
 	}
 	
 	private SLEXMMObjectVersion getPrevOV(SLEXMMObjectVersion ov) {
@@ -157,7 +163,7 @@ public class DAPOQLFunctionsGroovy {
 		}
 	}
 
-	private SLEXMMStorageMetaModel getStorage() {
+	public SLEXMMStorageMetaModel getStorage() {
 		return this.slxmm;
 	}	
 	
@@ -585,6 +591,29 @@ public class DAPOQLFunctionsGroovy {
 		return idsArrays;
 	}
 	
+	public QueryGroovyResult buildResult(DAPOQLSet set) throws Exception {
+		QueryGroovyResult qr = new QueryGroovyResult(set.getType(), getStorage(), this);
+		
+		Class<?> type = set.getType();
+		
+		if (set.attributesFetched()) {
+			qr.setResult(set);
+		} else {
+			if (type == SLEXMMEvent.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getEventsAndAttributeValues));
+			} else if (type == SLEXMMObjectVersion.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getVersionsAndAttributeValues));
+			} else if (type == SLEXMMCase.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getCasesAndAttributeValues));
+			} else if (type == SLEXMMLog.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getLogsAndAttributeValues));
+			} else {
+				qr.setResult(set);
+			}
+		}
+		
+		return qr;
+	}
 	
 	public DAPOQLSet getAllObjects() {
 		return getAll(SLEXMMObject.class, getStorage()::getObjects);
@@ -642,4 +671,11 @@ public class DAPOQLFunctionsGroovy {
 		return getAll(SLEXMMActivityInstance.class, getStorage()::getActivityInstances);
 	}
 
+	public void exportXLogsOf(QueryGroovyResult qr, QueryGroovyResult evqr) throws Exception {	
+		if (evqr != null) {
+			DAPOQLtoXES.exportLogs(this, qr.getResult(), evqr.getResult(), this.getLogPath());
+		} else {
+			DAPOQLtoXES.exportLogs(this, qr.getResult(), null, this.getLogPath());
+		}
+	}
 }

@@ -13,7 +13,9 @@ import groovy.lang.Script;
 
 public class DAPOQLRunnerGroovy {
 
-	SLEXMMStorageMetaModel slxmm = null;
+	private SLEXMMStorageMetaModel slxmm = null;
+	private DAPOQLFunctionsGroovy dapoqlfunc = null;
+	private String logpath = "./dapoql_export_logs/";
 	
 	public void cancel() {
 		if (slxmm != null) {
@@ -21,8 +23,17 @@ public class DAPOQLRunnerGroovy {
 		}
 	}
 	
+	public void setOutputLogPath(String logpath) {
+		this.logpath = logpath;
+	}
+	
+	private String getLogPath() {
+		return this.logpath;
+	}
+		
 	public QueryResult executeQuery(SLEXMMStorageMetaModel slxmm, String query, Set<DAPOQLVariable> vars) throws Exception {
 		this.slxmm = slxmm;
+		this.dapoqlfunc = new DAPOQLFunctionsGroovy(slxmm, getLogPath());
 
 //		System.out.println("Executing query: "+query);
 //		long start_time = System.currentTimeMillis();
@@ -47,7 +58,7 @@ public class DAPOQLRunnerGroovy {
 			
 			GroovyShell shell = new GroovyShell(this.getClass().getClassLoader(), binding, config);
 			Script script = shell.parse(query);
-			script.invokeMethod("init", slxmm);
+			script.invokeMethod("init", new Object[] {slxmm, dapoqlfunc});
 			Object result = script.run();
 			
 			if (result instanceof QueryResult) {

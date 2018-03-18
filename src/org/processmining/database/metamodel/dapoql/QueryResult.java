@@ -32,7 +32,7 @@ public class QueryResult {
 		this.result = new DAPOQLSet(this.storage, this.type);
 		this.result.set(result);
 	}
-	
+		
 	public DAPOQLSet getResult() {
 		return this.result;
 	}
