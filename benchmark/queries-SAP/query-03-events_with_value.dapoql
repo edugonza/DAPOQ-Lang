@@ -1,0 +1,1 @@
+return allEvents().where{ at.TABLE_NAME == "EKPO" }

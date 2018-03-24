@@ -46,7 +46,7 @@ public class DAPOQLFunctionsGroovy {
 		return this.logpath;
 	}
 	
-	private SLEXMMObjectVersion getPrevOV(SLEXMMObjectVersion ov) {
+	private SLEXMMObjectVersion getPrevOV(SLEXMMObjectVersion ov) throws Exception {
 		
 		SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForObject(ov.getObjectId());
 		SLEXMMObjectVersion ova = null;
@@ -62,12 +62,13 @@ public class DAPOQLFunctionsGroovy {
 		
 		if (ova != null && ova.getId() == ov.getId()) {
 			return null;
+			//throw new Exception("Wrong previous version");
 		} else {
 			return ova;
 		}
 	}
 	
-	private String getValueOVForAttribute(SLEXMMObjectVersion ov, SLEXMMAttribute at) {
+	private String getValueOVForAttribute(SLEXMMObjectVersion ov, SLEXMMAttribute at) throws Exception {
 		
 		if (ov != null) {
 			HashMap<SLEXMMAttribute, SLEXMMAttributeValue> map = ov.getAttributeValues();
@@ -79,7 +80,7 @@ public class DAPOQLFunctionsGroovy {
 			}
 		}
 		
-		return null;
+		throw new Exception("Null OV");
 	}
 	
 	private boolean equalValues(String a, String b) {
@@ -103,7 +104,7 @@ public class DAPOQLFunctionsGroovy {
 	}
 	
 	public boolean filterChangedOperation(SLEXMMObjectVersion ov, SLEXMMAttribute slxAtt, String v, String valueFrom,
-			String valueTo) {
+			String valueTo) throws Exception {
 
 		if (valueFrom == null) {
 			if (valueTo == null) {

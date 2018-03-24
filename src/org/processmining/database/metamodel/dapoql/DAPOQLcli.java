@@ -1,11 +1,17 @@
 package org.processmining.database.metamodel.dapoql;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
@@ -17,7 +23,10 @@ public class DAPOQLcli {
 		
 		Options options = new Options();
 		options.addRequiredOption("m", "metamodel", true, "Meta model file to query");
-		options.addRequiredOption("q", "query", true, "DAPOQ-Lang query to execute");
+		OptionGroup opg = new OptionGroup();
+		opg.addOption(new Option("q", "query", true, "DAPOQ-Lang query to execute"));
+		opg.addOption(new Option("qf", "query-file", true, "DAPOQ-Lang query file to execute"));
+		options.addOptionGroup(opg);
 		options.addOption("nd", false, "Disable disk cache for querying");
 		options.addOption("e", true, "Set the path where to save any generated XES log");
 		options.addOption("p", false, "Print output");
@@ -43,6 +52,7 @@ public class DAPOQLcli {
 		String mmFile = cmd.getOptionValue("m");
 		boolean diskCache = !cmd.hasOption("nd");
 		String query = cmd.getOptionValue("q");
+		String queryFile = cmd.getOptionValue("qf");
 		boolean exportLog = cmd.hasOption("e");
 		String logpath = cmd.getOptionValue("e");
 		boolean printOutput = cmd.hasOption("p");
@@ -59,6 +69,28 @@ public class DAPOQLcli {
 			e.printStackTrace();
 		} finally {
 			if (mm == null) {
+				System.exit(1);
+			}
+		}
+		
+		if (query == null) {
+			File qf = new File(queryFile);
+			try {
+				if (qf.exists()) {
+					BufferedReader br = new BufferedReader(new FileReader(qf));
+					StringBuilder sb = new StringBuilder();
+					while (br.ready()) {
+						sb.append(br.readLine());
+						sb.append('\n');
+					}
+					query = sb.toString();
+				} else {
+					throw new Exception("Query file not available.");
+				}
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+				HelpFormatter formatter = new HelpFormatter();
+				formatter.printHelp( "dapoql-cli", options );
 				System.exit(1);
 			}
 		}
