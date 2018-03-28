@@ -96,14 +96,17 @@ public class RunBenchmarkTest {
 	}
 	
 	private void writeOut(Duration[] dur, String qname) throws IOException {
-		bw.write(qname+","+dur[0]+","+dur[1]+"\n");
+		if (this.bw != null) {
+			bw.write(qname+","+dur[0]+","+dur[1]+"\n");
+		}
 	}
 	
 	private void writeOutHeader() throws IOException {
-		bw.write("QueryName,DAPOQLang_duration,SQL_duration\n");
+		if (this.bw != null) {
+			bw.write("QueryName,DAPOQLang_duration,SQL_duration\n");
+		}
 	}
 	
-	@Test
 	public void queryingBenchmark(String datasetPath, String queriesPath,
 			String outputPath) throws Exception {
 		if (outputPath != null) {
@@ -138,10 +141,23 @@ public class RunBenchmarkTest {
 		}
 	}
 	
+	@Test
+	public void test_benchmark() {
+		String mmPath = "./data/metamodel-RL.slexmm";
+		String queriesPath = "./benchmark/queries-RL";
+		String outputPath = null;
+		try {
+			this.queryingBenchmark(mmPath,queriesPath,outputPath);
+		} catch (Exception e) {
+			this.logger.severe(e.getMessage());
+			e.printStackTrace();
+		} 
+	}
+	
 	public static void main(String[] args) {
 		String mmPath = "./data/metamodel-RL.slexmm";
 		String queriesPath = "./benchmark/queries-RL";
-		String outputPath = "benchmark/results-RL.csv";
+		String outputPath = "./benchmark/results-RL.csv";
 		RunBenchmarkTest rbt = new RunBenchmarkTest();
 		try {
 			rbt.queryingBenchmark(mmPath,queriesPath,outputPath);
