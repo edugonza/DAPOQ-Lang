@@ -1,7 +1,10 @@
 package org.processmining.database.metamodel.dapoql.test.benchmark;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +27,7 @@ import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
 
 public class RunBenchmarkTest {
 
-	private File outputFile = null;
+	private BufferedWriter bw = null;
 	private static final String DEFAULT_FILENAME = "metamodel-RL.slexmm";
 	private static final String DEFAULT_PATH = "./data/";
 	Logger logger = Logger.getLogger(this.getClass().getName());
@@ -92,8 +95,23 @@ public class RunBenchmarkTest {
 		return benchmarkQueries;
 	}
 	
+	private void writeOut(Duration[] dur, String qname) throws IOException {
+		bw.write(qname+","+dur[0]+","+dur[1]+"\n");
+	}
+	
+	private void writeOutHeader() throws IOException {
+		bw.write("QueryName,DAPOQLang_duration,SQL_duration\n");
+	}
+	
 	@Test
-	public void queryingBenchmark(String datasetPath, String queriesPath) throws Exception {
+	public void queryingBenchmark(String datasetPath, String queriesPath,
+			String outputPath) throws Exception {
+		if (outputPath != null) {
+			File outputFile = new File(outputPath);
+			this.bw = new BufferedWriter(new FileWriter(outputFile));
+			writeOutHeader();
+		}
+		
 		String benchmarkQueries[][] = loadBenchmark(queriesPath);
 		
 		File datafile = new File(datasetPath);
@@ -112,16 +130,21 @@ public class RunBenchmarkTest {
 			logger.info("Query Set "+i+": "+qset[0]);
 			ComparisonCase cc = new ComparisonCase(qset[1], qset[2]);
 			benchmarkDurations[i] = cc.runCase(mm, vars);
+			writeOut(benchmarkDurations[i], qset[0]);
+		}
+		
+		if (this.bw != null) {
+			this.bw.close();
 		}
 	}
 	
 	public static void main(String[] args) {
-		
-		File outputFile = new File("benchmark/results-RL.csv");
+		String mmPath = "./data/metamodel-RL.slexmm";
+		String queriesPath = "./benchmark/queries-RL";
+		String outputPath = "benchmark/results-RL.csv";
 		RunBenchmarkTest rbt = new RunBenchmarkTest();
-		rbt.outputFile = outputFile;
 		try {
-			rbt.queryingBenchmark("./data/metamodel-SAP.slexmm","./benchmark/queries-Filter-periods-SAP");
+			rbt.queryingBenchmark(mmPath,queriesPath,outputPath);
 		} catch (Exception e) {
 			rbt.logger.severe(e.getMessage());
 			e.printStackTrace();

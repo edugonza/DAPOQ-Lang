@@ -6,3 +6,4 @@
 /.project
 /data/*
 /exportedLogs*/
+benchmark/results*
