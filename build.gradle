@@ -116,7 +116,7 @@ dependencies {
 	compile  'org.rapidprom.thirdparty.lib:OpenXES:20160212'
 	compile  'commons-io:commons-io:2.6'
 	compile  'org.apache.commons:commons-compress:1.16.1'
-	compile  'com.github.edugonza:OpenSLEX:1.0.3-pre-2'
+	compile  'com.github.edugonza:OpenSLEX:1.0.3-pre-3'
 	compile  'org.codehaus.groovy:groovy-all:2.4.14'
 	compile  'com.fifesoft:rsyntaxtextarea:2.6.1'
 	compile  'com.fifesoft:autocomplete:2.6.1'

@@ -10,7 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +22,14 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
@@ -39,6 +50,20 @@ public class RunBenchmarkTest {
 			list.add(it.next());
 		}
 		return list;
+	}
+	
+	public static String readFile(String path) throws Exception {
+		String query = null;
+		
+		File fd = new File(path);
+		
+		if (fd.exists()) {
+			query = IOUtils.toString(new FileInputStream(fd), Charset.defaultCharset());
+		} else {
+			throw new Exception();
+		}
+		
+		return query;
 	}
 	
 	public String[][] loadBenchmark(String queriespath) throws Exception {
@@ -94,27 +119,20 @@ public class RunBenchmarkTest {
 		
 		return benchmarkQueries;
 	}
-	
-	private void writeOut(Duration[] dur, String qname) throws IOException {
+		
+	private void writeSingleOut(Duration dur, String qname, String dbname, boolean isDapoql) throws IOException {
 		if (this.bw != null) {
-			bw.write(qname+","+dur[0]+","+dur[1]+"\n");
+			bw.write(System.currentTimeMillis()+","+dbname+","+qname+","+isDapoql+","+dur.toMillis()+"\n");
 		}
 	}
 	
 	private void writeOutHeader() throws IOException {
 		if (this.bw != null) {
-			bw.write("QueryName,DAPOQLang_duration,SQL_duration\n");
+			bw.write("ts,DB,QueryName,isDapoql,duration\n");
 		}
 	}
 	
-	public void queryingBenchmark(String datasetPath, String queriesPath,
-			String outputPath) throws Exception {
-		if (outputPath != null) {
-			File outputFile = new File(outputPath);
-			this.bw = new BufferedWriter(new FileWriter(outputFile));
-			writeOutHeader();
-		}
-		
+	public void queryingBenchmark(String datasetPath, String queriesPath) throws Exception {		
 		String benchmarkQueries[][] = loadBenchmark(queriesPath);
 		
 		File datafile = new File(datasetPath);
@@ -133,11 +151,69 @@ public class RunBenchmarkTest {
 			logger.info("Query Set "+i+": "+qset[0]);
 			ComparisonCase cc = new ComparisonCase(qset[1], qset[2]);
 			benchmarkDurations[i] = cc.runCase(mm, vars);
-			writeOut(benchmarkDurations[i], qset[0]);
+		}
+	}
+	
+	public void singleBenchmark(String datasetPath, String queryPath, boolean queryIsDapoql,
+			String outputPath, boolean printConsole, String printFile) throws Exception {
+		if (outputPath != null) {
+			File outputFile = new File(outputPath);
+			boolean writeheader = !outputFile.exists();
+			this.bw = new BufferedWriter(new FileWriter(outputFile,true));
+			if (writeheader) {
+				writeOutHeader();
+			}
+		}
+		
+		File datafile = new File(datasetPath);
+		if (!datafile.exists()) {
+			throw new Exception("Data does not exist: "+datafile.toString());
+		}
+		String path = datafile.getParent();
+		String filename = datafile.getName();
+		SLEXMMStorageMetaModel mm = new SLEXMMStorageMetaModelImpl(path, filename, true);
+		
+		Duration duration = null;
+		HashSet<Integer> ids = null;
+		
+		String query = readFile(queryPath);
+		
+		if (queryIsDapoql) {
+			Set<DAPOQLVariable> vars = null;
+			logger.info("Query DAPOQL");
+			Instant start = Instant.now();
+			ids = ComparisonCase.runDAPOQL(mm, vars, query);
+			Instant end = Instant.now();
+			duration = Duration.between(start, end);
+		} else {
+			logger.info("Query SQL");
+			Instant start = Instant.now();
+			ids = ComparisonCase.runSQL(mm, query);
+			Instant end = Instant.now();
+			duration = Duration.between(start, end);
 		}
 		
 		if (this.bw != null) {
+			writeSingleOut(duration, queryPath, datasetPath, queryIsDapoql);
+			this.bw.flush();
 			this.bw.close();
+		}
+		
+		if (printConsole) {
+			System.out.print("\n[ ");
+			for (Integer i: ids) {
+				System.out.print(i+", ");
+			}
+			System.out.print(" ]\n");
+		}
+		if (printFile != null) {
+			File pf = new File(printFile);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(pf));
+			for (Integer i: ids) {
+				bw.write(i+"\n");
+			}
+			bw.flush();
+			bw.close();
 		}
 	}
 	
@@ -147,7 +223,7 @@ public class RunBenchmarkTest {
 		String queriesPath = "./benchmark/queries-RL";
 		String outputPath = null;
 		try {
-			this.queryingBenchmark(mmPath,queriesPath,outputPath);
+			this.queryingBenchmark(mmPath,queriesPath);
 		} catch (Exception e) {
 			this.logger.severe(e.getMessage());
 			e.printStackTrace();
@@ -155,12 +231,53 @@ public class RunBenchmarkTest {
 	}
 	
 	public static void main(String[] args) {
-		String mmPath = "./data/metamodel-RL.slexmm";
-		String queriesPath = "./benchmark/queries-RL";
-		String outputPath = "./benchmark/results-RL.csv";
+		Options options = new Options();
+		options.addRequiredOption("db", "database", true, "OpenSLEX file to query");
+		OptionGroup querygroup = new OptionGroup();
+		querygroup.addOption(new Option("dpf", "dapoql-file", true, "DAPOQ-Lang query file"));
+		querygroup.addOption(new Option("sqlf", "sql-file", true, "SQL query file"));
+		options.addOptionGroup(querygroup);
+		options.addOption("o", "output", true, "Output CSV file to append the query time");
+		options.addOption("p", "print", false, "Pring query output to console");
+		options.addOption("pf", "print-file", true, "Write query output to file");
+		CommandLineParser parser = new DefaultParser();
+		CommandLine cmd = null;
+		
+		String queryPath = null;
+		String mmPath = null;
+		String outputPath = null;
+		boolean printconsole = false;
+		String printFile = null;
+		boolean isDapoql = false;
+		try {
+			cmd = parser.parse(options, args);
+			mmPath = cmd.getOptionValue("db");
+			printconsole = cmd.hasOption("p");
+			if (cmd.hasOption("pf")) {
+				printFile = cmd.getOptionValue("pf");
+			}
+			if (cmd.hasOption("o")) {
+				outputPath = cmd.getOptionValue("o");
+			}
+			if (cmd.hasOption("dpf")) {
+				isDapoql = true;
+				queryPath = cmd.getOptionValue("dpf");
+			} else if (cmd.hasOption("sqlf")) {
+				isDapoql = false;
+				queryPath = cmd.getOptionValue("sqlf");
+			} else {
+				throw new ParseException("Query option missing");
+			}
+		} catch (ParseException e1) {
+			System.err.println(e1.getMessage());
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp( "RunBenchmarkTest", options );
+			System.exit(1);
+		}
+		
 		RunBenchmarkTest rbt = new RunBenchmarkTest();
 		try {
-			rbt.queryingBenchmark(mmPath,queriesPath,outputPath);
+			rbt.singleBenchmark(mmPath,queryPath,isDapoql,outputPath,printconsole,printFile);
 		} catch (Exception e) {
 			rbt.logger.severe(e.getMessage());
 			e.printStackTrace();
