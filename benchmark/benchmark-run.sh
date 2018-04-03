@@ -12,3 +12,8 @@ done
 for i in $QUERIES_PATH/*.sql; do
   `$CLI -db $MM -sqlf $i -o $OUTPUT_CSV`
 done
+
+for i in $QUERIES_PATH/*.dapoql; do
+  `$CLI -db $MM -dpf $i -o $OUTPUT_CSV -mc`
+done
+

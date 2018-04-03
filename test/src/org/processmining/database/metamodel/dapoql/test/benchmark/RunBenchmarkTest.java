@@ -120,15 +120,15 @@ public class RunBenchmarkTest {
 		return benchmarkQueries;
 	}
 		
-	private void writeSingleOut(Duration dur, String qname, String dbname, boolean isDapoql) throws IOException {
+	private void writeSingleOut(Duration dur, String qname, String dbname, boolean isDapoql, boolean diskcache) throws IOException {
 		if (this.bw != null) {
-			bw.write(System.currentTimeMillis()+","+dbname+","+qname+","+isDapoql+","+dur.toMillis()+"\n");
+			bw.write(System.currentTimeMillis()+","+dbname+","+diskcache+","+qname+","+isDapoql+","+dur.toMillis()+"\n");
 		}
 	}
 	
 	private void writeOutHeader() throws IOException {
 		if (this.bw != null) {
-			bw.write("ts,DB,QueryName,isDapoql,duration\n");
+			bw.write("ts,DB,diskcache,QueryName,isDapoql,duration\n");
 		}
 	}
 	
@@ -154,7 +154,7 @@ public class RunBenchmarkTest {
 		}
 	}
 	
-	public void singleBenchmark(String datasetPath, String queryPath, boolean queryIsDapoql,
+	public void singleBenchmark(String datasetPath, boolean diskcache, String queryPath, boolean queryIsDapoql,
 			String outputPath, boolean printConsole, String printFile) throws Exception {
 		if (outputPath != null) {
 			File outputFile = new File(outputPath);
@@ -171,7 +171,7 @@ public class RunBenchmarkTest {
 		}
 		String path = datafile.getParent();
 		String filename = datafile.getName();
-		SLEXMMStorageMetaModel mm = new SLEXMMStorageMetaModelImpl(path, filename, true);
+		SLEXMMStorageMetaModel mm = new SLEXMMStorageMetaModelImpl(path, filename, diskcache);
 		
 		Duration duration = null;
 		HashSet<Integer> ids = null;
@@ -194,7 +194,7 @@ public class RunBenchmarkTest {
 		}
 		
 		if (this.bw != null) {
-			writeSingleOut(duration, queryPath, datasetPath, queryIsDapoql);
+			writeSingleOut(duration, queryPath, datasetPath, queryIsDapoql, diskcache);
 			this.bw.flush();
 			this.bw.close();
 		}
@@ -233,6 +233,7 @@ public class RunBenchmarkTest {
 	public static void main(String[] args) {
 		Options options = new Options();
 		options.addRequiredOption("db", "database", true, "OpenSLEX file to query");
+		options.addOption("mc", "mem-cache", false, "Disable disk-based cache for DAPOQ-Lang queries and use memory instead");
 		OptionGroup querygroup = new OptionGroup();
 		querygroup.addOption(new Option("dpf", "dapoql-file", true, "DAPOQ-Lang query file"));
 		querygroup.addOption(new Option("sqlf", "sql-file", true, "SQL query file"));
@@ -249,10 +250,12 @@ public class RunBenchmarkTest {
 		boolean printconsole = false;
 		String printFile = null;
 		boolean isDapoql = false;
+		boolean diskcache = false;
 		try {
 			cmd = parser.parse(options, args);
 			mmPath = cmd.getOptionValue("db");
 			printconsole = cmd.hasOption("p");
+			diskcache = !cmd.hasOption("mc");
 			if (cmd.hasOption("pf")) {
 				printFile = cmd.getOptionValue("pf");
 			}
@@ -263,6 +266,7 @@ public class RunBenchmarkTest {
 				isDapoql = true;
 				queryPath = cmd.getOptionValue("dpf");
 			} else if (cmd.hasOption("sqlf")) {
+				diskcache = false;
 				isDapoql = false;
 				queryPath = cmd.getOptionValue("sqlf");
 			} else {
@@ -277,7 +281,7 @@ public class RunBenchmarkTest {
 		
 		RunBenchmarkTest rbt = new RunBenchmarkTest();
 		try {
-			rbt.singleBenchmark(mmPath,queryPath,isDapoql,outputPath,printconsole,printFile);
+			rbt.singleBenchmark(mmPath,diskcache,queryPath,isDapoql,outputPath,printconsole,printFile);
 		} catch (Exception e) {
 			rbt.logger.severe(e.getMessage());
 			e.printStackTrace();
