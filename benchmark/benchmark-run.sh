@@ -2,8 +2,8 @@
 
 MM=$1
 QUERIES_PATH=$2
-OUTPUT_CSV="$PWD/output.csv"
-CLI="java -jar $PWD/../build/libs/*-cli.jar"
+OUTPUT_CSV="$PWD/output2.csv"
+CLI="java -Xmx8G -jar $PWD/../build/libs/*-bnch.jar"
 
 for i in $QUERIES_PATH/*.dapoql; do
   `$CLI -db $MM -dpf $i -o $OUTPUT_CSV`

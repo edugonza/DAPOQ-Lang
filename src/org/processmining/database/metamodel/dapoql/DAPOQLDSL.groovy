@@ -52,6 +52,9 @@ class DAPOQLDSL extends Script {
 	
 	private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
+	public static final Boolean TRUE = Boolean.TRUE
+	public static final Boolean FALSE = Boolean.FALSE
+	
 	protected void init(SLEXMMStorageMetaModel storage, DAPOQLFunctionsGroovy func) {
 		this.storage = storage;
 		this.dapoqlfunc = func;
@@ -131,119 +134,123 @@ class DAPOQLDSL extends Script {
 		}
 	}
 	
+	def QueryGroovyResult buildResult(DAPOQLSet set, Boolean withAttributes = false) {
+		return dapoqlfunc.buildResult(set, withAttributes);
+	}
+	
 	def QueryGroovyResult allDatamodels() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllDatamodels());
+		return buildResult(dapoqlfunc.getAllDatamodels());
 	}
 	
 	def QueryGroovyResult allClasses() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllClasses());
+		return buildResult(dapoqlfunc.getAllClasses());
 	}
 	
 	def QueryGroovyResult allAttributes() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllAttributes());
+		return buildResult(dapoqlfunc.getAllAttributes());
 	}
 	
 	def QueryGroovyResult allRelationships() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllRelationships());
+		return buildResult(dapoqlfunc.getAllRelationships());
 	}
 	
 	def QueryGroovyResult allObjects() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllObjects());
+		return buildResult(dapoqlfunc.getAllObjects());
 	}
 	
-	def QueryGroovyResult allVersions() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllVersions());
+	def QueryGroovyResult allVersions(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllVersions(), withAttributes);
 	}
 	
 	def QueryGroovyResult allRelations() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllRelations());
+		return buildResult(dapoqlfunc.getAllRelations());
 	}
 	
-	def QueryGroovyResult allEvents() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllEvents());
+	def QueryGroovyResult allEvents(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllEvents(), withAttributes);
 	}
 	
 	def QueryGroovyResult allActivityInstances() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllActivityInstances());
+		return buildResult(dapoqlfunc.getAllActivityInstances());
 	}
 	
-	def QueryGroovyResult allCases() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllCases());
+	def QueryGroovyResult allCases(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllCases(), withAttributes);
 	}
 	
-	def QueryGroovyResult allLogs() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllLogs());
+	def QueryGroovyResult allLogs(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllLogs(), withAttributes);
 	}
 	
 	def QueryGroovyResult allActivities() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllActivities());
+		return buildResult(dapoqlfunc.getAllActivities());
 	}
 	
 	def QueryGroovyResult allProcesses() {
-		return dapoqlfunc.buildResult(dapoqlfunc.getAllProcesses());
+		return buildResult(dapoqlfunc.getAllProcesses());
 	}
 	
 	def QueryGroovyResult versionsRelatedTo(QueryGroovyResult qr) throws Exception {
 		if (qr.type != SLEXMMObjectVersion.class) {
 			throw new Exception("Argument of versionsRelatedTo must be a set of versions");
 		}
-		return dapoqlfunc.buildResult(dapoqlfunc.versionsRelatedTo(qr.getResult()));
+		return buildResult(dapoqlfunc.versionsRelatedTo(qr.getResult()));
 	}
 	
 	def QueryGroovyResult datamodelsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.datamodelsOf(qr.getResult()));
+		return buildResult(dapoqlfunc.datamodelsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult classesOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.classesOf(qr.getResult()));
+		return buildResult(dapoqlfunc.classesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult attributesOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.attributesOf(qr.getResult()));
+		return buildResult(dapoqlfunc.attributesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult relationshipsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.relationshipsOf(qr.getResult()));
+		return buildResult(dapoqlfunc.relationshipsOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult objectsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.objectsOf(qr.getResult()));
+		return buildResult(dapoqlfunc.objectsOf(qr.getResult()));
 	}
 	
-	def QueryGroovyResult versionsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.versionsOf(qr.getResult()));
+	def QueryGroovyResult versionsOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.versionsOf(qr.getResult()), withAttributes);
 	}
 	
 	def QueryGroovyResult relationsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.relationsOf(qr.getResult()));
+		return buildResult(dapoqlfunc.relationsOf(qr.getResult()));
 	}
 	
-	def QueryGroovyResult eventsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.eventsOf(qr.getResult()));
+	def QueryGroovyResult eventsOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.eventsOf(qr.getResult()), withAttributes);
 	}
 	
 	def QueryGroovyResult activityInstancesOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.activityInstancesOf(qr.getResult()));
+		return buildResult(dapoqlfunc.activityInstancesOf(qr.getResult()));
 	}
 	
 	def QueryGroovyResult activitiesOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.activitiesOf(qr.getResult()));
+		return buildResult(dapoqlfunc.activitiesOf(qr.getResult()));
 	}
 	
-	def QueryGroovyResult casesOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.casesOf(qr.getResult()));
+	def QueryGroovyResult casesOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.casesOf(qr.getResult()), withAttributes);
 	}
 	
-	def QueryGroovyResult logsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.logsOf(qr.getResult()));
+	def QueryGroovyResult logsOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.logsOf(qr.getResult()), withAttributes);
 	}
 	
 	def QueryGroovyResult processesOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.processesOf(qr.getResult()));
+		return buildResult(dapoqlfunc.processesOf(qr.getResult()));
 	}
 
 	def QueryGroovyResult periodsOf(QueryGroovyResult qr) {
-		return dapoqlfunc.buildResult(dapoqlfunc.periodsOf(qr.getResult()));
+		return buildResult(dapoqlfunc.periodsOf(qr.getResult()));
 	}
 	
 	def SLEXMMPeriod globalPeriodOf(QueryGroovyResult qr) {
@@ -262,6 +269,29 @@ class DAPOQLDSL extends Script {
 			return p;
 		} else {
 			return globalPeriodOf(periodsOf(qr));
+		}
+	}
+	
+	def QueryGroovyResult s(args) {
+		boolean equalType = true;
+		Class type = null;
+		for (Object o: args) {
+			if (type == null) {
+				type = o.getClass();
+			}
+			if (!(equalType && o.getClass() == type)) {
+				equalType = false;
+			}
+		}
+		
+		if (equalType) {
+			QueryGroovyResult qr = new QueryGroovyResult(type, getStorage(), dapoqlfunc);
+			for (Object o: args) {
+				qr.getResult().add((AbstractDBElement) o);
+			}
+			return qr;
+		} else {
+			throw new Exception("Items do not have the same type");
 		}
 	}
 	

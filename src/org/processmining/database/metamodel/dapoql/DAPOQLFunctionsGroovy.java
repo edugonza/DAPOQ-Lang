@@ -1,6 +1,7 @@
 package org.processmining.database.metamodel.dapoql;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Function;
@@ -519,13 +520,76 @@ public class DAPOQLFunctionsGroovy {
 	}
 
 	public DAPOQLSet ElementsOf(DAPOQLSet list, Class<?> targetType) throws Exception {
-		return ElementsOf(list, targetType, null, null);
+		//return ElementsOf(list, targetType, null, null);
+		return ElementsOfFromCache(list, targetType);
 	}
-
+	
+	public DAPOQLSet ElementsOfFromCache(DAPOQLSet inlist, Class<?> targetType) throws Exception {
+		
+		Class<?> type = inlist.getType();
+		
+		DAPOQLSet auxResult = new DAPOQLSet(getStorage(), targetType);
+		int fromClazzId = AbstractDBElement.getClazzIdForClass(type);
+		int toClazzId = AbstractDBElement.getClazzIdForClass(targetType);
+		
+		DAPOQLSet list = new DAPOQLSet(getStorage(), inlist.getType());
+		
+		for (Integer id: inlist.getIdsSet()) {
+			int[] ids = getStorage().getElementsOf(fromClazzId, toClazzId, id);
+			if (ids == null) {
+				list.getIdsSet().add(id);
+			} else {
+				for (int i: ids) {
+					auxResult.getIdsSet().add(i);
+				}
+			}
+		}
+		
+		if (list.getIdsSet().isEmpty()) {
+			return auxResult;
+		}
+		
+		DAPOQLSet restResult = ElementsOf(list, targetType, null, null);
+		
+		return auxResult.union(restResult);
+	}
+	
+	private void keepElementsOf(HashMap<Integer,HashSet<Integer>> map, int id, int[] ids) {
+		
+		if (!map.containsKey(id)) {
+			map.put(id, new HashSet<Integer>());
+		}
+		
+		HashSet<Integer> set = map.get(id);
+		for (int i: ids) {
+			set.add(i);
+		}
+	}
+	
+	private void addElementsOfToCache(int from, int to, HashMap<Integer,HashSet<Integer>> map) {
+		
+		for (int id: map.keySet()) {
+		
+			HashSet<Integer> set = map.get(id);
+			
+			int[] preids = getStorage().getElementsOf(from, to, id);
+		
+			if (preids != null && preids.length > 0) {
+				for (int i: preids) {
+					set.add(i);
+				}
+			}
+			getStorage().putElementsOf(from, to, id, MMUtils.colAsArrayInt(set));
+		}
+	}
+	
 	public DAPOQLSet ElementsOf(DAPOQLSet list, Class<?> targetType, Function<int[], AbstractRSetElement<?>> fi,
 			Function<int[], AbstractRSetWithAtts<?,?,?>> fiwatt) throws Exception {
 
 		Class<?> type = list.getType();
+		
+		int fromClazzId = AbstractDBElement.getClazzIdForClass(type);
+		int toClazzId = AbstractDBElement.getClazzIdForClass(targetType);
 		
 		if (fi == null && fiwatt == null) {
 			if (type == targetType) {
@@ -543,6 +607,8 @@ public class DAPOQLFunctionsGroovy {
 			f = mapFunctions.get(targetType).get(type);
 		}
 		
+		HashMap<Integer,HashSet<Integer>> mapElementsOf = new HashMap<>();
+		
 		int[][] ids = getArrayIds(list.getIdsSet(), type);
 		for (int i = 0; i < ids.length; i++) {
 			if (fiwatt != null) {
@@ -551,6 +617,9 @@ public class DAPOQLFunctionsGroovy {
 				AbstractDBElementWithAtts<?,?> el = null;
 				while ((el = (AbstractDBElementWithAtts<?,?>) elrset.getNextWithAttributes()) != null) {
 					listResult.add(el);
+					if (elrset.getOriginId() != null) {
+						keepElementsOf(mapElementsOf,elrset.getOriginId(), new int[] {el.getId()});
+					}
 				}
 				listResult.setAttributesFetched(true);
 			} else {
@@ -559,9 +628,14 @@ public class DAPOQLFunctionsGroovy {
 				AbstractDBElement el = null;
 				while ((el = (AbstractDBElement) elrset.getNext()) != null) {
 					listResult.add(el);
+					if (elrset.getOriginId() != null) {
+						keepElementsOf(mapElementsOf,elrset.getOriginId(), new int[] {el.getId()});
+					}
 				}
 			}
 		}
+		
+		addElementsOfToCache(fromClazzId, toClazzId, mapElementsOf);
 		
 		return listResult;
 	}
@@ -593,11 +667,15 @@ public class DAPOQLFunctionsGroovy {
 	}
 	
 	public QueryGroovyResult buildResult(DAPOQLSet set) throws Exception {
+		return buildResult(set, true);
+	}
+	
+	public QueryGroovyResult buildResult(DAPOQLSet set, Boolean withAttributes) throws Exception {
 		QueryGroovyResult qr = new QueryGroovyResult(set.getType(), getStorage(), this);
 		
 		Class<?> type = set.getType();
 		
-		if (set.attributesFetched()) {
+		if (set.attributesFetched() || !withAttributes) {
 			qr.setResult(set);
 		} else {
 			if (type == SLEXMMEvent.class) {
