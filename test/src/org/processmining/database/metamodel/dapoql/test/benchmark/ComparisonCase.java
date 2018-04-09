@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.processmining.database.metamodel.dapoql.DAPOQLRunnerGroovy;
 import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
@@ -17,6 +18,7 @@ public class ComparisonCase {
 	
 	private String dapoqlQuery = "";
 	private String sqlQuery = "";
+	Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public ComparisonCase(String dapoqlQuery, String sqlQuery) {
 		setDapoqlQuery(dapoqlQuery);
@@ -39,42 +41,31 @@ public class ComparisonCase {
 		this.sqlQuery = sqlQuery;
 	}
 	
-	private void reconnect(SLEXMMStorageMetaModel mm) {
-		try {
-			mm.getClass().getMethod("reconnect").invoke(mm);
-		} catch (Exception e) {
-			
-		}
+	private void reconnect(SLEXMMStorageMetaModel mm) throws Exception {
+		mm.reconnect();
 	}
 	
-	public Duration[] runCase(SLEXMMStorageMetaModel mm, Set<DAPOQLVariable> vars) throws Exception {
-		Duration dur[] = new Duration[2];
-		
-		reconnect(mm);
-		
-		DAPOQLRunnerGroovy runner = new DAPOQLRunnerGroovy();
+	public static HashSet<Integer> runDAPOQL(SLEXMMStorageMetaModel mm, Set<DAPOQLVariable> vars, String query) throws Exception {
 		HashSet<Integer> dapoqlResultIds = new HashSet<>();
+		DAPOQLRunnerGroovy runner = new DAPOQLRunnerGroovy();
 		Instant startDapoql = Instant.now();
-		QueryResult outDapoql = runner.executeQuery(mm, this.dapoqlQuery, vars);
-		//int i = 0;
-		for (Object o: outDapoql.getResult()) {
-			// Just to consume the data iterating and making sure all the resultset is retrieved
+		QueryResult outDapoql = runner.executeQuery(mm, query, vars);
+		for (Object o : outDapoql.getResult()) {
+			// Just to consume the data iterating and making sure all the resultset is
+			// retrieved
 			if (o instanceof AbstractDBElement) {
 				dapoqlResultIds.add(((AbstractDBElement) o).getId());
 			}
-			//i++;
 		}
 		Instant endDapoql = Instant.now();
-		
-		dur[0] = Duration.between(startDapoql, endDapoql);
-		
-		System.out.println("DAPOQL:"+dur[0]);
-		
-		reconnect(mm);
-		
+		Duration.between(startDapoql, endDapoql);
+		return dapoqlResultIds;
+	}
+	
+	public static HashSet<Integer> runSQL(SLEXMMStorageMetaModel mm, String query) throws Exception {
 		HashSet<Integer> sqlResultIds = new HashSet<>();
-		Instant startSQL = Instant.now();
-		SLEXMMSQLResultSet outSQL = mm.executeSQL(this.sqlQuery);
+		
+		SLEXMMSQLResultSet outSQL = mm.executeSQL(query);
 		SLEXMMSQLResult r = null;
 		int colId = -1;
 		int k = 0;
@@ -85,24 +76,55 @@ public class ComparisonCase {
 				k++;
 			}
 		}
-		//int j = 0;
 		while ((r = outSQL.getNext()) != null) {
 			// Just to consume the data iterating and making sure all the resultset is retrieved
 			if (colId >= 0) {
 				sqlResultIds.add(Integer.valueOf(r.getValues()[colId]));
 			}
-			//j++;
 		}
 		outSQL.close();
-		Instant endSQL = Instant.now();
 		
-		dur[1] = Duration.between(startSQL, endSQL);
-		
-		System.out.println("SQL   :"+dur[1]);
-		
+		return sqlResultIds;
+	}
+	
+	public Duration[] runCase(SLEXMMStorageMetaModel mm, Set<DAPOQLVariable> vars) throws Exception {
+		Duration dur[] = new Duration[2];
+				
 		reconnect(mm);
 		
-		assert dapoqlResultIds.equals(sqlResultIds);
+		HashSet<Integer> dapoqlResultIds = new HashSet<>();
+		
+		if (getDapoqlQuery() != null) {
+
+			Instant startDapoql = Instant.now();
+			dapoqlResultIds = runDAPOQL(mm, vars, getDapoqlQuery());
+			Instant endDapoql = Instant.now();
+
+			dur[0] = Duration.between(startDapoql, endDapoql);
+
+			logger.info("DAPOQL:" + dur[0]);
+
+			reconnect(mm);
+
+		}
+		
+		HashSet<Integer> sqlResultIds = new HashSet<>();
+		
+		if (getSqlQuery() != null) {
+			Instant startSQL = Instant.now();
+			sqlResultIds = runSQL(mm, getSqlQuery());
+			Instant endSQL = Instant.now();
+		
+			dur[1] = Duration.between(startSQL, endSQL);
+		
+			logger.info("SQL   :"+dur[1]);
+		
+			reconnect(mm);
+		}
+		
+		if (getDapoqlQuery() != null && getSqlQuery() != null) {
+			assert dapoqlResultIds.equals(sqlResultIds);
+		}
 		
 		return dur;
 	}

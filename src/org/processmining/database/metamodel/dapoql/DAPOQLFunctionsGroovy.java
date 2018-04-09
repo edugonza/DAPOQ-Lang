@@ -1,6 +1,9 @@
 package org.processmining.database.metamodel.dapoql;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Function;
@@ -23,64 +26,148 @@ import org.processmining.openslex.metamodel.SLEXMMObject;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersion;
 import org.processmining.openslex.metamodel.SLEXMMObjectVersionResultSet;
 import org.processmining.openslex.metamodel.SLEXMMPeriod;
-import org.processmining.openslex.metamodel.SLEXMMPeriodResultSet;
 import org.processmining.openslex.metamodel.SLEXMMProcess;
 import org.processmining.openslex.metamodel.SLEXMMRelation;
 import org.processmining.openslex.metamodel.SLEXMMRelationship;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
+import org.processmining.openslex.utils.MMUtils;
 
 public class DAPOQLFunctionsGroovy {
 
 	private SLEXMMStorageMetaModel slxmm = null;
+	private String logpath = "./dapoql_export_logs/";
 
-	private static final int MAX_IDS_ARRAY_SIZE = 40000;
+	private static final int MAX_IDS_ARRAY_SIZE = 4000;
 
-	public DAPOQLFunctionsGroovy(SLEXMMStorageMetaModel strg) {
+	public DAPOQLFunctionsGroovy(SLEXMMStorageMetaModel strg, String logpath) {
 		this.slxmm = strg;
+		this.logpath = logpath;
 		initMapFunctions();
 	}
 	
-	public boolean filterChangedOperation(SLEXMMObjectVersion ov, SLEXMMAttribute slxAtt, String v, String valueFrom,
-			String valueTo) {
-
+	private String getLogPath() {
+		return this.logpath;
+	}
+	
+	private SLEXMMObjectVersion getPrevOV(SLEXMMObjectVersion ov) throws Exception {
+		
 		SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForObject(ov.getObjectId());
 		SLEXMMObjectVersion ova = null;
 		SLEXMMObjectVersion ovb = null;
-
+		
 		while ((ovb = ovrset.getNext()) != null) {
-			if (ovb.getId() == ov.getId()) {
-				break;
-			} else {
-				ova = ovb;
+			if (MMUtils.beforeOrEqual(ovb.getEndTimestamp(),ov.getStartTimestamp())) {
+				if (ova == null || MMUtils.after(ovb.getEndTimestamp(),ova.getEndTimestamp())) {
+					ova = ovb;
+				}
 			}
 		}
-
-		if (ova != null) {
-			SLEXMMAttributeValue prevAtV = ova.getAttributeValues().get(slxAtt);
-			String prevV = prevAtV.getValue();
-			if (valueFrom != null) {
-				if (!prevV.equals(valueFrom)) {
-					return false;
+		
+		if (ova != null && ova.getId() == ov.getId()) {
+			return null;
+			//throw new Exception("Wrong previous version");
+		} else {
+			return ova;
+		}
+	}
+	
+	private String getValueOVForAttribute(SLEXMMObjectVersion ov, SLEXMMAttribute at) throws Exception {
+		
+		if (ov != null) {
+			HashMap<SLEXMMAttribute, SLEXMMAttributeValue> map = ov.getAttributeValues();
+			if (map != null) {
+				SLEXMMAttributeValue atv = map.get(at);
+				if (atv != null) {
+					return atv.getValue();
 				}
 			}
-			if (valueTo != null) {
-				if (!v.equals(valueTo)) {
-					return false;
-				}
-			}
-			if (prevV.equals(v)) {
+		}
+		
+		throw new Exception("Null OV");
+	}
+	
+	private boolean equalValues(String a, String b) {
+		if (a == null) {
+			if (b == null) {
+				// a == null && b == null
+				return true;
+			} else {
+				// a == null && b != null
 				return false;
 			}
 		} else {
-			// ov was already the first Object Version for this object. We
-			// cannot decide what changed.
-			return false;
+			if (b == null) {
+				// a != null && b == null
+				return false;
+			} else {
+				// a != null && b != null
+				return a.equals(b);
+			}
 		}
+	}
+	
+	public boolean filterChangedOperation(SLEXMMObjectVersion ov, SLEXMMAttribute slxAtt, String v, String valueFrom,
+			String valueTo) throws Exception {
 
-		return true;
+		if (valueFrom == null) {
+			if (valueTo == null) {
+				// valueFrom == null and valueTo == null
+				// check if previous one is different of v.
+				SLEXMMObjectVersion prevOv = getPrevOV(ov);
+				if (prevOv == null) {
+					return false;
+				}
+				String prevV = getValueOVForAttribute(prevOv,slxAtt);
+				return !equalValues(prevV,v);
+			} else {
+				// valueFrom == null and valueTo != null
+				// check if valueTo is equal to v
+				if (equalValues(valueTo,v)) {
+					// check if v is different from previous one
+					SLEXMMObjectVersion prevOv = getPrevOV(ov);
+					if (prevOv == null) {
+						return false;
+					}
+					String prevV = getValueOVForAttribute(prevOv,slxAtt);
+					return !equalValues(prevV,v);
+				} else {
+					return false;
+				}
+			}
+		} else {
+			if (valueTo == null){
+				// valueFrom != null and valueTo == null
+				// check if v is different of valueFrom 
+				if (!equalValues(valueFrom,v)) {
+					// check if previous one is equal to valueFrom
+					SLEXMMObjectVersion prevOv = getPrevOV(ov);
+					if (prevOv == null) {
+						return false;
+					}
+					String prevV = getValueOVForAttribute(prevOv,slxAtt);
+					return equalValues(prevV,valueFrom);
+				} else {
+					return false;
+				}
+			} else {
+				// valueFrom != null and valueTo != null
+				// check if v is equal to valueTo
+				if (equalValues(v,valueTo)) {
+					// check if previous one is equal to valueFrom
+					SLEXMMObjectVersion prevOv = getPrevOV(ov);
+					if (prevOv == null) {
+						return false;
+					}
+					String prevV = getValueOVForAttribute(prevOv,slxAtt);
+					return equalValues(prevV,valueFrom);
+				} else {
+					return false;
+				}
+			}
+		}
 	}
 
-	private SLEXMMStorageMetaModel getStorage() {
+	public SLEXMMStorageMetaModel getStorage() {
 		return this.slxmm;
 	}	
 	
@@ -337,6 +424,14 @@ public class DAPOQLFunctionsGroovy {
 		return ElementsOf(list, SLEXMMCase.class);
 	}
 	
+	public DAPOQLSet casesOf(DAPOQLSet list, Boolean withAttributes) throws Exception {
+		if (withAttributes) {
+			return ElementsOf(list, SLEXMMCase.class);
+		} else {
+			return ElementsOf(list, SLEXMMCase.class);
+		}
+	}
+	
 	public DAPOQLSet eventsOf(DAPOQLSet list) throws Exception {
 		return ElementsOf(list, SLEXMMEvent.class);
 	}
@@ -435,13 +530,76 @@ public class DAPOQLFunctionsGroovy {
 	}
 
 	public DAPOQLSet ElementsOf(DAPOQLSet list, Class<?> targetType) throws Exception {
-		return ElementsOf(list, targetType, null, null);
+		//return ElementsOf(list, targetType, null, null);
+		return ElementsOfFromCache(list, targetType);
 	}
-
+	
+	public DAPOQLSet ElementsOfFromCache(DAPOQLSet inlist, Class<?> targetType) throws Exception {
+		
+		Class<?> type = inlist.getType();
+		
+		DAPOQLSet auxResult = new DAPOQLSet(getStorage(), targetType);
+		int fromClazzId = AbstractDBElement.getClazzIdForClass(type);
+		int toClazzId = AbstractDBElement.getClazzIdForClass(targetType);
+		
+		DAPOQLSet list = new DAPOQLSet(getStorage(), inlist.getType());
+		
+		for (Integer id: inlist.getIdsSet()) {
+			int[] ids = getStorage().getElementsOf(fromClazzId, toClazzId, id);
+			if (ids == null) {
+				list.getIdsSet().add(id);
+			} else {
+				for (int i: ids) {
+					auxResult.getIdsSet().add(i);
+				}
+			}
+		}
+		
+		if (list.getIdsSet().isEmpty()) {
+			return auxResult;
+		}
+		
+		DAPOQLSet restResult = ElementsOf(list, targetType, null, null);
+		
+		return auxResult.union(restResult);
+	}
+	
+	private void keepElementsOf(HashMap<Integer,HashSet<Integer>> map, int id, int[] ids) {
+		
+		if (!map.containsKey(id)) {
+			map.put(id, new HashSet<Integer>());
+		}
+		
+		HashSet<Integer> set = map.get(id);
+		for (int i: ids) {
+			set.add(i);
+		}
+	}
+	
+	private void addElementsOfToCache(int from, int to, HashMap<Integer,HashSet<Integer>> map) {
+		
+		for (int id: map.keySet()) {
+		
+			HashSet<Integer> set = map.get(id);
+			
+			int[] preids = getStorage().getElementsOf(from, to, id);
+		
+			if (preids != null && preids.length > 0) {
+				for (int i: preids) {
+					set.add(i);
+				}
+			}
+			getStorage().putElementsOf(from, to, id, MMUtils.colAsArrayInt(set));
+		}
+	}
+	
 	public DAPOQLSet ElementsOf(DAPOQLSet list, Class<?> targetType, Function<int[], AbstractRSetElement<?>> fi,
 			Function<int[], AbstractRSetWithAtts<?,?,?>> fiwatt) throws Exception {
 
 		Class<?> type = list.getType();
+		
+		int fromClazzId = AbstractDBElement.getClazzIdForClass(type);
+		int toClazzId = AbstractDBElement.getClazzIdForClass(targetType);
 		
 		if (fi == null && fiwatt == null) {
 			if (type == targetType) {
@@ -459,6 +617,8 @@ public class DAPOQLFunctionsGroovy {
 			f = mapFunctions.get(targetType).get(type);
 		}
 		
+		HashMap<Integer,HashSet<Integer>> mapElementsOf = new HashMap<>();
+		
 		int[][] ids = getArrayIds(list.getIdsSet(), type);
 		for (int i = 0; i < ids.length; i++) {
 			if (fiwatt != null) {
@@ -467,6 +627,9 @@ public class DAPOQLFunctionsGroovy {
 				AbstractDBElementWithAtts<?,?> el = null;
 				while ((el = (AbstractDBElementWithAtts<?,?>) elrset.getNextWithAttributes()) != null) {
 					listResult.add(el);
+					if (elrset.getOriginId() != null) {
+						keepElementsOf(mapElementsOf,elrset.getOriginId(), new int[] {el.getId()});
+					}
 				}
 				listResult.setAttributesFetched(true);
 			} else {
@@ -475,15 +638,22 @@ public class DAPOQLFunctionsGroovy {
 				AbstractDBElement el = null;
 				while ((el = (AbstractDBElement) elrset.getNext()) != null) {
 					listResult.add(el);
+					if (elrset.getOriginId() != null) {
+						keepElementsOf(mapElementsOf,elrset.getOriginId(), new int[] {el.getId()});
+					}
 				}
 			}
 		}
+		
+		addElementsOfToCache(fromClazzId, toClazzId, mapElementsOf);
 		
 		return listResult;
 	}
 	
 	private int[][] getArrayIds(Set<Integer> list, Class<?> type) {
-		Iterator<Integer> it = list.iterator();
+		int[] ids_sorted = MMUtils.colAsArrayInt(list);
+		Arrays.sort(ids_sorted);
+		int idx = 0;
 		int remaining = list.size();
 		int numArrays = (int) Math.ceil(((float) remaining / (float) MAX_IDS_ARRAY_SIZE));
 		int[][] idsArrays = new int[numArrays][];
@@ -500,14 +670,41 @@ public class DAPOQLFunctionsGroovy {
 			int[] ids = idsArrays[a];
 
 			for (int i = 0; i < size; i++) {
-				Integer oid = it.next();
-				ids[i] = oid;
+				ids[i] = ids_sorted[idx];
+				idx++;
 			}
 		}
 
 		return idsArrays;
 	}
 	
+	public QueryGroovyResult buildResult(DAPOQLSet set) throws Exception {
+		return buildResult(set, true);
+	}
+	
+	public QueryGroovyResult buildResult(DAPOQLSet set, Boolean withAttributes) throws Exception {
+		QueryGroovyResult qr = new QueryGroovyResult(set.getType(), getStorage(), this);
+		
+		Class<?> type = set.getType();
+		
+		if (set.attributesFetched() || !withAttributes) {
+			qr.setResult(set);
+		} else {
+			if (type == SLEXMMEvent.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getEventsAndAttributeValues));
+			} else if (type == SLEXMMObjectVersion.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getVersionsAndAttributeValues));
+			} else if (type == SLEXMMCase.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getCasesAndAttributeValues));
+			} else if (type == SLEXMMLog.class) {
+				qr.setResult(ElementsOf(set, type, null, getStorage()::getLogsAndAttributeValues));
+			} else {
+				qr.setResult(set);
+			}
+		}
+		
+		return qr;
+	}
 	
 	public DAPOQLSet getAllObjects() {
 		return getAll(SLEXMMObject.class, getStorage()::getObjects);
@@ -565,4 +762,11 @@ public class DAPOQLFunctionsGroovy {
 		return getAll(SLEXMMActivityInstance.class, getStorage()::getActivityInstances);
 	}
 
+	public void exportXLogsOf(QueryGroovyResult qr, QueryGroovyResult evqr) throws Exception {	
+		if (evqr != null) {
+			DAPOQLtoXES.exportLogs(this, qr.getResult(), evqr.getResult(), this.getLogPath());
+		} else {
+			DAPOQLtoXES.exportLogs(this, qr.getResult(), null, this.getLogPath());
+		}
+	}
 }

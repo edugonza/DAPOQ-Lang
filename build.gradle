@@ -1,4 +1,5 @@
 plugins {
+    id 'us.kirchmeier.capsule' version '1.0.2'
     id 'jacoco'
     id 'com.github.kt3k.coveralls' version '2.8.2'
 }
@@ -10,7 +11,7 @@ apply plugin: 'maven-publish'
 
 wrapper.gradleVersion = '4.6'
 
-version = '1.0.1'
+version = '1.0.3'
 group = 'com.github.edugonza'
 
 println name+" v"+version
@@ -70,6 +71,7 @@ sourceSets {
 }
 
 task benchmark(dependsOn: 'testClasses', type: JavaExec) {
+	logging.level = LogLevel.INFO
 	main = "org.processmining.database.metamodel.dapoql.test.benchmark.RunBenchmarkTest"
 	classpath = sourceSets.test.runtimeClasspath
 	classpath += sourceSets.main.runtimeClasspath
@@ -80,6 +82,20 @@ jar {
 	dependsOn javadoc
 	from sourceSets.main.allSource
 	from javadoc.destinationDir
+	into('lib') {
+		from 'lib'
+	}
+}
+
+task cliCapsule(type: FatCapsule) {
+	applicationClass 'org.processmining.database.metamodel.dapoql.DAPOQLcli'
+	classifier "cli"
+}
+
+task bnchCapsule(type: FatCapsule) {
+	from sourceSets.test.output+sourceSets.test.allSource
+	applicationClass 'org.processmining.database.metamodel.dapoql.test.benchmark.RunBenchmarkTest'
+	classifier "bnch"
 }
 
 publishing {
@@ -101,14 +117,17 @@ jacocoTestReport {
 }
 
 dependencies {
+	runtime  fileTree(dir: 'lib', include: ['*.jar'])
 	compile  'org.rapidprom:GraphViz:6.7.185'
+	compile  'org.rapidprom.thirdparty.lib:OpenXES:20160212'
 	compile  'commons-io:commons-io:2.6'
 	compile  'org.apache.commons:commons-compress:1.16.1'
-	compile  'com.github.edugonza:OpenSLEX:1.0.1'
+	compile  'com.github.edugonza:OpenSLEX:1.0.4'
 	compile  'org.codehaus.groovy:groovy-all:2.4.14'
 	compile  'com.fifesoft:rsyntaxtextarea:2.6.1'
 	compile  'com.fifesoft:autocomplete:2.6.1'
 	compile  'com.fifesoft:languagesupport:2.6.0'
+	compile  'commons-cli:commons-cli:1.4'
 	testCompile 'junit:junit:4.12'
 }
 

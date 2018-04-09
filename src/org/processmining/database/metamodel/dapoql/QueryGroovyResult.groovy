@@ -19,7 +19,7 @@ class QueryGroovyResult extends QueryResult {
 	def where(Closure body) {
 		QueryGroovyResult qr = new QueryGroovyResult(getType(),getStorage(),dapoqlfunc);
 
-		body.resolveStrategy = Closure.DELEGATE_ONLY;
+		body.resolveStrategy = Closure.DELEGATE_FIRST;
 		DAPOQLDelegate dapoqldelegate = new DAPOQLDelegate();
 		body.delegate = dapoqldelegate;
 		dapoqldelegate.type = qr.getType();
@@ -36,52 +36,21 @@ class QueryGroovyResult extends QueryResult {
 
 	def union(QueryGroovyResult qrB) {
 		QueryGroovyResult qr = new QueryGroovyResult(getType(),getStorage());
+		qr.setResult(this.getResult().union(qrB.getResult()));
 		
-		for (Integer i: this.getResult().getIdsSet()) {
-			qr.getResult().getIdsSet().add(i);
-		}
-
-		for (Integer i: qrB.getResult().getIdsSet()) {
-			qr.getResult().getIdsSet().add(i);
-		}
-
 		return qr;
 	}
 
 	def excluding(QueryGroovyResult qrB) {
 		QueryGroovyResult qr = new QueryGroovyResult(getType(),getStorage());
-
-		for (Integer i: this.getResult().getIdsSet()) {
-			qr.getResult().getIdsSet().add(i);
-		}
-
-		for (Integer i: qrB.getResult().getIdsSet()) {
-			qr.getResult().getIdsSet().remove(i);
-		}
-		
+		qr.setResult(this.getResult().excluding(qrB.getResult()));
+				
 		return qr;
 	}
 
 	def intersection(QueryGroovyResult qrB) {
-		QueryGroovyResult qrAux = new QueryGroovyResult(getType(),getStorage());
-
-		for (Integer i: this.getResult().getIdsSet()) {
-			qrAux.getResult().getIdsSet().add(i);
-		}
-
-		for (Integer i: qrB.getResult().getIdsSet()) {
-			qrAux.getResult().getIdsSet().remove(i);
-		}
-
 		QueryGroovyResult qr = new QueryGroovyResult(getType(),getStorage());
-		
-		for (Integer i: this.getResult().getIdsSet()) {
-			qr.getResult().getIdsSet().add(i);
-		}
-		
-		for (Integer i: qrAux.getResult().getIdsSet()) {
-			qr.getResult().getIdsSet().remove(i);
-		}
+		qr.setResult(this.getResult().intersection(qrB.getResult()));
 		
 		return qr;
 	}

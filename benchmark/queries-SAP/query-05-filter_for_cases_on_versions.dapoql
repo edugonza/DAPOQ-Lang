@@ -1,0 +1,18 @@
+def T1 = 527292000000
+def T2 = 1480531444303
+def P1 = createPeriod(T1,T2);
+
+casesOf(
+	eventsOf(
+		versionsOf(
+			allClasses().where {name == "EKPO"}
+		).where
+		{
+			changed([at: "MENGE"])
+		}
+	).where
+	{
+		def P2 = this.createPeriod(it.timestamp)
+		this.during(P2,P1)
+	}
+)

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale
 import java.util.function.Function
 import org.codehaus.groovy.runtime.callsite.MetaClassConstructorSite;
+import org.deckfour.xes.model.XLog
 import org.processmining.openslex.metamodel.AbstractAttDBElement
 import org.processmining.openslex.metamodel.AbstractDBElement
 import org.processmining.openslex.metamodel.AbstractDBElementWithAtts
@@ -42,8 +43,8 @@ import groovy.lang.MetaClass;
 import groovy.transform.TypeChecked;
 import groovy.transform.CompileStatic;
 
-//@TypeChecked
-//@CompileStatic
+@TypeChecked
+@CompileStatic
 class DAPOQLDSL extends Script {
 
 	protected DAPOQLFunctionsGroovy dapoqlfunc = null;
@@ -51,9 +52,12 @@ class DAPOQLDSL extends Script {
 	
 	private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
-	protected void init(SLEXMMStorageMetaModel storage) {
+	public static final Boolean TRUE = Boolean.TRUE
+	public static final Boolean FALSE = Boolean.FALSE
+	
+	protected void init(SLEXMMStorageMetaModel storage, DAPOQLFunctionsGroovy func) {
 		this.storage = storage;
-		this.dapoqlfunc = new DAPOQLFunctionsGroovy(storage);
+		this.dapoqlfunc = func;
 	}
 	
 	@Override
@@ -80,7 +84,7 @@ class DAPOQLDSL extends Script {
 		def getPropertyRaw(String propertyName) {
 			
 			if (AbstractDBElementWithAtts.class.isAssignableFrom(type)) {
-				AbstractDBElementWithAtts ae = o;
+				AbstractDBElementWithAtts ae = (AbstractDBElementWithAtts) o;
 				AbstractDBElementWithValue atv = ae.getAttributeValue(propertyName);
 				
 				if (atv != null) {
@@ -130,29 +134,8 @@ class DAPOQLDSL extends Script {
 		}
 	}
 	
-	// Check ME FIXME
-	private QueryGroovyResult buildResult(DAPOQLSet set) {
-		QueryGroovyResult qr = new QueryGroovyResult(set.getType(), getStorage(), dapoqlfunc);
-		
-		Class<?> type = set.getType();
-		
-		if (set.attributesFetched()) {
-			qr.setResult(set)
-		} else {
-			if (type == SLEXMMEvent.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getEventsAndAttributeValues));
-			} else if (type == SLEXMMObjectVersion.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getVersionsAndAttributeValues));
-			} else if (type == SLEXMMCase.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getCasesAndAttributeValues));
-			} else if (type == SLEXMMLog.class) {
-				qr.setResult(dapoqlfunc.ElementsOf(set, type, null, getStorage().&getLogsAndAttributeValues));
-			} else {
-				qr.setResult(set);
-			}
-		}
-		
-		return qr;
+	def QueryGroovyResult buildResult(DAPOQLSet set, Boolean withAttributes = false) {
+		return dapoqlfunc.buildResult(set, withAttributes);
 	}
 	
 	def QueryGroovyResult allDatamodels() {
@@ -175,28 +158,28 @@ class DAPOQLDSL extends Script {
 		return buildResult(dapoqlfunc.getAllObjects());
 	}
 	
-	def QueryGroovyResult allVersions() {
-		return buildResult(dapoqlfunc.getAllVersions());
+	def QueryGroovyResult allVersions(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllVersions(), withAttributes);
 	}
 	
 	def QueryGroovyResult allRelations() {
 		return buildResult(dapoqlfunc.getAllRelations());
 	}
 	
-	def QueryGroovyResult allEvents() {
-		return buildResult(dapoqlfunc.getAllEvents());
+	def QueryGroovyResult allEvents(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllEvents(), withAttributes);
 	}
 	
 	def QueryGroovyResult allActivityInstances() {
 		return buildResult(dapoqlfunc.getAllActivityInstances());
 	}
 	
-	def QueryGroovyResult allCases() {
-		return buildResult(dapoqlfunc.getAllCases());
+	def QueryGroovyResult allCases(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllCases(), withAttributes);
 	}
 	
-	def QueryGroovyResult allLogs() {
-		return buildResult(dapoqlfunc.getAllLogs());
+	def QueryGroovyResult allLogs(Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.getAllLogs(), withAttributes);
 	}
 	
 	def QueryGroovyResult allActivities() {
@@ -234,16 +217,16 @@ class DAPOQLDSL extends Script {
 		return buildResult(dapoqlfunc.objectsOf(qr.getResult()));
 	}
 	
-	def QueryGroovyResult versionsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.versionsOf(qr.getResult()));
+	def QueryGroovyResult versionsOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.versionsOf(qr.getResult()), withAttributes);
 	}
 	
 	def QueryGroovyResult relationsOf(QueryGroovyResult qr) {
 		return buildResult(dapoqlfunc.relationsOf(qr.getResult()));
 	}
 	
-	def QueryGroovyResult eventsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.eventsOf(qr.getResult()));
+	def QueryGroovyResult eventsOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.eventsOf(qr.getResult()), withAttributes);
 	}
 	
 	def QueryGroovyResult activityInstancesOf(QueryGroovyResult qr) {
@@ -254,12 +237,12 @@ class DAPOQLDSL extends Script {
 		return buildResult(dapoqlfunc.activitiesOf(qr.getResult()));
 	}
 	
-	def QueryGroovyResult casesOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.casesOf(qr.getResult()));
+	def QueryGroovyResult casesOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.casesOf(qr.getResult(), withAttributes), withAttributes);
 	}
 	
-	def QueryGroovyResult logsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.logsOf(qr.getResult()));
+	def QueryGroovyResult logsOf(QueryGroovyResult qr, Boolean withAttributes = true) {
+		return buildResult(dapoqlfunc.logsOf(qr.getResult()), withAttributes);
 	}
 	
 	def QueryGroovyResult processesOf(QueryGroovyResult qr) {
@@ -267,7 +250,7 @@ class DAPOQLDSL extends Script {
 	}
 
 	def QueryGroovyResult periodsOf(QueryGroovyResult qr) {
-		return buildResult(dapoqlfunc.periodsOf(qr.getResult));
+		return buildResult(dapoqlfunc.periodsOf(qr.getResult()));
 	}
 	
 	def SLEXMMPeriod globalPeriodOf(QueryGroovyResult qr) {
@@ -286,6 +269,29 @@ class DAPOQLDSL extends Script {
 			return p;
 		} else {
 			return globalPeriodOf(periodsOf(qr));
+		}
+	}
+	
+	def QueryGroovyResult s(args) {
+		boolean equalType = true;
+		Class type = null;
+		for (Object o: args) {
+			if (type == null) {
+				type = o.getClass();
+			}
+			if (!(equalType && o.getClass() == type)) {
+				equalType = false;
+			}
+		}
+		
+		if (equalType) {
+			QueryGroovyResult qr = new QueryGroovyResult(type, getStorage(), dapoqlfunc);
+			for (Object o: args) {
+				qr.getResult().add((AbstractDBElement) o);
+			}
+			return qr;
+		} else {
+			throw new Exception("Items do not have the same type");
 		}
 	}
 	
@@ -311,7 +317,7 @@ class DAPOQLDSL extends Script {
 					QueryGroovyResult qr = new QueryGroovyResult(type, getStorage(), dapoqlfunc);
 
 					for (Object o: args) {
-						qr.getResult().add(o);
+						qr.getResult().add((AbstractDBElement) o);
 					}
 
 					return invokeMethod(name,qr);
@@ -414,6 +420,36 @@ class DAPOQLDSL extends Script {
 	
 	def boolean matches(SLEXMMPeriod a, SLEXMMPeriod b) {
 		return (a.getStart() == b.getStart() && a.getEnd() == b.getEnd());
+	}
+	
+	def void exportXLogsOf(QueryGroovyResult qr) {
+		if (qr.getType() != SLEXMMLog.class &&
+			qr.getType() != SLEXMMCase.class &&
+			qr.getType() != SLEXMMActivityInstance.class &&
+			qr.getType() != SLEXMMEvent.class) {
+			throw new Exception("First argument of XLogsOf must be a set of logs, cases, activity instances, or events.");
+		} else {
+			// export one XLog per SLEXMMLog in the input 
+			// export one XLog containing the cases in the input 
+			// export one XLog containing the events in the input 
+			// export one XLog containing the events of the activity instances in the input
+			dapoqlfunc.exportXLogsOf(qr, null);
+		}
+	}
+	
+	def void exportXLogsOf(QueryGroovyResult qr, QueryGroovyResult evqr) {
+		if (qr.getType() != SLEXMMLog.class &&
+			qr.getType() != SLEXMMCase.class &&
+			qr.getType() != SLEXMMActivityInstance.class &&
+			qr.getType() != SLEXMMEvent.class) {
+			throw new Exception("First argument of XLogsOf must be a set of logs, cases, activity instances, or events.");
+		} else if (evqr.getType() != SLEXMMEvent.class) {
+			throw new Exception("Second argument of XLogsOf must be a set of events.");
+		} else {
+			// export one XLog per SLEXMMLog in the first argument, including only the events in the second argument
+			// export one XLog containing the cases in the first argument, including only the events in the second argument
+			dapoqlfunc.exportXLogsOf(qr, evqr);
+		}		
 	}
 	
 }

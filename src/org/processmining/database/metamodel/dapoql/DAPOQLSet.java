@@ -58,4 +58,56 @@ public class DAPOQLSet implements Iterable<AbstractDBElement> {
 		}
 		return objset;
 	}
+	
+	public DAPOQLSet intersection(DAPOQLSet bset) {
+		DAPOQLSet inter = new DAPOQLSet(this.storage, this.getType());
+		
+		if (this.getType() == bset.getType()) {
+			if (this.getIdsSet() != null && bset.getIdsSet() != null) {
+				if (!this.getIdsSet().isEmpty() && !bset.getIdsSet().isEmpty()) {
+					HashSet<Integer> auxset = new HashSet<>();
+					auxset.addAll(this.getIdsSet());
+					auxset.removeAll(bset.getIdsSet());
+					
+					HashSet<Integer> auxset2 = new HashSet<>();
+					auxset2.addAll(this.getIdsSet());
+					auxset2.removeAll(auxset);
+					
+					inter.set(auxset2);
+				}
+			}
+		}
+		
+		return inter;
+	}
+	
+	public DAPOQLSet union(DAPOQLSet bset) {
+		DAPOQLSet un = new DAPOQLSet(this.storage, this.getType());
+		
+		if (this.getType() == bset.getType()) {
+			if (this.getIdsSet() != null) {
+				un.getIdsSet().addAll(this.getIdsSet());
+			}
+			if (bset.getIdsSet() != null) {
+				un.getIdsSet().addAll(bset.getIdsSet());
+			}
+		}
+		
+		return un;
+	}
+	
+	public DAPOQLSet excluding(DAPOQLSet bset) {
+		DAPOQLSet ex = new DAPOQLSet(this.storage, this.getType());
+		
+		if (this.getType() == bset.getType()) {
+			if (this.getIdsSet() != null) {
+				ex.getIdsSet().addAll(this.getIdsSet());
+			}
+			if (bset.getIdsSet() != null) {
+				ex.getIdsSet().removeAll(bset.getIdsSet());
+			}
+		}
+		
+		return ex;
+	}
 }
