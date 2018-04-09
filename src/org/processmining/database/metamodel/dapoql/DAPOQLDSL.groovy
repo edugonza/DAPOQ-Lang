@@ -238,7 +238,7 @@ class DAPOQLDSL extends Script {
 	}
 	
 	def QueryGroovyResult casesOf(QueryGroovyResult qr, Boolean withAttributes = true) {
-		return buildResult(dapoqlfunc.casesOf(qr.getResult()), withAttributes);
+		return buildResult(dapoqlfunc.casesOf(qr.getResult(), withAttributes), withAttributes);
 	}
 	
 	def QueryGroovyResult logsOf(QueryGroovyResult qr, Boolean withAttributes = true) {

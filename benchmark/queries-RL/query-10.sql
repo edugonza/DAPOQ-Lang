@@ -1,4 +1,4 @@
-select distinct LG.id as "id", LGAT.name, LGATV.value, LGATV.type from
+select LG.id as "id", LGAT.name, LGATV.value, LGATV.type from
 log as LG
 left join log_attribute_value as LGATV on LGATV.log_id = LG.id
 left join log_attribute_name as LGAT on LGAT.id = LGATV.log_attribute_name_id

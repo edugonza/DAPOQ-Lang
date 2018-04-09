@@ -1,4 +1,4 @@
-select distinct E.id as "id", EAT.name, EATV.value, EATV.type from
+select E.id as "id", EAT.name, EATV.value, EATV.type from
 event as E
 join activity_instance as AI on AI.id = E.activity_instance_id
 join activity_instance_to_case as AITC on AITC.activity_instance_id = AI.id

@@ -1,4 +1,4 @@
-select distinct C.id as "id", CAT.name, CATV.value, CATV.type from
+select C.id as "id", CAT.name, CATV.value, CATV.type from
 "case" as C
 left join case_attribute_value as CATV on CATV.case_id = C.id
 left join case_attribute_name as CAT on CAT.id = CATV.case_attribute_name_id

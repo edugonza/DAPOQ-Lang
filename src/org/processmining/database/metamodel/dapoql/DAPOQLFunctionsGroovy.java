@@ -1,5 +1,7 @@
 package org.processmining.database.metamodel.dapoql;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,7 +37,7 @@ public class DAPOQLFunctionsGroovy {
 	private SLEXMMStorageMetaModel slxmm = null;
 	private String logpath = "./dapoql_export_logs/";
 
-	private static final int MAX_IDS_ARRAY_SIZE = 40000;
+	private static final int MAX_IDS_ARRAY_SIZE = 4000;
 
 	public DAPOQLFunctionsGroovy(SLEXMMStorageMetaModel strg, String logpath) {
 		this.slxmm = strg;
@@ -422,6 +424,14 @@ public class DAPOQLFunctionsGroovy {
 		return ElementsOf(list, SLEXMMCase.class);
 	}
 	
+	public DAPOQLSet casesOf(DAPOQLSet list, Boolean withAttributes) throws Exception {
+		if (withAttributes) {
+			return ElementsOf(list, SLEXMMCase.class);
+		} else {
+			return ElementsOf(list, SLEXMMCase.class);
+		}
+	}
+	
 	public DAPOQLSet eventsOf(DAPOQLSet list) throws Exception {
 		return ElementsOf(list, SLEXMMEvent.class);
 	}
@@ -641,7 +651,9 @@ public class DAPOQLFunctionsGroovy {
 	}
 	
 	private int[][] getArrayIds(Set<Integer> list, Class<?> type) {
-		Iterator<Integer> it = list.iterator();
+		int[] ids_sorted = MMUtils.colAsArrayInt(list);
+		Arrays.sort(ids_sorted);
+		int idx = 0;
 		int remaining = list.size();
 		int numArrays = (int) Math.ceil(((float) remaining / (float) MAX_IDS_ARRAY_SIZE));
 		int[][] idsArrays = new int[numArrays][];
@@ -658,8 +670,8 @@ public class DAPOQLFunctionsGroovy {
 			int[] ids = idsArrays[a];
 
 			for (int i = 0; i < size; i++) {
-				Integer oid = it.next();
-				ids[i] = oid;
+				ids[i] = ids_sorted[idx];
+				idx++;
 			}
 		}
 

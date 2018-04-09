@@ -1,4 +1,4 @@
-SELECT distinct C.id as "id", CAT.name, CATV.value, CATV.type
+SELECT C.id as "id", CAT.name, CATV.value, CATV.type
 FROM
 	"case" as C
 JOIN activity_instance_to_case as AITC ON AITC.case_id = C.id

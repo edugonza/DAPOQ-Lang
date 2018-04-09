@@ -1,1 +1,1 @@
-select distinct * from attribute_name
+select * from attribute_name
