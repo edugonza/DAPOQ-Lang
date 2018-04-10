@@ -11,7 +11,7 @@ apply plugin: 'maven-publish'
 
 wrapper.gradleVersion = '4.6'
 
-version = '1.0.4'
+version = '1.0.5'
 group = 'com.github.edugonza'
 
 println name+" v"+version
@@ -114,6 +114,11 @@ jar {
 	}
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier "javadoc"
+        from javadoc.destinationDir
+}
+
 task cliCapsule(type: FatCapsule) {
 	applicationClass 'org.processmining.database.metamodel.dapoql.DAPOQLcli'
 	classifier "cli"
@@ -125,10 +130,15 @@ task bnchCapsule(type: FatCapsule) {
 	classifier "bnch"
 }
 
+artifacts {
+        archives javadocJar
+}
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
 			from components.java
+			artifact javadocJar
 		}
 	}
 	repositories {
@@ -149,7 +159,7 @@ dependencies {
 	compile  'org.rapidprom.thirdparty.lib:OpenXES:20160212'
 	compile  'commons-io:commons-io:2.6'
 	compile  'org.apache.commons:commons-compress:1.16.1'
-	compile  'com.github.edugonza:OpenSLEX:1.0.6'
+	compile  'com.github.edugonza:OpenSLEX:1.0.7'
 	compile  'org.codehaus.groovy:groovy-all:2.4.14'
 	compile  'com.fifesoft:rsyntaxtextarea:2.6.1'
 	compile  'com.fifesoft:autocomplete:2.6.1'

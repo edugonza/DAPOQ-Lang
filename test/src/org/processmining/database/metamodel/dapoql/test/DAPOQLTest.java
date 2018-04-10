@@ -2,15 +2,11 @@ package org.processmining.database.metamodel.dapoql.test;
 
 import static org.junit.Assert.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.processmining.database.metamodel.dapoql.DAPOQLRunnerGroovy;
-import org.processmining.database.metamodel.dapoql.DAPOQLVariable;
 import org.processmining.database.metamodel.dapoql.QueryResult;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
