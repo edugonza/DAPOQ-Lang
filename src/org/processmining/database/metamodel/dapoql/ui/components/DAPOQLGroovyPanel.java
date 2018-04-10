@@ -32,7 +32,7 @@ public class DAPOQLGroovyPanel extends JPanel {
 	}
 	
 	private SLEXMMDataModel getDataModel() {
-		SLEXMMDataModelResultSet dmrset = getMetaModel().getDataModels();
+		SLEXMMDataModelResultSet dmrset = getMetaModel().getDatamodels();
 
 		SLEXMMDataModel dm = dmrset.getNext();
 

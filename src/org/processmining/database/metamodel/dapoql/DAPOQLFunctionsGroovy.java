@@ -1,10 +1,8 @@
 package org.processmining.database.metamodel.dapoql;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -51,7 +49,7 @@ public class DAPOQLFunctionsGroovy {
 	
 	private SLEXMMObjectVersion getPrevOV(SLEXMMObjectVersion ov) throws Exception {
 		
-		SLEXMMObjectVersionResultSet ovrset = slxmm.getObjectVersionsForObject(ov.getObjectId());
+		SLEXMMObjectVersionResultSet ovrset = slxmm.getVersionsForObject(ov.getObjectId());
 		SLEXMMObjectVersion ova = null;
 		SLEXMMObjectVersion ovb = null;
 		
@@ -202,7 +200,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getObjectsForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getObjectsForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getObjectsForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getObjectsForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getObjectsForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getObjectsForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getObjectsForRelations);
 		mapFunctions.put(SLEXMMObject.class,funcs);
@@ -218,7 +216,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getEventsForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getEventsForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getEventsForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getEventsForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getEventsForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getEventsForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getEventsForRelations);
 		mapFunctions.put(SLEXMMEvent.class,funcs);
@@ -234,7 +232,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getAttributesForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getAttributesForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getAttributesForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getAttributesForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getAttributesForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getAttributesForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getAttributesForRelations);
 		mapFunctions.put(SLEXMMAttribute.class,funcs);
@@ -250,7 +248,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getClassesForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getClassesForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getClassesForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getClassesForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getClassesForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getClassesForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getClassesForRelations);
 		mapFunctions.put(SLEXMMClass.class,funcs);
@@ -266,7 +264,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getDatamodelsForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getDatamodelsForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getDatamodelsForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getDatamodelsForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getDatamodelsForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getDatamodelsForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getDatamodelsForRelations);
 		mapFunctions.put(SLEXMMDataModel.class,funcs);
@@ -282,7 +280,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getActivityInstancesForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getActivityInstancesForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getActivityInstancesForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getActivityInstancesForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getActivityInstancesForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getActivityInstancesForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getActivityInstancesForRelations);
 		mapFunctions.put(SLEXMMActivityInstance.class,funcs);
@@ -298,7 +296,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getActivitiesForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getActivitiesForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getActivitiesForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getActivitiesForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getActivitiesForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getActivitiesForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getActivitiesForRelations);
 		mapFunctions.put(SLEXMMActivity.class,funcs);
@@ -314,7 +312,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, null);
 		funcs.put(SLEXMMCase.class, getStorage()::getProcessesForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getProcessesForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getProcessesForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getProcessesForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getProcessesForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getProcessesForRelations);
 		mapFunctions.put(SLEXMMProcess.class,funcs);
@@ -330,7 +328,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getCasesForProcesses);
 		funcs.put(SLEXMMCase.class, null);
 		funcs.put(SLEXMMLog.class, getStorage()::getCasesForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getCasesForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getCasesForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getCasesForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getCasesForRelations);
 		mapFunctions.put(SLEXMMCase.class,funcs);
@@ -346,25 +344,25 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getLogsForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getLogsForCases);
 		funcs.put(SLEXMMLog.class, null);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getLogsForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getLogsForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getLogsForRelationships);
 		funcs.put(SLEXMMRelation.class, getStorage()::getLogsForRelations);
 		mapFunctions.put(SLEXMMLog.class,funcs);
 				
 		funcs = new HashMap<>();
-		funcs.put(SLEXMMObject.class, getStorage()::getObjectVersionsForObjects);
-		funcs.put(SLEXMMEvent.class, getStorage()::getObjectVersionsForEvents);
-		funcs.put(SLEXMMAttribute.class, getStorage()::getObjectVersionsForAttributes);
-		funcs.put(SLEXMMClass.class, getStorage()::getObjectVersionsForClasses);
+		funcs.put(SLEXMMObject.class, getStorage()::getVersionsForObjects);
+		funcs.put(SLEXMMEvent.class, getStorage()::getVersionsForEvents);
+		funcs.put(SLEXMMAttribute.class, getStorage()::getVersionsForAttributes);
+		funcs.put(SLEXMMClass.class, getStorage()::getVersionsForClasses);
 		funcs.put(SLEXMMDataModel.class, getStorage()::getVersionsForDatamodels);
-		funcs.put(SLEXMMActivityInstance.class, getStorage()::getObjectVersionsForActivityInstances);
-		funcs.put(SLEXMMActivity.class, getStorage()::getObjectVersionsForActivities);
+		funcs.put(SLEXMMActivityInstance.class, getStorage()::getVersionsForActivityInstances);
+		funcs.put(SLEXMMActivity.class, getStorage()::getVersionsForActivities);
 		funcs.put(SLEXMMProcess.class, getStorage()::getVersionsForProcesses);
-		funcs.put(SLEXMMCase.class, getStorage()::getObjectVersionsForCases);
+		funcs.put(SLEXMMCase.class, getStorage()::getVersionsForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getVersionsForLogs);
 		funcs.put(SLEXMMObjectVersion.class, null);
-		funcs.put(SLEXMMRelationship.class, getStorage()::getObjectVersionsForRelationships);
-		funcs.put(SLEXMMRelation.class, getStorage()::getObjectVersionsForRelations);
+		funcs.put(SLEXMMRelationship.class, getStorage()::getVersionsForRelationships);
+		funcs.put(SLEXMMRelation.class, getStorage()::getVersionsForRelations);
 		mapFunctions.put(SLEXMMObjectVersion.class,funcs);
 				
 		funcs = new HashMap<>();
@@ -378,7 +376,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getRelationshipsForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getRelationshipsForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getRelationshipsForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getRelationshipsForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getRelationshipsForVersions);
 		funcs.put(SLEXMMRelationship.class, null);
 		funcs.put(SLEXMMRelation.class, getStorage()::getRelationshipsForRelations);
 		mapFunctions.put(SLEXMMRelationship.class,funcs);
@@ -394,7 +392,7 @@ public class DAPOQLFunctionsGroovy {
 		funcs.put(SLEXMMProcess.class, getStorage()::getRelationsForProcesses);
 		funcs.put(SLEXMMCase.class, getStorage()::getRelationsForCases);
 		funcs.put(SLEXMMLog.class, getStorage()::getRelationsForLogs);
-		funcs.put(SLEXMMObjectVersion.class, getStorage()::getRelationsForObjectVersions);
+		funcs.put(SLEXMMObjectVersion.class, getStorage()::getRelationsForVersions);
 		funcs.put(SLEXMMRelationship.class, getStorage()::getRelationsForRelationships);
 		funcs.put(SLEXMMRelation.class, null);
 		mapFunctions.put(SLEXMMRelation.class,funcs);
@@ -484,7 +482,7 @@ public class DAPOQLFunctionsGroovy {
 		Class<?> type = list.getType();
 		
 		if (type == SLEXMMObjectVersion.class) {
-			return ElementsOf(list, SLEXMMObjectVersion.class, getStorage()::getVersionsRelatedToObjectVersions, null);
+			return ElementsOf(list, SLEXMMObjectVersion.class, getStorage()::getVersionsRelatedToVersions, null);
 		} else {
 			throw new Exception("Wrong input type");
 		}
@@ -746,7 +744,7 @@ public class DAPOQLFunctionsGroovy {
 	}
 
 	public DAPOQLSet getAllDatamodels() {
-		return getAll(SLEXMMDataModel.class, getStorage()::getDataModels);
+		return getAll(SLEXMMDataModel.class, getStorage()::getDatamodels);
 	}
 
 	public DAPOQLSet getAllProcesses() {

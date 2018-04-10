@@ -11,17 +11,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -39,18 +34,7 @@ import org.processmining.openslex.metamodel.SLEXMMStorageMetaModelImpl;
 public class RunBenchmarkTest {
 
 	private BufferedWriter bw = null;
-	private static final String DEFAULT_FILENAME = "metamodel-RL.slexmm";
-	private static final String DEFAULT_PATH = "./data/";
 	Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	private <T> List<T> toList(Stream<T> st) {
-		ArrayList<T> list = new ArrayList<>();
-		Iterator<T> it = st.iterator();
-		while (it.hasNext()) {
-			list.add(it.next());
-		}
-		return list;
-	}
 	
 	public static String readFile(String path) throws Exception {
 		String query = null;
@@ -82,7 +66,6 @@ public class RunBenchmarkTest {
 			}
 		};
 		
-		String package_name = "org.processmining.database.metamodel.dapoql.test.benchmark.resources";
 		Path path = Paths.get(queriespath);
 		List<Path> dapoqlFiles = Files.walk(path).filter(dapoqlPred).collect(Collectors.toList());
 		List<Path> sqlFiles = Files.walk(path).filter(sqlPred).collect(Collectors.toList());
@@ -221,7 +204,6 @@ public class RunBenchmarkTest {
 	public void test_benchmark() {
 		String mmPath = "./data/metamodel-RL.slexmm";
 		String queriesPath = "./benchmark/queries-RL";
-		String outputPath = null;
 		try {
 			this.queryingBenchmark(mmPath,queriesPath);
 		} catch (Exception e) {

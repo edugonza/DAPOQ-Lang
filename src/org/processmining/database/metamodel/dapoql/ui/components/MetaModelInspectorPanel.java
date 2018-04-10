@@ -84,7 +84,7 @@ public class MetaModelInspectorPanel extends JPanel {
 	}
 
 	private SLEXMMDataModel getDataModel() {
-		SLEXMMDataModelResultSet dmrset = getMetaModel().getDataModels();
+		SLEXMMDataModelResultSet dmrset = getMetaModel().getDatamodels();
 
 		SLEXMMDataModel dm = dmrset.getNext();
 
@@ -686,7 +686,7 @@ public class MetaModelInspectorPanel extends JPanel {
 						if (selected != null) {
 							try {
 								SLEXMMObjectVersionResultSet ovrset = getMetaModel()
-										.getObjectVersionsForObject(selected[0]);
+										.getVersionsForObject(selected[0]);
 								MetaModelTableUtils.setObjectVersionsTableContent(tableObjectVersions, ovrset);
 								SLEXMMRelationResultSet[] rrset = new SLEXMMRelationResultSet[2];
 								rrset[0] = getMetaModel().getRelationsForSourceObject(selected[0]);
@@ -719,7 +719,7 @@ public class MetaModelInspectorPanel extends JPanel {
 						if (selected != null) {
 							try {
 								SLEXMMObjectVersionResultSet ovrset = getMetaModel()
-										.getObjectVersionsForObject(selected[0]);
+										.getVersionsForObject(selected[0]);
 								MetaModelTableUtils.setObjectVersionsTableContent(tableObjectVersions, ovrset);
 								SLEXMMRelationResultSet[] rrset = new SLEXMMRelationResultSet[2];
 								rrset[0] = getMetaModel().getRelationsForSourceObject(selected[0]);
@@ -786,7 +786,7 @@ public class MetaModelInspectorPanel extends JPanel {
 						Integer selected = MetaModelTableUtils.getSelectedEvent(tableObjectVersions);
 						if (selected != null) {
 							HashMap<SLEXMMAttribute, SLEXMMAttributeValue> atts = getMetaModel()
-									.getAttributeValuesForObjectVersion(selected);
+									.getAttributeValuesForVersion(selected);
 							try {
 								MetaModelTableUtils.setObjectVersionAttributesTableContent(tableObjectVersionAttributes,
 										atts);

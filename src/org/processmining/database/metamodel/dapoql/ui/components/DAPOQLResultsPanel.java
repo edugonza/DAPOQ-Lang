@@ -217,7 +217,7 @@ public class DAPOQLResultsPanel extends JPanel {
 					Integer selected = MetaModelTableUtils.getSelectedEvent(sqlResultTable);
 					if (selected != null) {
 						HashMap<SLEXMMAttribute, SLEXMMAttributeValue> atts =
-								slxmm.getAttributeValuesForObjectVersion(selected);
+								slxmm.getAttributeValuesForVersion(selected);
 						try {
 							MetaModelTableUtils.setObjectVersionAttributesTableContent(detailsTable,atts);
 						} catch (Exception ex) {

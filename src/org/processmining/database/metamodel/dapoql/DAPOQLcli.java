@@ -3,7 +3,6 @@ package org.processmining.database.metamodel.dapoql;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.cli.CommandLine;
@@ -84,6 +83,7 @@ public class DAPOQLcli {
 						sb.append('\n');
 					}
 					query = sb.toString();
+					br.close();
 				} else {
 					throw new Exception("Query file not available.");
 				}
