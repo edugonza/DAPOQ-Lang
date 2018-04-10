@@ -1,0 +1,13 @@
+def P1 = createPeriod("1986/09/17 00:00","2016/11/30 19:44","yyyy/MM/dd HH:mm")
+
+casesOf(
+	eventsOf(
+		versionsOf(
+			allClasses().where {name == "CUSTOMER"}
+		).where	{ changed([at: "BIRTH_DATE"]) }
+	).where
+	{
+		def P2 = createPeriod(it.timestamp)
+		during(P2,P1)
+	}
+)

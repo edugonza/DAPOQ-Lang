@@ -202,8 +202,8 @@ public class RunBenchmarkTest {
 	
 	@Test
 	public void test_benchmark() {
-		String mmPath = "./data/metamodel-RL.slexmm";
-		String queriesPath = "./benchmark/queries-RL";
+		String mmPath = "./data/metamodel-sample.slexmm";
+		String queriesPath = "./benchmark/queries-sample";
 		try {
 			this.queryingBenchmark(mmPath,queriesPath);
 		} catch (Exception e) {

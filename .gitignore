@@ -5,5 +5,9 @@
 /.classpath
 /.project
 /data/*
+!/data/metamodel-sample.slexmm
 /exportedLogs*/
-benchmark/results*
+/benchmark/results*
+/benchmark/*
+!/benchmark/*.sh
+!/benchmark/queries-sample/

@@ -11,7 +11,7 @@ apply plugin: 'maven-publish'
 
 wrapper.gradleVersion = '4.6'
 
-version = '1.0.4'
+version = '1.0.5'
 group = 'com.github.edugonza'
 
 println name+" v"+version
@@ -98,9 +98,9 @@ task integrationTest(type: Test) {
 }
 
 check.dependsOn integrationTest
-integrationTest.mustRunAfter test
 
 task testall(type: Test) {
+	integrationTest.mustRunAfter test
 	dependsOn test
 	dependsOn integrationTest
 }

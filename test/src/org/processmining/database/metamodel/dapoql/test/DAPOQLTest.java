@@ -19,7 +19,7 @@ public class DAPOQLTest {
 
 	static SLEXMMStorageMetaModel mm;
 	static String path = "data/";
-	static String filename = "metamodel-RL.slexmm";
+	static String filename = "metamodel-sample.slexmm";
 	DAPOQLRunnerGroovy runner;
 	
 	@BeforeClass
