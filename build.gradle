@@ -107,6 +107,11 @@ task testall(type: Test) {
 
 tasks.withType(Test) {
 	reports.html.destination = file("${reporting.baseDir}/${name}")
+	jacoco {
+		append = true
+		destinationFile = file('build/jacoco/test.exec')
+		classDumpDir = file('build/jacoco/classpathdumps')
+	}
 }
 
 jar {
@@ -155,6 +160,7 @@ jacocoTestReport {
         xml.enabled = true // coveralls plugin depends on xml format report
         html.enabled = true
     }
+    executionData = files('build/jacoco/test.exec')
 }
 
 dependencies {
