@@ -3,9 +3,15 @@ package org.processmining.database.metamodel.dapoql;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.deckfour.xes.classification.XEventAttributeClassifier;
+import org.deckfour.xes.classification.XEventClassifier;
+import org.deckfour.xes.classification.XEventNameClassifier;
 import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.extension.std.XIdentityExtension;
 import org.deckfour.xes.extension.std.XLifecycleExtension;
@@ -13,7 +19,10 @@ import org.deckfour.xes.extension.std.XOrganizationalExtension;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;
 import org.deckfour.xes.factory.XFactoryBufferedImpl;
+import org.deckfour.xes.factory.XFactoryNaiveImpl;
+import org.deckfour.xes.factory.XFactoryRegistry;
 import org.deckfour.xes.id.XID;
+import org.deckfour.xes.info.XLogInfoFactory;
 import org.deckfour.xes.model.XAttribute;
 import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XEvent;
@@ -29,6 +38,7 @@ import org.processmining.openslex.metamodel.SLEXMMActivityInstance;
 import org.processmining.openslex.metamodel.SLEXMMCase;
 import org.processmining.openslex.metamodel.SLEXMMEvent;
 import org.processmining.openslex.metamodel.SLEXMMLog;
+import org.processmining.openslex.metamodel.SLEXMMStorageMetaModel;
 
 public class DAPOQLtoXES {
 	
@@ -61,6 +71,25 @@ public class DAPOQLtoXES {
 		return e;
 	}
 	
+	private static class EventTimeComparator implements Comparator<Integer> {
+
+		private SLEXMMStorageMetaModel storage = null;
+		
+		public EventTimeComparator(SLEXMMStorageMetaModel storage) {
+			this.storage = storage;
+		}
+		
+		@Override
+		public int compare(Integer evIdA, Integer evIdB) {
+			SLEXMMEvent evA = this.storage.getFromCache(SLEXMMEvent.class, evIdA);
+			SLEXMMEvent evB = this.storage.getFromCache(SLEXMMEvent.class, evIdB);
+			long tsA = evA.getTimestamp();
+			long tsB = evB.getTimestamp();
+			return Long.compare(tsA, tsB);
+		}
+		
+	}
+	
 	private static XTrace exportTrace(XFactory xfact, DAPOQLFunctionsGroovy func, SLEXMMCase slxcase,
 			DAPOQLSet evset,
 			Map<Integer, SLEXMMActivityInstance> mapAI,
@@ -86,8 +115,12 @@ public class DAPOQLtoXES {
 			res = res.intersection(evset);
 		}
 		
-		for (AbstractDBElement el : res) {
-			SLEXMMEvent slxev = (SLEXMMEvent) el;
+		ArrayList<Integer> orderedEvents = new ArrayList<>(res.getIdsSet());
+		
+		Collections.sort(orderedEvents, new EventTimeComparator(slxcase.getStorage()));
+		
+		for (Integer elId : orderedEvents) {
+			SLEXMMEvent slxev = (SLEXMMEvent) slxcase.getStorage().getFromCache(SLEXMMEvent.class, elId);
 			XEvent ev = exportEvent(xfact,func,slxev,mapAI,mapAct);
 			t.add(ev);
 		}
@@ -205,6 +238,7 @@ public class DAPOQLtoXES {
 				SLEXMMLog slxlog = (SLEXMMLog) logEl;
 				XLog log = exportLog(xfact, func, slxlog, evres,mapAI,mapAct,true);
 				String logfilename = slxlog.getId()+"_"+slxlog.getName()+".xes.gz";
+				
 				serializeLog(log, xeserial, logfilename, f);
 			}
 		} else if (res.getType() == SLEXMMCase.class) {
@@ -221,6 +255,7 @@ public class DAPOQLtoXES {
 			}
 			
 			String logfilename = "log-from-cases_"+System.currentTimeMillis()+".xes.gz";
+			
 			serializeLog(log, xeserial, logfilename, f);
 		} else if (res.getType() == SLEXMMEvent.class) {
 			prefetch(func,res,evres);
@@ -244,6 +279,7 @@ public class DAPOQLtoXES {
 			}
 			
 			String logfilename = "log-from-events_"+System.currentTimeMillis()+".xes.gz";
+			
 			serializeLog(log, xeserial, logfilename, f);
 		} else if (res.getType() == SLEXMMActivityInstance.class) {
 			DAPOQLSet evRes = func.eventsOf(res);

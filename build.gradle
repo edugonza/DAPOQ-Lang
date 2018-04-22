@@ -11,7 +11,7 @@ apply plugin: 'maven-publish'
 
 wrapper.gradleVersion = '4.6'
 
-version = '1.0.5'
+version = '1.0.6'
 group = 'com.github.edugonza'
 
 println name+" v"+version
@@ -98,11 +98,15 @@ task integrationTest(type: Test) {
 }
 
 check.dependsOn integrationTest
+integrationTest.mustRunAfter test
 
 task testall(type: Test) {
-	integrationTest.mustRunAfter test
 	dependsOn test
 	dependsOn integrationTest
+}
+
+tasks.withType(Test) {
+	reports.html.destination = file("${reporting.baseDir}/${name}")
 }
 
 jar {
@@ -159,7 +163,7 @@ dependencies {
 	compile  'org.rapidprom.thirdparty.lib:OpenXES:20160212'
 	compile  'commons-io:commons-io:2.6'
 	compile  'org.apache.commons:commons-compress:1.16.1'
-	compile  'com.github.edugonza:OpenSLEX:1.0.7'
+	compile  'com.github.edugonza:OpenSLEX:1.0.8'
 	compile  'org.codehaus.groovy:groovy-all:2.4.14'
 	compile  'com.fifesoft:rsyntaxtextarea:2.6.1'
 	compile  'com.fifesoft:autocomplete:2.6.1'
