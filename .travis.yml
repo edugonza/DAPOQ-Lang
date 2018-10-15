@@ -1,4 +1,4 @@
 language: java
-script: travis_wait ./gradlew clean testall -i
+script: ./gradlew clean testall -i
 after_success:
 - ./gradlew jacocoTestReport coveralls
